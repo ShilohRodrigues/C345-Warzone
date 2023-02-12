@@ -6,23 +6,25 @@ using namespace std;
 
 ///////////////// Game Class Implementations //////////////////////////
 //Game constructor, initializes the state to the starting state
-Game::Game() {
+GameEngine::GameEngine() {
   state = shared_ptr<State>(new StartState()); //Shared pointed, no need to delete
 }
-//Attempt to go to the next state with the entered command
-int Game::nextState(string cmd) {
-  return state->next(this, cmd);
+//Parameterized Constructor
+GameEngine::GameEngine(shared_ptr<State> newState) {
+  this->state = newState;
 }
-//State Getter
-shared_ptr<State> Game::getState() { 
-  return this->state; 
+//Copy Constructor
+GameEngine::GameEngine(GameEngine &game) {
+  state = game.state;
 }
-//State Setter
-void Game::setState(shared_ptr<State> newState) { 
-  this->state = newState; 
+//Assignment Operator
+GameEngine& GameEngine::operator=(const GameEngine& game) {
+  if (this == &game) return *this;
+  this->state = game.state;
+  return *this;
 }
 //Insertion Stream
-ostream& operator<<(ostream &strm, const Game &g) {
+ostream& operator<<(ostream &strm, const GameEngine &g) {
   //Loop through available commands to print them
   string cmds = "";
   for(string cmd : g.state->getCommands()) {
@@ -31,8 +33,20 @@ ostream& operator<<(ostream &strm, const Game &g) {
   cmds = cmds.substr(0, cmds.size()-2); //Remove trailing comma
   return strm << "Current state: " << *g.state << endl << "Available commands: " << cmds;
 }
+//Attempt to go to the next state with the entered command
+int GameEngine::nextState(string cmd) {
+  return state->next(this, cmd);
+}
+//State Getter
+shared_ptr<State> GameEngine::getState() { 
+  return this->state; 
+}
+//State Setter
+void GameEngine::setState(shared_ptr<State> newState) { 
+  this->state = newState; 
+}
 //Destructor 
-Game::~Game() { /*Using smart pointers*/ }
+GameEngine::~GameEngine() { /*Using smart pointers*/ }
 
 ///////////////// State Class Implementations //////////////////////////
 //State class insertion stream
@@ -44,7 +58,7 @@ ostream &operator<<(ostream &strm, State const &s) {
 void StartState::action() {
 
 }
-int StartState::next(Game *game, string cmd) {
+int StartState::next(GameEngine *game, string cmd) {
   if (cmd == "loadmap") {
     game->setState(shared_ptr<State>(new MapLoadedState()));
     return 0; //Return 0 for success
@@ -62,7 +76,7 @@ vector<string> StartState::getCommands(){
 void MapLoadedState::action() {
 
 }
-int MapLoadedState::next(Game *game, string cmd) {
+int MapLoadedState::next(GameEngine *game, string cmd) {
   if (cmd == "loadmap") {
     return 0;
   }
@@ -83,7 +97,7 @@ vector<string> MapLoadedState::getCommands(){
 void MapValidatedState::action() {
 
 }
-int MapValidatedState::next(Game *game, string cmd) {
+int MapValidatedState::next(GameEngine *game, string cmd) {
   if (cmd == "addplayer") {
     game->setState(shared_ptr<State>(new PlayersAddedState()));
     return 0;
@@ -101,7 +115,7 @@ vector<string> MapValidatedState::getCommands(){
 void PlayersAddedState::action() {
 
 }
-int PlayersAddedState::next(Game *game, string cmd) {
+int PlayersAddedState::next(GameEngine *game, string cmd) {
   if (cmd == "addplayer") {
     return 0;
   }
@@ -122,7 +136,7 @@ vector<string> PlayersAddedState::getCommands(){
 void AssignReinforcementState::action() {
 
 }
-int AssignReinforcementState::next(Game *game, string cmd) {
+int AssignReinforcementState::next(GameEngine *game, string cmd) {
   if (cmd == "issueorder") {
     game->setState(shared_ptr<State>(new IssueOrdersState));
     return 0;
@@ -140,7 +154,7 @@ vector<string> AssignReinforcementState::getCommands(){
 void IssueOrdersState::action() {
 
 }
-int IssueOrdersState::next(Game *game, string cmd) {
+int IssueOrdersState::next(GameEngine *game, string cmd) {
   if (cmd == "issueorder") {
     return 0;
   }
@@ -161,7 +175,7 @@ vector<string> IssueOrdersState::getCommands(){
 void ExecuteOrdersState::action() {
 
 }
-int ExecuteOrdersState::next(Game *game, string cmd) {
+int ExecuteOrdersState::next(GameEngine *game, string cmd) {
   if (cmd == "execorder") {
     return 0;
   }
@@ -186,7 +200,7 @@ vector<string> ExecuteOrdersState::getCommands(){
 void WinState::action() {
 
 }
-int WinState::next(Game *game, string cmd) {
+int WinState::next(GameEngine *game, string cmd) {
   if (cmd == "play") {
     game->setState(shared_ptr<State>(new StartState()));
     return 0;

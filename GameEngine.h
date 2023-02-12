@@ -8,18 +8,22 @@
 using namespace std;
 
 class State;
-class Game;
+class GameEngine;
 
 //Game class, tracks the state of the game and controls going to the next and previous states
-class Game {
+class GameEngine {
   public:
-    Game();
-    ~Game();
+    GameEngine();
+    ~GameEngine();
+    GameEngine(shared_ptr<State> newState);
+    GameEngine& operator=(const GameEngine& game);
+    GameEngine(GameEngine &game);
+    friend ostream& operator<<(ostream& strm, const GameEngine& g);
+
     int nextState(string cmd);
     shared_ptr<State> getState();
     void setState(shared_ptr<State> newState);
-    friend ostream& operator<<(ostream& strm, const Game& g);
-  
+    
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
 };
@@ -28,7 +32,7 @@ class Game {
 class State {
   public:
     virtual void action() = 0;
-    virtual int next(Game *game, string cmd) = 0;
+    virtual int next(GameEngine *game, string cmd) = 0;
     virtual vector<string> getCommands() = 0;
     virtual ostream &output(ostream &strm) const = 0;
     friend ostream &operator<<(ostream &strm, State const &s);
@@ -38,7 +42,7 @@ class State {
 class StartState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "start"; }
 
@@ -48,7 +52,7 @@ class StartState: public State {
 class MapLoadedState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "map loaded"; }
 
@@ -58,7 +62,7 @@ class MapLoadedState: public State {
 class MapValidatedState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "map validated"; }
 
@@ -68,7 +72,7 @@ class MapValidatedState: public State {
 class PlayersAddedState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "players added"; }
 
@@ -78,7 +82,7 @@ class PlayersAddedState: public State {
 class AssignReinforcementState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "assign reinforcements"; }
 
@@ -88,7 +92,7 @@ class AssignReinforcementState: public State {
 class IssueOrdersState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "issue orders"; }
 
@@ -98,7 +102,7 @@ class IssueOrdersState: public State {
 class ExecuteOrdersState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "execute orders"; }
 
@@ -108,7 +112,7 @@ class ExecuteOrdersState: public State {
 class WinState: public State {
   public:
     virtual void action() override;
-    virtual int next(Game *game, string cmd) override;
+    virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "Win"; }
 

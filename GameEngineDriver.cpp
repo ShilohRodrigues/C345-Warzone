@@ -6,7 +6,7 @@ using namespace std;
 int main() {
 
   //Create game object
-  Game *game = new Game();
+  GameEngine *game = new GameEngine();
 
   cout << "Welcome to Warzone" << endl << endl;
 
