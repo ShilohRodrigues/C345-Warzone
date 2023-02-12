@@ -3,6 +3,7 @@
 
 using namespace std;
 
+///////////////// Game Class Implementations //////////////////////////
 //Game constructor, initializes the state to the starting state
 Game::Game() {
   state = new StartState();
@@ -14,7 +15,7 @@ Game::Game(State *newState) {
 int Game::nextState(string cmd) {
   return state->next(this, cmd);
 }
-//Insertion Stream
+//Insertion Stream for Game class
 ostream& operator<<(ostream &strm, const Game &g) {
   //Loop through available commands to print them
   string cmds = "";
@@ -25,12 +26,13 @@ ostream& operator<<(ostream &strm, const Game &g) {
   return strm << "Current state: " << *g.state << endl << "Available commands: " << cmds;
 }
 
+///////////////// State Class Implementations //////////////////////////
 //State class insertion stream
 ostream &operator<<(ostream &strm, State const &s) { 
   return s.output(strm);
 }
 
-//Start State class implementations
+///////////////// StartState Class Implementations //////////////////////////
 void StartState::action() {
 
 }
@@ -44,7 +46,7 @@ int StartState::next(Game *game, string cmd) {
   }
 }
 
-//Map Loaded State class implementations
+////////////////// Map Loaded State class implementations //////////////////
 void MapLoadedState::action() {
 
 }
@@ -61,7 +63,7 @@ int MapLoadedState::next(Game *game, string cmd) {
   }
 }
 
-//Map Validated State class implementations
+////////////// Map Validated State class implementations ///////////////////////
 void MapValidatedState::action() {
 
 }
@@ -75,7 +77,7 @@ int MapValidatedState::next(Game *game, string cmd) {
   }
 }
 
-//Players added State class implementations
+///////////// Players added State class implementations ///////////////////////////
 void PlayersAddedState::action() {
 
 }
@@ -92,7 +94,7 @@ int PlayersAddedState::next(Game *game, string cmd) {
   }
 }
 
-//Assign Reinforcements State class implementations
+////////////// Assign Reinforcements State class implementations //////////////////////
 void AssignReinforcementState::action() {
 
 }
@@ -106,7 +108,7 @@ int AssignReinforcementState::next(Game *game, string cmd) {
   }
 }
 
-//Issue Orders State class implementations
+//////////////// Issue Orders State class implementations //////////////////////////
 void IssueOrdersState::action() {
 
 }
@@ -123,7 +125,7 @@ int IssueOrdersState::next(Game *game, string cmd) {
   }
 }
 
-//Execute Orders State class implementations
+/////////////// Execute Orders State class implementations /////////////////////
 void ExecuteOrdersState::action() {
 
 }
@@ -144,7 +146,7 @@ int ExecuteOrdersState::next(Game *game, string cmd) {
   }
 }
 
-//Win State class implementations
+//////////////////////// Win State class implementations ///////////////////////////
 void WinState::action() {
 
 }

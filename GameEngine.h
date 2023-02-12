@@ -9,6 +9,7 @@ using namespace std;
 class State;
 class Game;
 
+//Game class, tracks the state of the game and controls going to the next and previous states
 class Game {
   public:
     Game();
@@ -19,7 +20,7 @@ class Game {
     friend ostream& operator<<(ostream& strm, const Game& g);
   
   private:
-    State *state;    
+    State *state;  //Tracks the state of the game  
 };
 
 //State Interface, all states must inherit this class and implement all its methods
@@ -43,7 +44,6 @@ class StartState: public State {
   private:
     vector<string> commands{"loadmap"};
 };
-
 class MapLoadedState: public State {
   public:
     virtual void action() override;
@@ -54,7 +54,6 @@ class MapLoadedState: public State {
   private:
     vector<string> commands{"loadmap", "validatemap"};
 };
-
 class MapValidatedState: public State {
   public:
     virtual void action() override;
@@ -65,7 +64,6 @@ class MapValidatedState: public State {
   private:
     vector<string> commands{"addplayer"};
 };
-
 class PlayersAddedState: public State {
   public:
     virtual void action() override;
@@ -76,7 +74,6 @@ class PlayersAddedState: public State {
   private:
     vector<string> commands{"addplayer", "assigncountries"};
 };
-
 class AssignReinforcementState: public State {
   public:
     virtual void action() override;
@@ -87,7 +84,6 @@ class AssignReinforcementState: public State {
   private:
     vector<string> commands{"issueorder"};
 };
-
 class IssueOrdersState: public State {
   public:
     virtual void action() override;
@@ -98,7 +94,6 @@ class IssueOrdersState: public State {
   private:
     vector<string> commands{"issueorder", "endissueorders"};
 };
-
 class ExecuteOrdersState: public State {
   public:
     virtual void action() override;
@@ -109,7 +104,6 @@ class ExecuteOrdersState: public State {
   private:
     vector<string> commands{"execorder", "endexecorder", "win"};
 };
-
 class WinState: public State {
   public:
     virtual void action() override;

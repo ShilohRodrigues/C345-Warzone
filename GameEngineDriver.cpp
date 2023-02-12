@@ -10,12 +10,13 @@ int main() {
 
   cout << "Welcome to Warzone" << endl << endl;
 
-  //Game loop
+  //Main game loop
   while(true) {
 
-    cout << *game << endl << endl;
+    cout << *game << endl << endl; //Print current game state
     cout << "Enter a command to continue: ";
 
+    //Get entered command, check return status, 1 for error, 2 for game ended
     string input = ""; 
     getline(cin, input);
 
@@ -26,7 +27,7 @@ int main() {
       cout << "Game ended, Thank you for playing!" << endl;
       break;
     } 
-    
+
   }
   
   delete game;
