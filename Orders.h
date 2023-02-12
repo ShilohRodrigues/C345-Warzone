@@ -28,6 +28,7 @@ private:
 // subclasses
 // deploy(), advance(), bomb(), blockade(), airlift(), negotiate()
 class Deploy : Order {
+public:
     Deploy();
     Deploy(const Deploy& deploy);
     Deploy& operator=(const Deploy& deploy);
@@ -38,6 +39,7 @@ class Deploy : Order {
 };
 
 class Advance : Order {
+public:
     Advance();
     Advance(const Advance& advance);
     Advance& operator=(const Advance& advance);
@@ -48,6 +50,7 @@ class Advance : Order {
 };
 
 class Bomb : Order {
+public:
     Bomb();
     Bomb(const Bomb& bomb);
     Bomb& operator=(const Bomb& bomb);
@@ -58,6 +61,7 @@ class Bomb : Order {
 };
 
 class Blockade : Order {
+public:
     Blockade();
     Blockade(const Blockade& blockade);
     Blockade& operator=(const Blockade& blockade);
@@ -68,6 +72,7 @@ class Blockade : Order {
 };
 
 class Airlift : Order {
+public:
     Airlift();
     Airlift(const Airlift& airlift);
     Airlift& operator=(const Airlift& airlift);
@@ -78,6 +83,7 @@ class Airlift : Order {
 };
 
 class Negotiate : Order {
+public:
     Negotiate();
     Negotiate(const Negotiate& negotiate);
     Negotiate& operator=(const Negotiate& negotiate);
