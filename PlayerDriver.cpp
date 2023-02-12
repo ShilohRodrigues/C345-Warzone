@@ -4,9 +4,9 @@ using namespace std;
 
 // driver creates players + demos features
 int main() {
-    auto testTerritories = make_unique<vector<Territory*>>();
+    auto testTerritories = make_unique<vector<shared_ptr<Territory>>>();
     for (int i = 0; i < 5; i++) {
-        testTerritories->push_back(new Territory());
+        testTerritories->push_back(make_shared<Territory>());
     }
 
     // initialize test player
@@ -37,10 +37,4 @@ int main() {
     cout << "\n== Player::issueOrder() ==\n";
 //    testPlayer->issueOrder();
     cout << *testPlayer;
-
-
-    // delete test territories when done testing
-    for (Territory *territory : *testTerritories) {
-        delete territory;
-    }
 }

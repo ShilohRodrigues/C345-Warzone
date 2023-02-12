@@ -16,7 +16,7 @@ class Player {
 public:
     // default constructor
     Player();
-    explicit Player(const vector<Territory*>& territories);
+    explicit Player(const vector<shared_ptr<Territory>>& territories);
     // copy constructor
     Player(const Player& player);
     // assignment operator
@@ -30,15 +30,15 @@ public:
     // toAttack()
     // issueOrder()
 
-    unique_ptr<vector<Territory*>> toDefend();
-    unique_ptr<vector<Territory*>> toAttack();
+    unique_ptr<vector<shared_ptr<Territory>>> toDefend();
+    unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     void issueOrder();
 
 // player owns collection of territories
 // player owns a hand of Warzone cards
 // player has list of orders
 private:
-    unique_ptr<vector<Territory*>> territories;
+    unique_ptr<vector<shared_ptr<Territory>>> territories;
     unique_ptr<Hand> cardHand;
     unique_ptr<OrdersList> ordersList;
 };

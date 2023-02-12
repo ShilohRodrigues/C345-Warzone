@@ -10,11 +10,12 @@ using namespace std;
 
 // default constructor
 // TODO: see how Territory, Hand, OrdersList constructors are implemented
-Player::Player():territories(make_unique<vector<Territory*>>()), cardHand(make_unique<Hand>()),
+Player::Player():territories(make_unique<vector<shared_ptr<Territory>>>()), cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {}
 
 // parameterized constructor (for testing)
-Player::Player(const vector<Territory*>& territories):territories(make_unique<vector<Territory*>>(territories)),
+Player::Player(const vector<shared_ptr<Territory>>& territories):
+    territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {}
 
@@ -34,8 +35,8 @@ Player& Player::operator=(const Player& player) {
         return *this;
     } else {
         territories->clear();
-        for (Territory* t: *player.territories) {
-            this->territories->push_back(new Territory(*t));
+        for (const shared_ptr<Territory>& t: *player.territories) {
+            this->territories->push_back(make_shared<Territory>(*t));
         }
         this->cardHand = make_unique<Hand>(*player.cardHand);
         this->ordersList = make_unique<OrdersList>(*player.ordersList);
@@ -59,14 +60,7 @@ ostream& operator<<(ostream& os, const Player& player) {
 }
 
     // destructor
-    Player::~Player() {
-        for (Territory* t : *territories) {
-            delete t;
-        }
-        // no need to delete with unique_pointers?
-//        delete cardHand;
-//        delete ordersList;
-    }
+    Player::~Player() {}
 
 
 // toDefend()
@@ -74,9 +68,9 @@ ostream& operator<<(ostream& os, const Player& player) {
  * Returns a list of territories to defend.
  * @return list of territories to defend
  */
-unique_ptr<vector<Territory*>> Player::toDefend() {
+unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
     // returns arbitrary list for now
-    auto arbitraryList = make_unique<vector<Territory*>>();
+    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
     arbitraryList->push_back((*territories)[0]);
     arbitraryList->push_back((*territories)[1]);
 
@@ -88,9 +82,9 @@ unique_ptr<vector<Territory*>> Player::toDefend() {
  * Returns a list of territories to attack.
  * @return list of territories to attack
  */
-unique_ptr<vector<Territory*>> Player::toAttack() {
+unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
     // returns arbitrary list for now
-    auto arbitraryList = make_unique<vector<Territory*>>();
+    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
     arbitraryList->push_back((*territories)[2]);
     arbitraryList->push_back((*territories)[3]);
 
