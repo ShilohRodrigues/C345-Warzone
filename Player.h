@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <memory>
 #include "Territory.h"
 #include "Cards.h"
 #include "Orders.h"
@@ -15,13 +16,13 @@ class Player {
 public:
     // default constructor
     Player();
-    explicit Player(vector<Territory*>& territories);
+    explicit Player(const vector<Territory*>& territories);
     // copy constructor
     Player(const Player& player);
     // assignment operator
     Player& operator=(const Player& player);
     // stream insertion operator (friend)
-    friend std::ostream& operator<<(std::ostream& os, const Player& player);
+    friend ostream& operator<<(ostream& os, const Player& player);
     // destructor
     ~Player();
 
@@ -29,17 +30,17 @@ public:
     // toAttack()
     // issueOrder()
 
-    vector<Territory*> toDefend();
-    vector<Territory*> toAttack();
+    unique_ptr<vector<Territory*>> toDefend();
+    unique_ptr<vector<Territory*>> toAttack();
     void issueOrder();
 
 // player owns collection of territories
 // player owns a hand of Warzone cards
 // player has list of orders
 private:
-    vector<Territory*> territories;
-    Hand* cardHand;
-    OrdersList* ordersList;
+    unique_ptr<vector<Territory*>> territories;
+    unique_ptr<Hand> cardHand;
+    unique_ptr<OrdersList> ordersList;
 };
 
 #endif // PLAYER_H

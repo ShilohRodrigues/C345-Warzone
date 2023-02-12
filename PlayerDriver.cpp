@@ -1,23 +1,24 @@
 #include "Player.h"
-#include <iostream>
+
+using namespace std;
 
 // driver creates players + demos features
 int main() {
-    std::vector<Territory*> testTerritories;
+    auto testTerritories = make_unique<vector<Territory*>>();
     for (int i = 0; i < 5; i++) {
-        testTerritories.push_back(*new Territory*());
+        testTerritories->push_back(new Territory());
     }
 
     // initialize test player
     cout << "Initializing test Player . . . \n";
-    Player* testPlayer = new Player(testTerritories);
+    auto testPlayer = new Player(*testTerritories);
     cout << "Test player initialized.\n";
 
     // show that the stream insertion operator works
     cout << "\n== Player Stream Insertion ==\n" << *testPlayer << endl;
 
     // show that the copy constructor works
-    Player* testPlayerCopied = new Player(*testPlayer);
+    auto testPlayerCopied = new Player(*testPlayer);
     cout << "\n== Player Copy Constructor ==\n" << *testPlayerCopied << endl;
 
     // show that the assignment operator works
@@ -38,4 +39,8 @@ int main() {
     cout << *testPlayer;
 
 
+    // delete test territories when done testing
+    for (Territory *territory : *testTerritories) {
+        delete territory;
+    }
 }
