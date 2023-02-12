@@ -100,7 +100,7 @@ public:
     void add(shared_ptr<Order> order);
     // move(), remove()
     void move(const string& direction, int orderID);
-    void remove();
+    void remove(int orderID);
 
 private:
     unique_ptr<list<shared_ptr<Order>>> orderList;

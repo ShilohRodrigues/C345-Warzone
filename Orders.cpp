@@ -251,7 +251,7 @@ void OrdersList::add(shared_ptr<Order> order) {
 void OrdersList::move(const string& direction, int orderID) {
     // find the order in the ordersList using the orderID
     auto orderIterator = find_if(this->orderList->begin(), this->orderList->end(),
-                         [orderID](const shared_ptr<Order> order) { return order->orderID == orderID; });
+                         [orderID](const shared_ptr<Order>& order) { return order->orderID == orderID; });
     // check if found
     if (orderIterator == this->orderList->end()) {
         cout << "couldn't find order with given orderID";
@@ -283,4 +283,19 @@ void OrdersList::move(const string& direction, int orderID) {
 }
 
 // remove()
-void remove();
+/**
+ * Finds an order in the ordersList via its orderID and removes it.
+ * @param orderID int orderID of the order to be removed from the list
+ */
+void OrdersList::remove(int orderID) {
+    // find the order via the orderID
+    auto orderIterator = find_if(this->orderList->begin(), this->orderList->end(),
+                                 [orderID](const shared_ptr<Order>& order) { return order->orderID == orderID; });
+    // check that it's found
+    if (orderIterator == this->orderList->end()) {
+        cout << "order not found with given orderID";
+    } else {
+        // remove the order
+        this->orderList->remove(*orderIterator);
+    }
+}
