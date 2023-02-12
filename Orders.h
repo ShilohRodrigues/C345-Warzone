@@ -103,7 +103,6 @@ public:
     // stream insertion operator
     friend ostream& operator<<(ostream& os, const OrdersList& ordersList);
 
-    void add(shared_ptr<Order> order);
     // move(), remove()
     void move(const string& direction, int orderID);
     void remove(int orderID);
