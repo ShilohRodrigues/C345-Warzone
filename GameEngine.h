@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 using namespace std;
 
 class State;
@@ -13,14 +14,14 @@ class Game;
 class Game {
   public:
     Game();
-    Game(State *newState);
+    ~Game();
     int nextState(string cmd);
-    State *getState() const { return this->state; }
-    void setState(State *newState) { this->state = newState; }
+    shared_ptr<State> getState();
+    void setState(shared_ptr<State> newState);
     friend ostream& operator<<(ostream& strm, const Game& g);
   
   private:
-    State *state;  //Tracks the state of the game  
+    shared_ptr<State> state;  //Tracks the state of the game  
 };
 
 //State Interface, all states must inherit this class and implement all its methods
@@ -28,7 +29,7 @@ class State {
   public:
     virtual void action() = 0;
     virtual int next(Game *game, string cmd) = 0;
-    virtual vector<string> getCommands() const = 0;
+    virtual vector<string> getCommands() = 0;
     virtual ostream &output(ostream &strm) const = 0;
     friend ostream &operator<<(ostream &strm, State const &s);
 };
@@ -38,7 +39,7 @@ class StartState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "start"; }
 
   private:
@@ -48,7 +49,7 @@ class MapLoadedState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "map loaded"; }
 
   private:
@@ -58,7 +59,7 @@ class MapValidatedState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "map validated"; }
 
   private:
@@ -68,7 +69,7 @@ class PlayersAddedState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "players added"; }
 
   private:
@@ -78,7 +79,7 @@ class AssignReinforcementState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "assign reinforcements"; }
 
   private:
@@ -88,7 +89,7 @@ class IssueOrdersState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "issue orders"; }
 
   private:
@@ -98,7 +99,7 @@ class ExecuteOrdersState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "execute orders"; }
 
   private:
@@ -108,7 +109,7 @@ class WinState: public State {
   public:
     virtual void action() override;
     virtual int next(Game *game, string cmd) override;
-    virtual vector<string> getCommands() const override { return commands; }
+    virtual vector<string> getCommands() override;
     ostream &output(ostream &strm) const override { return strm << "Win"; }
 
   private:
