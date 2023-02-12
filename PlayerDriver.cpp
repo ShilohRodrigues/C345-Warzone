@@ -3,7 +3,7 @@
 using namespace std;
 
 // driver creates players + demos features
-int main() {
+void playerDriver() {
     auto testTerritories = make_unique<vector<shared_ptr<Territory>>>();
     for (int i = 0; i < 5; i++) {
         testTerritories->push_back(make_shared<Territory>());

@@ -26,6 +26,10 @@ ostream& operator<<(ostream& os, const Order& order) {
 
     return os;
 }
+// validate()
+bool Order::validate() { return false; }
+// execute()
+void Order::execute() {}
 
 // Order subclasses
 // validate() for every subclass
