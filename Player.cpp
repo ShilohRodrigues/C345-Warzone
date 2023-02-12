@@ -79,6 +79,8 @@ unique_ptr<vector<Territory*>> Player::toDefend() {
     auto arbitraryList = make_unique<vector<Territory*>>();
     arbitraryList->push_back((*territories)[0]);
     arbitraryList->push_back((*territories)[1]);
+
+    return arbitraryList;
 }
 
 // toAttack()
@@ -91,6 +93,8 @@ unique_ptr<vector<Territory*>> Player::toAttack() {
     auto arbitraryList = make_unique<vector<Territory*>>();
     arbitraryList->push_back((*territories)[2]);
     arbitraryList->push_back((*territories)[3]);
+
+    return arbitraryList;
 }
 
 
