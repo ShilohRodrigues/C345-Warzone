@@ -241,6 +241,12 @@ ostream& operator<<(ostream& os, const OrdersList& ordersList) {
     return os;
 }
 
+// utility function to add orders to the orders list
+template<typename T>
+void OrdersList::add(shared_ptr<T> order) {
+    this->orderList->push_back(static_pointer_cast<Order>(order));
+}
+
 // move()
 /**
  * Finds a given order via its orderID and moves it either up or down in the ordersList

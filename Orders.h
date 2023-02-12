@@ -103,10 +103,13 @@ public:
     // stream insertion operator
     friend ostream& operator<<(ostream& os, const OrdersList& ordersList);
 
+    template<typename T>
+    void add(shared_ptr<T> order);
     // move(), remove()
     void move(const string& direction, int orderID);
     void remove(int orderID);
 
+private:
     unique_ptr<list<shared_ptr<Order>>> orderList;
 };
 
