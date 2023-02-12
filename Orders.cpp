@@ -21,8 +21,8 @@ Order::Order(const Order& order):orderID(++nextID) {} // should still create uni
 // assignment operator - none because the subclasses have their own concrete implementation
 // stream insertion operator
 ostream& operator<<(ostream& os, const Order& order) {
-    os << typeid(order).name() << endl;
-    os << "orderID: " << order.orderID << endl;
+    os << typeid(order).name();
+    os << " - orderID: " << order.orderID;
 
     return os;
 }
@@ -294,7 +294,7 @@ void OrdersList::move(const string& direction, int orderID) {
         if (direction == "up") {
             auto previous = prev(orderIterator);
             // check that this is feasible
-            if (previous == this->orderList->begin()) {
+            if (orderIterator == this->orderList->begin()) {
                 cout << "this is already the first order";
             } else {
                 // swap
@@ -304,7 +304,7 @@ void OrdersList::move(const string& direction, int orderID) {
             // swap the order with the next order
             auto nextIt = next(orderIterator);
             // check if this is feasible
-            if (nextIt == this->orderList->end()) {
+            if (orderIterator == this->orderList->end()) {
                 cout << "this is already the last order";
             } else {
                 // swap

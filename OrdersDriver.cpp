@@ -30,10 +30,14 @@ void ordersDriver() {
     }
 
     // OrdersList has remove()
-    testOrdersList->remove(3); // remove blockade
-    cout << "\n== OrdersLost::remove() ==\n" << *testOrdersList << endl;
+    testOrdersList->remove(3); // remove bomb
+    cout << "\n== OrdersLost::remove() ==\n[removing order with orderID 3 (bomb)]\n" << *testOrdersList << endl;
 
     //OrdersList has move()
-    testOrdersList->move("up", 2); // remove blockade
-    cout << "\n== OrdersLost::move() ==\n" << *testOrdersList << endl;
+    cout << "\n== OrdersLost::move() ==\n[move(\"up\", 2) - swapping advance (2) and deploy (1)]\n";
+    testOrdersList->move("up", 2); // swap advance and deploy
+    cout << *testOrdersList << endl;
+    cout << "[move(\"down\", 5) - swapping airlift (5) and negotiate (6)]\n";
+    testOrdersList->move("down", 5);
+    cout << *testOrdersList << endl;
 }
