@@ -31,7 +31,7 @@ public:
 
     vector<Territory*> toDefend();
     vector<Territory*> toAttack();
-    void issueOrder(Order* order);
+    void issueOrder();
 
 // player owns collection of territories
 // player owns a hand of Warzone cards

@@ -86,14 +86,17 @@ vector<Territory*> Player::toAttack() {
     return {territories[2], territories[3]};
 }
 
+
 // issueOrder()
-void issueOrder() {
-
-}
-
-void Player::issueOrder(Order* order) {
+/**
+ * Creates an order and adds it to the list of orders.
+ * @param order
+ */
+void Player::issueOrder() {
+    // create test order for now
+//    Order* testOrder = new Order();
     // TODO: issueOrder(); verify how orders are added to OrdersList
-//    ordersList->add(order);
+//    ordersList->add(testOrder);
 }
 
 
