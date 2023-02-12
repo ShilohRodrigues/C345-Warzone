@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <list>
+#include <algorithm>
 
 using namespace std;
 
@@ -242,8 +243,43 @@ void OrdersList::add(shared_ptr<Order> order) {
 }
 
 // move()
-void OrdersList::move() {
-
+/**
+ * Finds a given order via its orderID and moves it either up or down in the ordersList
+ * @param direction string "up" (previous) or "down" (next)
+ * @param orderID int the orderID of the order to be found
+ */
+void OrdersList::move(const string& direction, int orderID) {
+    // find the order in the ordersList using the orderID
+    auto orderIterator = find_if(this->orderList->begin(), this->orderList->end(),
+                         [orderID](const shared_ptr<Order> order) { return order->orderID == orderID; });
+    // check if found
+    if (orderIterator == this->orderList->end()) {
+        cout << "couldn't find order with given orderID";
+    } else {
+        // swap the order with the preceding order
+        if (direction == "up") {
+            auto previous = prev(orderIterator);
+            // check that this is feasible
+            if (previous == this->orderList->begin()) {
+                cout << "this is already the first order";
+            } else {
+                // swap
+                swap(*orderIterator, *previous);
+            }
+        } else if (direction == "down") {
+            // swap the order with the next order
+            auto nextIt = next(orderIterator);
+            // check if this is feasible
+            if (nextIt == this->orderList->end()) {
+                cout << "this is already the last order";
+            } else {
+                // swap
+                swap(*orderIterator, *nextIt);
+            }
+        } else {
+            cout << "invalid direction" << endl;
+        }
+    }
 }
 
 // remove()

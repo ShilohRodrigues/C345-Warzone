@@ -99,7 +99,7 @@ public:
 
     void add(shared_ptr<Order> order);
     // move(), remove()
-    void move();
+    void move(const string& direction, int orderID);
     void remove();
 
 private:
