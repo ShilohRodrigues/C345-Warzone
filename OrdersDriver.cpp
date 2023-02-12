@@ -14,8 +14,13 @@ void ordersDriver() {
     // create a list of orders
     auto testOrdersList = make_unique<OrdersList>();
     testOrdersList->add(testDeploy);
+    testOrdersList->add(testAdvance);
+    testOrdersList->add(testBomb);
+    testOrdersList->add(testBlockade);
+    testOrdersList->add(testAirlift);
+    testOrdersList->add(testNegotiate);
 
-    cout << "== OrdersList Stream Insertion Operator ==\n" << testOrdersList << endl;
+    cout << "\n== OrdersList Stream Insertion Operator ==\n" << *testOrdersList << endl;
 
     for (const auto& order : *testOrdersList->orderList) {
         // every order subclass has validate()
@@ -26,9 +31,9 @@ void ordersDriver() {
 
     // OrdersList has remove()
     testOrdersList->remove(3); // remove blockade
-    cout << "== OrdersLost::remove() ==\n" << testOrdersList << endl;
+    cout << "\n== OrdersLost::remove() ==\n" << *testOrdersList << endl;
 
     //OrdersList has move()
     testOrdersList->move("up", 2); // remove blockade
-    cout << "== OrdersLost::move() ==\n" << testOrdersList << endl;
+    cout << "\n== OrdersLost::move() ==\n" << *testOrdersList << endl;
 }

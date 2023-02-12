@@ -27,7 +27,7 @@ private:
 
 // subclasses
 // deploy(), advance(), bomb(), blockade(), airlift(), negotiate()
-class Deploy : Order {
+class Deploy : public Order {
 public:
     Deploy();
     Deploy(const Deploy& deploy);
@@ -38,7 +38,7 @@ public:
     void execute() override;
 };
 
-class Advance : Order {
+class Advance : public Order {
 public:
     Advance();
     Advance(const Advance& advance);
@@ -49,7 +49,7 @@ public:
     void execute() override;
 };
 
-class Bomb : Order {
+class Bomb : public Order {
 public:
     Bomb();
     Bomb(const Bomb& bomb);
@@ -60,7 +60,7 @@ public:
     void execute() override;
 };
 
-class Blockade : Order {
+class Blockade : public Order {
 public:
     Blockade();
     Blockade(const Blockade& blockade);
@@ -71,7 +71,7 @@ public:
     void execute() override;
 };
 
-class Airlift : Order {
+class Airlift : public Order {
 public:
     Airlift();
     Airlift(const Airlift& airlift);
@@ -82,7 +82,7 @@ public:
     void execute() override;
 };
 
-class Negotiate : Order {
+class Negotiate : public Order {
 public:
     Negotiate();
     Negotiate(const Negotiate& negotiate);
@@ -109,7 +109,6 @@ public:
     void move(const string& direction, int orderID);
     void remove(int orderID);
 
-private:
     unique_ptr<list<shared_ptr<Order>>> orderList;
 };
 

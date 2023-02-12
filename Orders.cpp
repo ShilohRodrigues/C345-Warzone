@@ -235,7 +235,7 @@ OrdersList& OrdersList::operator=(const OrdersList& ordersList) {
 // stream insertion operator
 ostream& operator<<(ostream& os, const OrdersList& ordersList) {
     for (const auto& order : *ordersList.orderList) {
-        os << order << endl;
+        os << *order << endl;
     }
 
     return os;
@@ -245,6 +245,35 @@ ostream& operator<<(ostream& os, const OrdersList& ordersList) {
 template<typename T>
 void OrdersList::add(shared_ptr<T> order) {
     this->orderList->push_back(static_pointer_cast<Order>(order));
+}
+template<>
+void OrdersList::add<Deploy>(shared_ptr<Deploy> deploy) {
+    this->orderList->push_back(static_pointer_cast<Order>(deploy));
+}
+
+template<>
+void OrdersList::add<Advance>(shared_ptr<Advance> advance) {
+    this->orderList->push_back(static_pointer_cast<Order>(advance));
+}
+
+template<>
+void OrdersList::add<Bomb>(shared_ptr<Bomb> bomb) {
+    this->orderList->push_back(static_pointer_cast<Order>(bomb));
+}
+
+template<>
+void OrdersList::add<Blockade>(shared_ptr<Blockade> blockade) {
+    this->orderList->push_back(static_pointer_cast<Order>(blockade));
+}
+
+template<>
+void OrdersList::add<Airlift>(shared_ptr<Airlift> airlift) {
+    this->orderList->push_back(static_pointer_cast<Order>(airlift));
+}
+
+template<>
+void OrdersList::add<Negotiate>(shared_ptr<Negotiate> negotiate) {
+    this->orderList->push_back(static_pointer_cast<Order>(negotiate));
 }
 
 // move()
