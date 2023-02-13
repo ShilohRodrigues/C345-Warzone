@@ -41,8 +41,7 @@ Player& Player::operator=(const Player& player) {
 
 // stream insertion operator
 ostream& operator<<(ostream& os, const Player& player) {
-    // TODO: verify that Map, Hand, OrdersList have stream insertion operators
-    os << "Territories: ";
+    os << "Territories:\n";
     if (player.territories) {
         for (const auto& t : *player.territories) {
             os << *t << endl;
@@ -70,8 +69,8 @@ ostream& operator<<(ostream& os, const Player& player) {
 unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
     // returns arbitrary list for now
     auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back((*territories)[0]);
-    arbitraryList->push_back((*territories)[1]);
+    arbitraryList->push_back(this->territories->at(0));
+    arbitraryList->push_back(this->territories->at(1));
 
     return arbitraryList;
 }
@@ -84,8 +83,8 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
 unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
     // returns arbitrary list for now
     auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back((*territories)[2]);
-    arbitraryList->push_back((*territories)[3]);
+    arbitraryList->push_back(this->territories->at(2));
+    arbitraryList->push_back(this->territories->at(3));
 
     return arbitraryList;
 }

@@ -6,21 +6,27 @@ using namespace std;
 void playerDriver() {
     auto testTerritories = make_unique<vector<shared_ptr<Territory>>>();
     for (int i = 0; i < 5; i++) {
-        testTerritories->push_back(make_shared<Territory>(i, "country", "continent"));
+        testTerritories->push_back(make_shared<Territory>(i, "testCountry", "testContinent"));
     }
 
     // player owns a collection of territories + a hand of warzone cards
     cout << "Initializing test Player . . . \n";
-    auto testPlayer = make_unique<Player>();
+    auto testPlayer = make_unique<Player>(*testTerritories);
     cout << "Test player initialized.\n";
 
     // show that toDefend() method works
     cout << "\n== Player::toDefend() ==\n";
-    testPlayer->toDefend();
+    auto toDefendList = testPlayer->toDefend();
+    for (const auto& t : *toDefendList) {
+        cout << *t << endl;
+    }
 
     // show that toAttack() method works
     cout << "\n== Player::toAttack() ==\n";
-    testPlayer->toAttack();
+    auto toAttackList = testPlayer->toAttack();
+    for (const auto& t : *toAttackList) {
+        cout << *t << endl;
+    }
 
     // show that issueOrder() method works
     cout << "\n== Player::issueOrder() ==\n";
