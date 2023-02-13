@@ -5,6 +5,7 @@ int main()
 	cout << "The object is to create a hand object that is filled by drawing cards from deck. \n" << endl;
 	// Create a deck of cards
 	Deck* deck = new Deck;
+	cout << "New Deck has made\n" << endl;
 	deck->MakeDeck();
 	// Create a hand of cards
 	Hand* hand = new Hand;
