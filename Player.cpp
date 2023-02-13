@@ -54,7 +54,7 @@ ostream& operator<<(ostream& os, const Player& player) {
         os << "null\n";
     }
 
-    os << "Hand: " << *player.cardHand;
+    os << "Hand: " << *player.cardHand << endl;
     os << "Orders: " << *player.ordersList << endl;
 
     return os;
