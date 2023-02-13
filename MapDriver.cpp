@@ -1,4 +1,4 @@
-#include "map.h"
+#include "Map.h"
 #include <iostream>
 using namespace std;
 
