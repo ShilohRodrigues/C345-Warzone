@@ -11,7 +11,7 @@
 #include <map>
 #include <algorithm>
 #include <stack>
-
+#include <file>
 //TESTER CLASS OFF GITHUB, NOT PART OF THE ASSIGNMENT CRITERIA *********************
 using namespace std;
 class Player {
@@ -33,8 +33,8 @@ public:
 
 //Class TERRITORY ***********************************************************************************
 //Territory Class 
-class Territory{
-    private:
+class Territory {
+private:
     unique_ptr<std::string> name;
     unique_ptr<std::string> belongsToContinent;
     shared_ptr<Player> playerInPossession;
@@ -42,28 +42,29 @@ class Territory{
     unique_ptr<int> territoryId;
     vector<Territory*> adjacent;
 
-    public:
+public:
     //Constructors and Destructors
-    Territory( int, string,  string , shared_ptr<Player>,int);
-    Territory(int, string ,string);
-    Territory(const Territory& );
-     ~Territory();
-     Territory& operator=(const Territory&);
-    
-     /* Stream insertion "<<" is not a member of our class, it belongs to <iostream>.
-        Therefor to work with Stream insertion our operator overloading */
-    friend std::ostream& operator<<(std::ostream&, const Territory&); 
-    
-    
+    Territory(int, string, string, shared_ptr<Player>, int);
+    Territory(int, string, string);
+    Territory(const Territory&);
+    ~Territory();
+    Territory& operator=(const Territory&);
+
+    /* Stream insertion "<<" is not a member of our class, it belongs to <iostream>.
+       Therefor to work with Stream insertion our operator overloading */
+    friend std::ostream& operator<<(std::ostream&, const Territory&);
+
+
     //Accessor functions 
     void setName(const string&);
-    void setContinent(const string&) ; 
+    void setContinent(const string&);
     void setArmy(int);
-    void setNeighbours(Territory* );
-    
+    void setNeighbours(Territory*);
+
     //mutator functions 
+    int getTerritoryID() const;
     string getTerritoryName() const;
-    string getContinent() const; 
+    string getContinent() const;
     int getArmyCount() const;
     vector<Territory*> getAdjacent() const { return adjacent; }
 
@@ -80,10 +81,10 @@ private:
     unique_ptr<int>continentID;
     vector<Territory*> territories;
 public:
-    Continent(string,int);
+    Continent(string, int);
     ~Continent();
 
-    void addTerritory(Territory* );
+    void addTerritory(Territory*);
 
     string getContinentName();
     int getContinentID();
@@ -92,8 +93,8 @@ public:
 };
 
 //class MAP ***********************************************************************
-class Map{
-    public:
+class Map {
+public:
     vector<Territory*> territories;
     vector<Continent*> continents;
     map<string, Territory*> territoryMap;
@@ -103,9 +104,10 @@ class Map{
     ~Map();
 
     //mutator functions
-    void addTerritory(Territory* );
-    void addContinent(Continent* );
-    void connectTerritories(string,string);
+    void addTerritory(Territory*);
+    void addContinent(Continent*);
+    void connectTerritories(string, string);
+
 
     //boolean functions
     bool isConnectedMap();
@@ -114,14 +116,15 @@ class Map{
 
     //accessor function
     string getContinentFromContinentId(int);
-
-
+    vector<Continent*> getContinents() const { return continents; }
+    vector<Territory*> getTerritories() const { return territories; }
 };
 
-class MapLoader{
-    private:
+class MapLoader {
+private:
     shared_ptr<Map> mp;
-    public:
+
+public:
     MapLoader(const string&);
 };
 
