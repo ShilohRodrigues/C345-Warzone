@@ -9,10 +9,18 @@ void playerDriver() {
         testTerritories->push_back(make_shared<Territory>(i, "testCountry", "testContinent"));
     }
 
-    // player owns a collection of territories + a hand of warzone cards
+    // player owns a collection of territories
     cout << "Initializing test Player . . . \n";
     auto testPlayer = make_unique<Player>(*testTerritories);
     cout << "Test player initialized.\n";
+
+    // player owns a hand of warzone cards
+    shared_ptr<Deck> deck = make_shared<Deck>();
+    deck->MakeDeck();
+    for (int i = 0; i < 5; i++)
+    {
+        testPlayer->cardHand->setHandOfCards(deck->draw());
+    }
 
     // show that toDefend() method works
     cout << "\n== Player::toDefend() ==\n";
