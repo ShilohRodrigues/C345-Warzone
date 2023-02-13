@@ -224,9 +224,12 @@ OrdersList& OrdersList::operator=(const OrdersList& ordersList) {
     if (this == &ordersList) {
         return *this;
     } else {
-        for (const auto& order : *ordersList.orderList) {
-            // TODO: check if deep copy?
-            this->orderList->push_back(order);
+        // make sure we're not iterating over a nullptr
+        if (ordersList.orderList) {
+            for (const auto& order : *ordersList.orderList) {
+                // TODO: check if deep copy?
+                this->orderList->push_back(order);
+            }
         }
 
         return *this;
@@ -234,6 +237,7 @@ OrdersList& OrdersList::operator=(const OrdersList& ordersList) {
 }
 // stream insertion operator
 ostream& operator<<(ostream& os, const OrdersList& ordersList) {
+    // make sure we're not iterating over a nullptr
     if (ordersList.orderList) {
         for (const auto& order : *ordersList.orderList) {
             os << *order << endl;
@@ -294,8 +298,8 @@ void OrdersList::move(const string& direction, int orderID) {
     if (orderIterator == this->orderList->end()) {
         cout << "couldn't find order with given orderID";
     } else {
-        // swap the order with the preceding order
         if (direction == "up") {
+            // swap the order with the preceding order
             auto previous = prev(orderIterator);
             // check that this is feasible
             if (orderIterator == this->orderList->begin()) {

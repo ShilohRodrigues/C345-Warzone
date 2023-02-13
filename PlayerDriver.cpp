@@ -2,8 +2,8 @@
 
 using namespace std;
 
-// driver creates players + demos features
 void playerDriver() {
+    // create test territories
     auto testTerritories = make_unique<vector<shared_ptr<Territory>>>();
     for (int i = 0; i < 5; i++) {
         testTerritories->push_back(make_shared<Territory>(i, "testCountry", "testContinent"));

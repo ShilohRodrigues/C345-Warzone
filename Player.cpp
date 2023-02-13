@@ -25,9 +25,11 @@ Player::Player(const Player& player) {
 
 // assignment operator
 Player& Player::operator=(const Player& player) {
+    // if it's the same as the present player, don't change anything
     if (this == &player) {
         return *this;
     } else {
+        // change data members so that they match
         this->name = player.name;
         territories->clear();
         for (const auto& t: *player.territories) {
@@ -42,6 +44,7 @@ Player& Player::operator=(const Player& player) {
 // stream insertion operator
 ostream& operator<<(ostream& os, const Player& player) {
     os << "Territories:\n";
+    // make sure territories isn't null before iterating over it
     if (player.territories) {
         for (const auto& t : *player.territories) {
             os << *t << endl;
