@@ -8,7 +8,7 @@ int main() {
   //Create game object
   GameEngine *game = new GameEngine();
 
-  cout << "Welcome to Warzone" << endl << endl;
+  cout << "Welcome to Warzone" << endl;
 
   //Main game loop
   while(true) {

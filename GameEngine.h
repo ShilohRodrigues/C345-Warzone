@@ -31,90 +31,130 @@ class GameEngine {
 //State Interface, all states must inherit this class and implement all its methods
 class State {
   public:
+    virtual ostream &output(ostream &strm) const = 0;
+    friend ostream &operator<<(ostream &strm, State const &s);
     virtual void action() = 0;
     virtual int next(GameEngine *game, string cmd) = 0;
     virtual vector<string> getCommands() = 0;
-    virtual ostream &output(ostream &strm) const = 0;
-    friend ostream &operator<<(ostream &strm, State const &s);
 };
 
 //Different states that implement the abstract state class
 class StartState: public State {
   public:
+    StartState();
+    ~StartState();
+    StartState& operator=(const StartState& state);
+    StartState(StartState &state);
+    ostream &output(ostream &strm) const override { return strm << "start"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "start"; }
 
   private:
     vector<string> commands{"loadmap"};
 };
 class MapLoadedState: public State {
   public:
+    MapLoadedState();
+    ~MapLoadedState();
+    MapLoadedState& operator=(const MapLoadedState& state);
+    MapLoadedState(MapLoadedState &state);
+    ostream &output(ostream &strm) const override { return strm << "map loaded"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "map loaded"; }
 
   private:
     vector<string> commands{"loadmap", "validatemap"};
 };
 class MapValidatedState: public State {
   public:
+    MapValidatedState();
+    ~MapValidatedState();
+    MapValidatedState& operator=(const MapValidatedState& state);
+    MapValidatedState(MapValidatedState &state);
+    ostream &output(ostream &strm) const override { return strm << "map validated"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "map validated"; }
 
   private:
     vector<string> commands{"addplayer"};
 };
 class PlayersAddedState: public State {
   public:
+    PlayersAddedState();
+    ~PlayersAddedState();
+    PlayersAddedState& operator=(const PlayersAddedState& state);
+    PlayersAddedState(PlayersAddedState &state);
+    ostream &output(ostream &strm) const override { return strm << "players added"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "players added"; }
 
   private:
     vector<string> commands{"addplayer", "assigncountries"};
 };
 class AssignReinforcementState: public State {
   public:
+    AssignReinforcementState();
+    ~AssignReinforcementState();
+    AssignReinforcementState& operator=(const AssignReinforcementState& state);
+    AssignReinforcementState(AssignReinforcementState &state);
+    ostream &output(ostream &strm) const override { return strm << "assign reinforcements"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "assign reinforcements"; }
 
   private:
     vector<string> commands{"issueorder"};
 };
 class IssueOrdersState: public State {
   public:
+    IssueOrdersState();
+    ~IssueOrdersState();
+    IssueOrdersState& operator=(const IssueOrdersState& state);
+    IssueOrdersState(IssueOrdersState &state);
+    ostream &output(ostream &strm) const override { return strm << "issue orders"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "issue orders"; }
 
   private:
     vector<string> commands{"issueorder", "endissueorders"};
 };
 class ExecuteOrdersState: public State {
   public:
+    ExecuteOrdersState();
+    ~ExecuteOrdersState();
+    ExecuteOrdersState& operator=(const ExecuteOrdersState& state);
+    ExecuteOrdersState(ExecuteOrdersState &state);
+    ostream &output(ostream &strm) const override { return strm << "execute orders"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "execute orders"; }
 
   private:
     vector<string> commands{"execorder", "endexecorder", "win"};
 };
 class WinState: public State {
   public:
+    WinState();
+    ~WinState();
+    WinState& operator=(const WinState& state);
+    WinState(WinState &state);
+    ostream &output(ostream &strm) const override { return strm << "Win"; }
+
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
-    ostream &output(ostream &strm) const override { return strm << "Win"; }
 
   private:
     vector<string> commands{"end", "play"};
