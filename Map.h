@@ -11,7 +11,6 @@
 #include <map>
 #include <algorithm>
 #include <stack>
-#include <file>
 //TESTER CLASS OFF GITHUB, NOT PART OF THE ASSIGNMENT CRITERIA *********************
 using namespace std;
 class Player {
