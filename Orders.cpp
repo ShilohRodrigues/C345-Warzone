@@ -234,8 +234,12 @@ OrdersList& OrdersList::operator=(const OrdersList& ordersList) {
 }
 // stream insertion operator
 ostream& operator<<(ostream& os, const OrdersList& ordersList) {
-    for (const auto& order : *ordersList.orderList) {
-        os << *order << endl;
+    if (ordersList.orderList) {
+        for (const auto& order : *ordersList.orderList) {
+            os << *order << endl;
+        }
+    } else {
+        os << "null\n";
     }
 
     return os;

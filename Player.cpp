@@ -1,32 +1,26 @@
-#include <vector>
-#include <iostream>
-
 #include "Player.h"
-#include "Territory.h"
-#include "Cards.h"
-#include "Orders.h"
 
 using namespace std;
 
 // default constructor
-// TODO: see how Territory, Hand, OrdersList constructors are implemented
-Player::Player():territories(make_unique<vector<shared_ptr<Territory>>>()), cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()) {}
+Player::Player(): name("defaultPlayer"), territories(make_unique<vector<shared_ptr<Territory>>>()),
+                    cardHand(make_unique<Hand>()),ordersList(make_unique<OrdersList>()) {}
 
 // parameterized constructor (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
+    name("defaultPlayer"),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {}
 
 // copy constructor
 Player::Player(const Player& player) {
-    // TODO: verify that Territory, Hand, OrdersList have copy constructors and assignment operators
-//    for (Territory* t: *player.territories) {
-//        this->territories->push_back(new Territory(*t));
-//    }
-//    this->cardHand = make_unique<Hand>(*player.cardHand);
-//    this->ordersList = make_unique<OrdersList>(*player.ordersList);
+    this->name = player.name;
+    for (const auto& t: *player.territories) {
+        this->territories->push_back(t);
+    }
+    this->cardHand = make_unique<Hand>(*player.cardHand);
+    this->ordersList = make_unique<OrdersList>(*player.ordersList);
 }
 
 // assignment operator
@@ -34,9 +28,10 @@ Player& Player::operator=(const Player& player) {
     if (this == &player) {
         return *this;
     } else {
+        this->name = player.name;
         territories->clear();
-        for (const shared_ptr<Territory>& t: *player.territories) {
-            this->territories->push_back(make_shared<Territory>(*t));
+        for (const auto& t: *player.territories) {
+            this->territories->push_back(t);
         }
         this->cardHand = make_unique<Hand>(*player.cardHand);
         this->ordersList = make_unique<OrdersList>(*player.ordersList);
@@ -46,21 +41,25 @@ Player& Player::operator=(const Player& player) {
 
 // stream insertion operator
 ostream& operator<<(ostream& os, const Player& player) {
-    // TODO: verify that Territory, Hand, OrdersList have stream insertion operators
-//    os << "Territories:\n";
-//    for (Territory* t : *player.territories) {
-//        os << *t << "\n";
-//    }
-//    os << "Hand:\n" << *player.cardHand;
-//    os << "Orders:\n" << *player.ordersList;
+    // TODO: verify that Map, Hand, OrdersList have stream insertion operators
+    os << "Territories: ";
+    if (player.territories) {
+        for (const auto& t : *player.territories) {
+            os << *t << endl;
+        }
+        os << endl;
+    } else {
+        os << "null\n";
+    }
 
-    os << "test output for stream operator";
+    os << "Hand: " << *player.cardHand;
+    os << "Orders: " << *player.ordersList << endl;
 
     return os;
 }
 
     // destructor
-    Player::~Player() {}
+    Player::~Player() = default; // deletion of data members handled by smart pointers already
 
 
 // toDefend()
@@ -99,9 +98,8 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
  */
 void Player::issueOrder() {
     // create test order for now
-//    Order* testOrder = new Order();
-    // TODO: issueOrder(); verify how orders are added to OrdersList
-//    ordersList->add(testOrder);
+    auto testOrder = make_shared<Deploy>();
+    ordersList->add(testOrder);
 }
 
 

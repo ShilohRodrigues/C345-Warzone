@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <memory>
-#include "Territory.h"
+#include "Map.h"
 #include "Cards.h"
 #include "Orders.h"
 
@@ -14,6 +14,7 @@ using namespace std;
 
 class Player {
 public:
+    string name;
     // default constructor
     Player();
     explicit Player(const vector<shared_ptr<Territory>>& territories);
