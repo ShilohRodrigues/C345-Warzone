@@ -8,6 +8,7 @@
 #include <iterator>
 
 using namespace std;
+
 //---------------------------------------------------CARD---------------------------------------------------
 class Card
 {
@@ -18,6 +19,8 @@ Card(const Card& c);
 Card& operator = (const Card& c);
 void setCardType(int num);
 const string& getCardType() const;
+// stream insertion operator
+friend ostream& operator<<(ostream& os, const Card& card);
 
 private:
 vector<string> cardsTypes = { "Spy", "Bomb", "Reinforcement", "Blockade", "Airlift", "Diplomacy" };
@@ -35,6 +38,8 @@ public:
 	void numOfCardsInDeck();
 	Card* draw();
 	void addCardToDeck(Card* one_card);
+	// stream insertion operator
+	friend ostream& operator<<(ostream& os, const Deck& deck);
 
 private:
 	vector<Card*> deck;
@@ -57,6 +62,8 @@ public:
 	vector<Card*>* getPlayCards();
 	void deletePlayedCardsFromHand(Card* r_card);
 	void clearPlayedCards();
+	// stream insertion operator
+	friend ostream& operator<<(ostream& os, const Hand& hand);
 
 private:
 	vector<Card*> handCards;
