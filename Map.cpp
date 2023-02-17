@@ -1,251 +1,133 @@
 #include "Map.h"
 
-using namespace std;
-//CLASS PLAYER 
-Player::Player(const string& x) {
-    name = x;
-}
-Player::~Player() {}
-string Player::getName() { return name; }
-
-
-
-//CLASS TERRITORY ************************************************************************************************************************
-//Constructor Territory 
-Territory::Territory(int idTerritory, string usrName, string usrContinent, shared_ptr<Player> currentPlayer, int armyCount) {
-    territoryId = unique_ptr<int>(new int(idTerritory));
-    name = unique_ptr<string>(new string(usrName));
-    belongsToContinent = unique_ptr<string>(new string(usrContinent));
-    playerInPossession = shared_ptr<Player>(currentPlayer);
-    armies = unique_ptr<int>(new int(armyCount));
-}
-Territory::Territory(int idTerritory, string usrName, string usrContinent) {
-    territoryId = unique_ptr<int>(new int(idTerritory));
-    name = unique_ptr<string>(new string(usrName));
-    belongsToContinent = unique_ptr<string>(new string(usrContinent));
-    playerInPossession = nullptr;
-    armies = unique_ptr<int>(new int(0));
-}
-ostream& operator<<(std::ostream& os, const Territory& territoryInfo) {
-    os << "Name: " << *territoryInfo.name <<
-        ", Continent: " << *territoryInfo.belongsToContinent
-        << ", Player: " << territoryInfo.playerInPossession->getName()
-        << ", Armies: " << *territoryInfo.armies << endl;
-    return os;
-}
-
+////////////// Territory Class /////////////////////
+//Parameterized
+Territory::Territory(int tid, string tname) {
+    id = shared_ptr<int> (new int(tid));;
+    name = shared_ptr<string> (new string(tname)); 
+    armyCnt = shared_ptr<int> (new int(0));
+}   
+//Copy
+Territory::Territory(Territory &territory) {
+    id = territory.id;
+    name = territory.name;
+    armyCnt = territory.armyCnt;
+}   
+//Destructor
 Territory::~Territory() {
-    /*  Since we have smart pointers, "delete" pointers would not be required nor would it work in our scenario,
-        as smart pointers delete themselves.*/
 
-        /*  Although smart pointers deallocate memories themselves, we can use .reset() to ensure that our pointers are
-            destroyed. Since we have unique_ptr's we can be certain that when destroying these pointers, we wont have
-            any dangling pointers;
-        */
-    name.reset();
-    belongsToContinent.reset();
-    playerInPossession.reset();
-    armies.reset();
-}
-
-Territory& Territory::operator=(const Territory& copiedTerritory) {
-    /* Smart pointers automatically manage for memory leaks therefor we would not have to
-       delete pointers*/
-    name.reset();
-    belongsToContinent.reset();
-    playerInPossession.reset();
-    armies.reset();
-    // Allocate new memory and copy over the data from the other object
-    name = unique_ptr<string>(new string(*copiedTerritory.name));
-    belongsToContinent = unique_ptr<string>(new string(*copiedTerritory.belongsToContinent));
-    armies = unique_ptr<int>(new int(*copiedTerritory.armies));
-    playerInPossession = shared_ptr<Player>(new Player(*copiedTerritory.playerInPossession));
-    // This is a pointer that deals with our current object, by returning this, we are returning the 
-    //current object 
+}  
+//Assignment
+Territory& Territory::operator=(const Territory& territory) {
+    if (this == &territory) return *this;
+    this->name = territory.name;
+    this->id = territory.id;
+    this->armyCnt = territory.armyCnt;
     return *this;
 }
-void Territory::setName(const string& newName) {
-    *name = newName;
-}
-void Territory::setContinent(const string& newContinent) {
-    *belongsToContinent = newContinent;
-}
-void Territory::setArmy(int armyCount) {
-    *armies = armyCount;
-}
-void Territory::setNeighbours(Territory* N) {
-    adjacent.push_back(N);
-}
-//mutator functions 
-int Territory::getTerritoryID() const {
-    return *territoryId;
-}
-string Territory::getTerritoryName() const {
-    return *name;
-}
-string Territory::getContinent() const {
-    return *belongsToContinent;
-}
-int Territory::getArmyCount() const {
-    return *armies;
+//Stream Insertion
+ostream& operator<<(ostream &strm, const Territory &t) {
+    return strm << "ID: " << *t.id << endl << "Continent Name: " << *t.name << endl << "Army Count: " << *t.armyCnt << endl;
 }
 
-
-
-
-//CLASS CONTINENTS ********************************************************************************************************************************
-Continent::Continent(string continentName, int idContinent) {
-    name = unique_ptr<string>(new string(continentName));
-    continentID = unique_ptr<int>(new int(idContinent));
+int Territory::getId() {
+    return *id;
 }
 
-Continent::~Continent() {}
-
-void Continent::addTerritory(Territory* A) {
-    territories.push_back(A);
+////////////// Continent Class /////////////////////
+//Parameterized
+Continent::Continent(int cid, string cname) {
+    id = shared_ptr<int> (new int(cid));
+    name = shared_ptr<string> (new string(cname)); 
+}
+//Copy
+Continent::Continent(Continent &continent) {
+    id = continent.id;
+    name = continent.name;
+    territories = continent.territories;
+}   
+//Destructor
+Continent::~Continent() {
+    //delete[] territories;
+}  
+//Assignment
+Continent& Continent::operator=(const Continent& continent) {
+    if (this == &continent) return *this;
+    this->name = continent.name;
+    this->id = continent.id;
+    this->territories = continent.territories;
+    return *this;
+}  
+//Stream Insertion
+ostream& operator<<(ostream &strm, const Continent &c) {
+   return strm << endl;
 }
 
-string Continent::getContinentName() {
-    return *name;
-}
-int Continent::getContinentID() {
-    return *continentID;
+void Continent::addBorder(Territory from, list<Territory> to) {
+    (*territories)[from] = to;
 }
 
 
-
-
-
-//CLASS MAP ***************************************************************************************************************************
-//constructor and deconstructor
-Map::Map() {}
-Map::~Map() {}
-
-//mutator functions
-void Map::addTerritory(Territory* A) {
-    territories.push_back(A);
-    territoryMap[A->getTerritoryName()] = A;
-
-}
-void Map::addContinent(Continent* A) {
-    continents.push_back(A);
-    continentMap[A->getContinentName()] = A;
-}
-void Map::connectTerritories(string A, string B) {
-    Territory* territory1 = territoryMap[A];
-    Territory* territory2 = territoryMap[B];
-    territory1->setNeighbours(territory2);
-    territory2->setNeighbours(territory1);
-}
-
-//accessor functions 
-string Map::getContinentFromContinentId(int id) {
-    for (Continent* c : continents) {
-        if (c->getContinentID() == id) {
-            return c->getContinentName();
-        }
-        else {
-            return "NOT A CONTINENT";
+//MAPLOADER CLASS 
+//Helper function to split strings by the separator char.  
+vector<string> split(string str, char separator) {
+    vector<string> strings;
+    int startIndex = 0, endIndex = 0;
+    for (int i = 0; i <= str.size(); i++) {
+        if (str[i] == separator || i == str.size()) {
+            endIndex = i;
+            string temp;
+            temp.append(str, startIndex, endIndex - startIndex);
+            strings.push_back(temp);
+            startIndex = endIndex + 1;
         }
     }
-    return "";
+    return strings;
 }
 
-bool Map::isConnectedMap() {
-    vector<Territory*> currentTerritories = territories;
-    while (currentTerritories.size() > 0) {
-        auto neighbour = currentTerritories[0];
-        int index = std::distance(territories.begin(), find(territories.begin(), territories.end(), neighbour));
+//Static function that loads parses a map file and returns a map object
+Map MapLoader::loadMap(string path) {
 
-        for (int i = 0; i < neighbour->getAdjacent().size(); i++) {
-            auto& nextTerritory = neighbour->getAdjacent()[i];
-            if (find(currentTerritories.begin(), currentTerritories.end(), nextTerritory) != currentTerritories.end()) {
-                int index = std::distance(territories.begin(), find(territories.begin(), territories.end(), nextTerritory));
-            }
-        }
-    }
-
-    return currentTerritories.size() == 0;
-}
-
-
-//******************************************************
-//README*************************************************
-//NEED TO IMPLEMENT INONECONTINENT**************************
-//***********************************************************
-
-
-//MAPLOADER CLASS ******************************************************************************
-MapLoader::MapLoader(const string& fileName) {
-    ifstream mapFile(fileName);
-    int continentCounter = 0;
+    ifstream mapFile(path);
 
     if (!mapFile.is_open()) {
         cout << "Error: Unable to open file" << endl;
         throw std::runtime_error("Error: Unable to open file");
     }
 
-    string line;
+    string line = "";
     while (getline(mapFile, line)) {
         if (line == "[continents]") {
+            int count = 0;
             while (getline(mapFile, line) && !line.empty()) {
-                continentCounter++;
-                istringstream getWord(line);
-                string continentName;
-                getWord >> continentName;
-                Continent* newContinent = new Continent(continentName, continentCounter);
-                mp->addContinent(newContinent);
+                //Split the line into the ID and the Name
+                vector<string> sLine = split(line, ' ');
+                string name = sLine[0]; 
+                //Create Continent ***********
+                new Continent(++count, name);
             }
+
         }
 
         if (line == "[countries]") {
-            while (getline(mapFile, line) && !line.empty()) {
-                istringstream getWord(line);
-                int countryID, continentId;
-                string countryName, continentName;
-                getWord >> countryID >> countryName >> continentId;
-                continentName = mp->getContinentFromContinentId(continentId);
-                //Create Object Territory.
-                Territory* newTerritory = new Territory(countryID, countryName, continentName);
-
-                //push territory into class Map's vector territories
-                mp->addTerritory(newTerritory);
-
-                //push territory into class Continent vector territories
-                for (Continent* ct : mp->getContinents()) {
-                    if (ct->getContinentID() == continentId) {
-                        ct->addTerritory(newTerritory);
-                    }
-                }
+            while (getline(mapFile, line) && !line.empty()) {             
+                //Split the line into the ID and the Name
+                vector<string> sLine = split(line, ' ');
+                int id = stoi(sLine[0]);
+                string name = sLine[1];              
+                //Create new territory
+                new Territory(id, name);
             }
         }
 
         if (line == "[borders]") {
             while (getline(mapFile, line) && !line.empty()) {
-                istringstream getWord(line);
-                string getBorders, continentId;
-                std::stringstream getInt(line);
-                int node, first;
-                getInt >> first;
-
-
-                Territory* currentTerritory = nullptr;
-                for (Territory* TT : mp->getTerritories()) {
-                    if (TT->getTerritoryID() == first) {
-                        currentTerritory = TT;
-                        break;
-                    }
-
-                }
-                while (getInt >> node) {
-                    for (Territory* TF : mp->getTerritories()) {
-                        if (TF->getTerritoryID() == node) {
-                            currentTerritory->setNeighbours(TF);
-                            break;
-                        }
-                    }
-                }
+                
             }
         }
     }
+
+    Map *mp = new Map();
+    return *mp;
+
 }
