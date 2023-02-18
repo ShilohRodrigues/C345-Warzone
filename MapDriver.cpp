@@ -16,4 +16,8 @@ int main() {
     cout << endl << endl;
     mp.printContinents();
 
+    cout << endl;
+    if (mp.validate()) cout << "Map Validated!" << endl;
+    else cout << "Map Invalid";
+
 }

@@ -113,6 +113,10 @@ int Continent::getId() const {
 string Continent::getName() const {
     return name;
 }
+//Get territories
+unordered_map<Territory, list<Territory>, MyHash> Continent::getTerritories() {
+    return *territories;
+}
 //Add territory and their borders
 void Continent::addBorder(Territory from, list<Territory> to) {
     (*territories)[from] = to;
@@ -175,7 +179,41 @@ void Map::printContinents() {
 }
 //Check if the territories are a connected graph and if every continent is a connected subgraph
 bool Map::validate() {
+    
+    bool valid = true;
 
+    //Validating that the map is a connected graph
+    if (!isConnected(*territories)) valid = false;
+    //Validate that the continents are connected subgraphs
+    for (auto &j : *continents) {
+        if (!isConnected(j.getTerritories())) valid = false;
+    }
+
+    return valid;
+}
+//Helper function: performs breadth first traversal checks if everythings connected
+bool Map::isConnected(unordered_map<Territory, list<Territory>, MyHash> territories) {
+    if (territories.empty()) {
+        return false; // empty map is not connected
+    } 
+    //to track visited territories
+    unordered_set<Territory, MyHash> visited;
+    queue<Territory> q;
+
+    q.push(territories.begin()->first);
+    visited.insert(q.front());
+    while (!q.empty()) {
+        Territory current = q.front();
+        q.pop();
+        for (auto adjacent : territories[current]) {
+            if (visited.count(adjacent) == 0) {
+                q.push(adjacent);
+                visited.insert(adjacent);
+            }
+        }
+    }
+    //Check if all territories were visited
+    return visited.size() == territories.size();
 }
 
 //MapLoader Class 

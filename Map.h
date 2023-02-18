@@ -9,6 +9,8 @@
 #include <list>
 #include <unordered_map>
 #include <string>
+#include <unordered_set>
+#include <queue>
 
 using namespace std;
 
@@ -63,6 +65,7 @@ class Continent {
 
         int getId() const; //ID getter
         string getName() const; //Name getter
+        unordered_map<Territory, list<Territory>, MyHash> getTerritories();
         void addBorder(Territory from, list<Territory> to);
 
 };
@@ -85,6 +88,7 @@ class Map {
         void addBorderContinent(int cid, Territory from, list<Territory> to);
         void printContinents();
         bool validate();
+        bool isConnected(unordered_map<Territory, list<Territory>, MyHash> territories);
 
 };
 
