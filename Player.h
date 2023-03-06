@@ -14,7 +14,6 @@ using namespace std;
 
 class Player {
 public:
-    string name;
     // default constructor
     Player();
     explicit Player(const vector<shared_ptr<Territory>>& territories);
@@ -38,8 +37,24 @@ public:
 // player owns collection of territories
 // player owns a hand of Warzone cards
 // player has list of orders
-    unique_ptr<Hand> cardHand;
 private:
+    string name;
+public:
+    // getters and setters
+    const string &getName() const;
+    void setName(const string &name);
+
+    const unique_ptr<Hand> &getCardHand() const;
+    void setCardHand(unique_ptr<Hand> &cardHand);
+
+    const unique_ptr<vector<shared_ptr<Territory>>> &getTerritories() const;
+    void setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories);
+
+    const unique_ptr<OrdersList> &getOrdersList() const;
+    void setOrdersList(unique_ptr<OrdersList> &ordersList);
+
+private:
+    unique_ptr<Hand> cardHand;
     unique_ptr<vector<shared_ptr<Territory>>> territories;
     unique_ptr<OrdersList> ordersList;
 };

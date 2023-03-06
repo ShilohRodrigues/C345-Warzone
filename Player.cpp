@@ -60,7 +60,41 @@ ostream& operator<<(ostream& os, const Player& player) {
     return os;
 }
 
-    // destructor
+// getters and setters
+
+const string &Player::getName() const {
+    return name;
+}
+
+void Player::setName(const string &name) {
+    Player::name = name;
+}
+
+const unique_ptr<Hand> &Player::getCardHand() const {
+    return cardHand;
+}
+
+void Player::setCardHand(unique_ptr<Hand> &cardHand) {
+    Player::cardHand = std::move(cardHand);
+}
+
+const unique_ptr<vector<shared_ptr<Territory>>> &Player::getTerritories() const {
+    return territories;
+}
+
+void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories) {
+    Player::territories = std::move(territories);
+}
+
+const unique_ptr<OrdersList> &Player::getOrdersList() const {
+    return ordersList;
+}
+
+void Player::setOrdersList(unique_ptr<OrdersList> &ordersList) {
+    Player::ordersList = std::move(ordersList);
+}
+
+// destructor
     Player::~Player() = default; // deletion of data members handled by smart pointers already
 
 
@@ -70,7 +104,7 @@ ostream& operator<<(ostream& os, const Player& player) {
  * @return list of territories to defend
  */
 unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
-    // returns arbitrary list for now
+    // TODO: not arbitrary anymore
     auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
     arbitraryList->push_back(this->territories->at(0));
     arbitraryList->push_back(this->territories->at(1));
@@ -84,7 +118,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
  * @return list of territories to attack
  */
 unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
-    // returns arbitrary list for now
+    // TODO: not arbitrary anymore
     auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
     arbitraryList->push_back(this->territories->at(2));
     arbitraryList->push_back(this->territories->at(3));
@@ -99,7 +133,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
  * @param order
  */
 void Player::issueOrder() {
-    // create test order for now
+    // TODO: not arbitrary anymore
     auto testOrder = make_shared<Deploy>();
     ordersList->add(testOrder);
 }
