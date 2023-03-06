@@ -26,10 +26,18 @@ ostream& operator<<(ostream& os, const Order& order) {
 
     return os;
 }
-// validate()
-bool Order::validate() { return false; }
-// execute()
-void Order::execute() {}
+
+const int Order::getOrderId() const {
+    return orderID;
+}
+
+int Order::getNextId() {
+    return nextID;
+}
+
+void Order::setNextId(int nextId) {
+    nextID = nextId;
+}
 
 // Order subclasses
 // validate() for every subclass
@@ -340,4 +348,13 @@ void OrdersList::remove(int orderID) {
         // remove the order
         this->orderList->remove(*orderIterator);
     }
+}
+
+// getters and setters
+const unique_ptr<list<shared_ptr<Order>>> &OrdersList::getOrderList() const {
+    return orderList;
+}
+
+void OrdersList::setOrderList(unique_ptr<list<shared_ptr<Order>>> &orderList) {
+    OrdersList::orderList = std::move(orderList);
 }

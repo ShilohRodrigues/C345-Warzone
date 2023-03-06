@@ -9,19 +9,24 @@ using namespace std;
 // superclass order
 class Order {
 public:
-    const int orderID; // to keep track of individual orders since they have the same name
-
     Order();
     // copy constructor
     Order(const Order& order);
     // assignment operator
     Order& operator=(const Order& order);
     // each subclass needs validate(), execute()
-    virtual bool validate();
-    virtual void execute();
+    virtual bool validate()=0;
+    virtual void execute()=0;
     // stream insertion operator
     friend ostream& operator<<(ostream& os, const Order& order);
+
+    // getters and setters
+    const int getOrderId() const;
+    static int getNextId();
+    static void setNextId(int nextId);
+
 private:
+    const int orderID; // to keep track of individual orders since they have the same name
     static int nextID; // counter to maintain unique IDs
 };
 
@@ -109,6 +114,11 @@ public:
     void move(const string& direction, int orderID);
     void remove(int orderID);
 
+    // getters and setters
+    const unique_ptr<list<shared_ptr<Order>>> &getOrderList() const;
+    void setOrderList(unique_ptr<list<shared_ptr<Order>>> &orderList);
+
+private:
     unique_ptr<list<shared_ptr<Order>>> orderList;
 };
 
