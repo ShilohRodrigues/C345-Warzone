@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void ordersDriver() {
+void ordersDemo1() {
     // create order of every kind
     auto testDeploy = make_shared<Deploy>();
     auto testAdvance = make_shared<Advance>();
@@ -22,7 +22,7 @@ void ordersDriver() {
 
     cout << "\n== OrdersList Stream Insertion Operator ==\n" << *testOrdersList << endl;
 
-    for (const auto& order : *testOrdersList->orderList) {
+    for (const auto& order : *testOrdersList->getOrderList()) {
         // every order subclass has validate()
         order->validate();
         // every order subclass has execute()

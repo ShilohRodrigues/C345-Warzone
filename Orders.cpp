@@ -301,7 +301,7 @@ void OrdersList::add<Negotiate>(shared_ptr<Negotiate> negotiate) {
 void OrdersList::move(const string& direction, int orderID) {
     // find the order in the ordersList using the orderID
     auto orderIterator = find_if(this->orderList->begin(), this->orderList->end(),
-                         [orderID](const shared_ptr<Order>& order) { return order->orderID == orderID; });
+                         [orderID](const shared_ptr<Order>& order) { return order->getOrderId() == orderID; });
     // check if found
     if (orderIterator == this->orderList->end()) {
         cout << "couldn't find order with given orderID";
@@ -340,7 +340,7 @@ void OrdersList::move(const string& direction, int orderID) {
 void OrdersList::remove(int orderID) {
     // find the order via the orderID
     auto orderIterator = find_if(this->orderList->begin(), this->orderList->end(),
-                                 [orderID](const shared_ptr<Order>& order) { return order->orderID == orderID; });
+                                 [orderID](const shared_ptr<Order>& order) { return order->getOrderId() == orderID; });
     // check that it's found
     if (orderIterator == this->orderList->end()) {
         cout << "order not found with given orderID";

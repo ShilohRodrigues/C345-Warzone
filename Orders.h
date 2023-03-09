@@ -122,6 +122,6 @@ private:
     unique_ptr<list<shared_ptr<Order>>> orderList;
 };
 
-void ordersDriver();
+void ordersDemo1();
 
 #endif // ORDERS_H
