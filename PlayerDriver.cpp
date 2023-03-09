@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void playerDriver() {
+void playerDemo1() {
     // create test territories
     auto testTerritories = make_unique<vector<shared_ptr<Territory>>>();
     for (int i = 0; i < 5; i++) {
@@ -19,7 +19,7 @@ void playerDriver() {
     deck->MakeDeck();
     for (int i = 0; i < 5; i++)
     {
-        testPlayer->cardHand->setHandOfCards(deck->draw());
+        testPlayer->getCardHand()->setHandOfCards(deck->draw());
     }
 
     // show that toDefend() method works
