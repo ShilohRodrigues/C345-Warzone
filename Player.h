@@ -59,6 +59,6 @@ private:
     unique_ptr<OrdersList> ordersList;
 };
 
-void playerDriver();
+void playerDemo1();
 
 #endif // PLAYER_H

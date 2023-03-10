@@ -1,6 +1,6 @@
 #include "Cards.h"
 
-int main()
+void cardDemo1 ()
 {
 	cout << "The object is to create a hand object that is filled by drawing cards from deck. \n" << endl;
 	// Create a deck of cards

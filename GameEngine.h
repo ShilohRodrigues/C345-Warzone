@@ -160,4 +160,6 @@ class WinState: public State {
     vector<string> commands{"end", "play"};
 };
 
+void gameEngineDemo1();
+
 #endif // GAME_ENGINE

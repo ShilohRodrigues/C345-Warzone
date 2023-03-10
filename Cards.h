@@ -69,3 +69,5 @@ private:
 	vector<Card*> handCards;
 	vector<Card*> playCards;//for store play cards
 };
+
+void cardDemo1();

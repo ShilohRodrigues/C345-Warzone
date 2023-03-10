@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int main() {
+void gameEngineDemo1() {
 
   //Create game object
   GameEngine *game = new GameEngine();
