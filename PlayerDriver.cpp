@@ -6,7 +6,7 @@ void playerDemo1() {
     // create test territories
     auto testTerritories = make_unique<vector<shared_ptr<Territory>>>();
     for (int i = 0; i < 5; i++) {
-        testTerritories->push_back(make_shared<Territory>(i, "testName" + to_string(i), "testContinent" + to_string(i)));
+        testTerritories->push_back(make_shared<Territory>(i, "testTerritory" + to_string(i), i, "testPlayer", 0));
     }
 
     // player owns a collection of territories
