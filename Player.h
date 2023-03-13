@@ -33,6 +33,12 @@ public:
     const string &getName() const;
     void setName(const string &name);
 
+    int getArmyCount() const;
+    void setArmyCount(int armyCount);
+
+    int getReinforcementPool() const;
+    void setReinforcementPool(int reinforcementPool);
+
     const unique_ptr<Hand> &getCardHand() const;
     void setCardHand(unique_ptr<Hand> &cardHand);
 
@@ -42,12 +48,10 @@ public:
     const unique_ptr<OrdersList> &getOrdersList() const;
     void setOrdersList(unique_ptr<OrdersList> &ordersList);
 
-    int getArmyCount() const;
-    void setArmyCount(int armyCount);
-
 private:
     string name;
-    int armyCount;
+    int armyCount; // total army count available to the player
+    int reinforcementPool; // armies the player can use every turn, decreases as the player uses them, replenishes later
     // player owns a hand of Warzone cards
     unique_ptr<Hand> cardHand;
     // player owns collection of territories

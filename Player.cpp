@@ -5,18 +5,20 @@ using namespace std;
 // default constructor
 Player::Player():
     name("defaultPlayer"),
+    armyCount(3),
+    reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>()),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()),
-    armyCount(0) {}
+    ordersList(make_unique<OrdersList>()) {}
 
 // parameterized constructor (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
     name("defaultPlayer"),
+    armyCount(3),
+    reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()),
-    armyCount(0) {}
+    ordersList(make_unique<OrdersList>()) {}
 
 // copy constructor
 Player::Player(const Player& player) {
@@ -80,6 +82,14 @@ int Player::getArmyCount() const {
 
 void Player::setArmyCount(int armyCount) {
     Player::armyCount = armyCount;
+}
+
+int Player::getReinforcementPool() const {
+    return reinforcementPool;
+}
+
+void Player::setReinforcementPool(int reinforcementPool) {
+    Player::reinforcementPool = reinforcementPool;
 }
 
 const unique_ptr<Hand> &Player::getCardHand() const {
