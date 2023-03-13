@@ -10,8 +10,6 @@
 
 using namespace std;
 
-// player class declarations
-
 class Player {
 public:
     // default constructor
@@ -26,20 +24,11 @@ public:
     // destructor
     ~Player();
 
-    // toDefend()
-    // toAttack()
-    // issueOrder()
-
+    // required methods
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     void issueOrder();
 
-// player owns collection of territories
-// player owns a hand of Warzone cards
-// player has list of orders
-private:
-    string name;
-public:
     // getters and setters
     const string &getName() const;
     void setName(const string &name);
@@ -53,9 +42,17 @@ public:
     const unique_ptr<OrdersList> &getOrdersList() const;
     void setOrdersList(unique_ptr<OrdersList> &ordersList);
 
+    int getArmyCount() const;
+    void setArmyCount(int armyCount);
+
 private:
+    string name;
+    int armyCount;
+    // player owns a hand of Warzone cards
     unique_ptr<Hand> cardHand;
+    // player owns collection of territories
     unique_ptr<vector<shared_ptr<Territory>>> territories;
+    // player has list of orders
     unique_ptr<OrdersList> ordersList;
 };
 
