@@ -3,12 +3,19 @@
 using namespace std;
 
 // default constructor
-Player::Player(): name("defaultPlayer"), territories(make_unique<vector<shared_ptr<Territory>>>()),
-                    cardHand(make_unique<Hand>()),ordersList(make_unique<OrdersList>()) {}
+Player::Player():
+    name("defaultPlayer"),
+    armyCount(3),
+    reinforcementPool(3),
+    territories(make_unique<vector<shared_ptr<Territory>>>()),
+    cardHand(make_unique<Hand>()),
+    ordersList(make_unique<OrdersList>()) {}
 
 // parameterized constructor (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
     name("defaultPlayer"),
+    armyCount(3),
+    reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {}
@@ -61,13 +68,28 @@ ostream& operator<<(ostream& os, const Player& player) {
 }
 
 // getters and setters
-
 const string &Player::getName() const {
     return name;
 }
 
 void Player::setName(const string &name) {
     Player::name = name;
+}
+
+int Player::getArmyCount() const {
+    return armyCount;
+}
+
+void Player::setArmyCount(int armyCount) {
+    Player::armyCount = armyCount;
+}
+
+int Player::getReinforcementPool() const {
+    return reinforcementPool;
+}
+
+void Player::setReinforcementPool(int reinforcementPool) {
+    Player::reinforcementPool = reinforcementPool;
 }
 
 const unique_ptr<Hand> &Player::getCardHand() const {
@@ -95,7 +117,7 @@ void Player::setOrdersList(unique_ptr<OrdersList> &ordersList) {
 }
 
 // destructor
-    Player::~Player() = default; // deletion of data members handled by smart pointers already
+Player::~Player() = default; // deletion of data members handled by smart pointers already
 
 
 // toDefend()
