@@ -1,12 +1,14 @@
-#include "Map.h"
 #include <iostream>
+#include "Map.h"
+#include <vector>
 using namespace std;
+int mapDemo1() {
+    string fileNamer = "sw_baltic.map";
 
-
-int main() {
-    string fileNamer;
-    cout << "Please enter Directory for your .map file , if the map is in the same directory please enter the file name" << endl;
-    cin >> fileNamer;
     //sw_baltic.map
-    MapLoader mp = MapLoader(fileNamer);
+    Map *mp = new Map();
+    MapLoader::loadMap(*mp,fileNamer);
+    cout << *mp;
+    delete mp;
+    return 0;
 }

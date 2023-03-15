@@ -1,130 +1,107 @@
-#ifndef MAP_H 
+#ifndef MAP_H
 #define MAP_H
+
 #include <iostream>
-#include <vector>
-#include <map>
 #include <fstream>
 #include <sstream>
-#include <iostream>
-#include <string>
+#include <vector>
 #include <memory>
-#include <map>
-#include <algorithm>
-#include <stack>
-//TESTER CLASS OFF GITHUB, NOT PART OF THE ASSIGNMENT CRITERIA *********************
+#include <list>
+#include <unordered_map>
+#include <string>
+#include <unordered_set>
+#include <queue>
+
 using namespace std;
-class Player {
-private:
-    string name;                         //player name
 
-public:
-    Player();                            //default constructor
-    Player(const string&);              //one parameter constructor
-    Player(const Player*);               //copy constructor DELETE***********************
-    Player& operator = (const Player&);  //assignment operator DELETE ***************************************
-    ~Player();                           //destructor
+struct MyHash;
+class Territory;
+class Continent;
+class Map;
+class MapLoader;
 
-    string getName();                    //accessor
-    void setName(string);                //mutator
+//Custom hashing function for territory and continent
+struct MyHash {
+    size_t operator()(Territory const& t) const noexcept;
+    size_t operator()(Continent const& c) const noexcept;
 };
-//TESTER CLASS END ********************************************
 
-
-//Class TERRITORY ***********************************************************************************
-//Territory Class 
 class Territory {
+
 private:
+    unique_ptr<int> id;
     unique_ptr<std::string> name;
-    unique_ptr<std::string> belongsToContinent;
-    shared_ptr<Player> playerInPossession;
-    unique_ptr<int> armies;
-    unique_ptr<int> territoryId;
-    vector<Territory*> adjacent;
+    unique_ptr<string> playerInPossession;
+    unique_ptr<int> continentId;
+    unique_ptr<int> armyCnt;
 
 public:
-    //Constructors and Destructors
-    Territory(int, string, string, shared_ptr<Player>, int);
-    Territory(int, string, string);
-    Territory(const Territory&);
-    ~Territory();
-    Territory& operator=(const Territory&);
+    //Initial territory
+    Territory(int, const string&, int);
+    Territory(int , const string& , int , const string& , int );
+    Territory(const Territory &territory); //Copy Constructor
+    ~Territory(); //Destructor
+    Territory& operator=(const Territory& territory); //Assignment Operator
+    bool operator==(const Territory& territory) const; //Equals Operator
+    friend ostream& operator<<(ostream& strm, const Territory& t); //Stream Insertion Operator
 
-    /* Stream insertion "<<" is not a member of our class, it belongs to <iostream>.
-       Therefor to work with Stream insertion our operator overloading */
-    friend std::ostream& operator<<(std::ostream&, const Territory&);
+    int getId() const; //ID getter
+    string getName() const; //Name getter
+    int getContId() const;
 
-
-    //Accessor functions 
-    void setName(const string&);
-    void setContinent(const string&);
-    void setArmy(int);
-    void setNeighbours(Territory*);
-
-    //mutator functions 
-    int getTerritoryID() const;
-    string getTerritoryName() const;
-    string getContinent() const;
-    int getArmyCount() const;
-    vector<Territory*> getAdjacent() const { return adjacent; }
-
-    //NEED TO UPDATE WITH EUGENIE'S CLASS 
-    // Player getPlayer() const; 
-    //void setPlayer(Player*);
 };
 
-
-//Class CONTINENT ******************************************************************************
 class Continent {
+
 private:
     unique_ptr<string>name;
-    unique_ptr<int>continentID;
-    vector<Territory*> territories;
+    unique_ptr<int>id;
+    unordered_map<Territory, list<Territory>, MyHash> *territories;
+
 public:
-    Continent(string, int);
-    ~Continent();
+    Continent(int cid, const string& cname); //Parameterized Constructor
+    Continent(const Continent &continent); //Copy Constructor
+    ~Continent(); //Destructor
+    Continent& operator=(const Continent& continent); //Assignment Operator
+    bool operator==(const Continent& continent) const; //Equals Operator
+    friend ostream& operator<<(ostream& strm, const Continent& c); //Stream Insertion Operator
 
-    void addTerritory(Territory*);
+    int getId() const; //ID getter
+    string getName() const; //Name getter
+    unordered_map<Territory, list<Territory>, MyHash> getTerritories();
+    void addBorder(const Territory& from, list<Territory> to);
 
-    string getContinentName();
-    int getContinentID();
-    //FOR BOOL isConnectedContinent ONLYYY
-    vector<Territory*> getTerritories() const { return territories; }
 };
 
-//class MAP ***********************************************************************
 class Map {
+
+private:
+    vector<Continent> *continents;
+    unordered_map<Territory, list<Territory>, MyHash> *territories;
+
 public:
-    vector<Territory*> territories;
-    vector<Continent*> continents;
-    map<string, Territory*> territoryMap;
-    map<string, Continent*> continentMap;
+    Map();
+    Map(Map &Map); //Copy Constructor
+    ~Map(); //Destructor
+    Map& operator=(const Map& map); //Assignment Operator
+    friend ostream& operator<<(ostream& strm, const Map& m); //Stream Insertion Operator
 
-    Map(); //default constructor
-    ~Map();
+    void addBorder(const Territory& from, list<Territory> to);
+    void addContinent(const Continent& c);
+    void addBorderContinent(int cid, const Territory& from, list<Territory> to);
+    void printContinents();
+    bool validate();
+    bool isConnected(unordered_map<Territory, list<Territory>, MyHash> territories);
 
-    //mutator functions
-    void addTerritory(Territory*);
-    void addContinent(Continent*);
-    void connectTerritories(string, string);
-
-
-    //boolean functions
-    bool isConnectedMap();
-    bool isConnectedContinents();
-    bool inOneContinent(string);
-
-    //accessor function
-    string getContinentFromContinentId(int);
-    vector<Continent*> getContinents() const { return continents; }
-    vector<Territory*> getTerritories() const { return territories; }
 };
 
 class MapLoader {
-private:
-    shared_ptr<Map> mp;
 
 public:
-    MapLoader(const string&);
+    static void loadMap(Map& ,const string& path);
+
 };
+
+int mapDemo1();
 
 #endif
