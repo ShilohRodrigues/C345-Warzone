@@ -23,6 +23,8 @@ Player::Player(const vector<shared_ptr<Territory>>& territories):
 // copy constructor
 Player::Player(const Player& player) {
     this->name = player.name;
+    this->armyCount = player.armyCount;
+    this->reinforcementPool = player.reinforcementPool;
     for (const auto& t: *player.territories) {
         this->territories->push_back(t);
     }
@@ -38,6 +40,8 @@ Player& Player::operator=(const Player& player) {
     } else {
         // change data members so that they match
         this->name = player.name;
+        this->armyCount = player.armyCount;
+        this->reinforcementPool = player.reinforcementPool;
         territories->clear();
         for (const auto& t: *player.territories) {
             this->territories->push_back(t);
@@ -50,6 +54,9 @@ Player& Player::operator=(const Player& player) {
 
 // stream insertion operator
 ostream& operator<<(ostream& os, const Player& player) {
+    os << "name: " << player.name << endl;
+    os << "armyCount: " << player.armyCount << endl;
+    os << "reinforcementPool: " << player.reinforcementPool << endl;
     os << "Territories:\n";
     // make sure territories isn't null before iterating over it
     if (player.territories) {
