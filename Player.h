@@ -49,7 +49,8 @@ public:
     void setOrdersList(unique_ptr<OrdersList> &ordersList);
 
 private:
-    string name;
+    static int nextID;
+    const string name;
     int armyCount; // total army count available to the player
     int reinforcementPool; // armies the player can use every turn, decreases as the player uses them, replenishes later
     // player owns a hand of Warzone cards

@@ -2,9 +2,11 @@
 
 using namespace std;
 
+int Player::nextID = 0;
+
 // default constructor
 Player::Player():
-    name("defaultPlayer"),
+    name("Player" + to_string(++nextID)),
     armyCount(3),
     reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>()),
@@ -13,7 +15,7 @@ Player::Player():
 
 // parameterized constructor (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
-    name("defaultPlayer"),
+    name("Player" + to_string(++nextID)),
     armyCount(3),
     reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
