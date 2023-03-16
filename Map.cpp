@@ -94,6 +94,22 @@ int Territory::getContId() const {
     return *continentId;
 }
 
+const unique_ptr<string> &Territory::getPlayerInPossession() const {
+    return playerInPossession;
+}
+
+void Territory::setPlayerInPossession(const unique_ptr<string> &playerInPossession) {
+    Territory::playerInPossession = playerInPossession;
+}
+
+const unique_ptr<int> &Territory::getArmyCnt() const {
+    return armyCnt;
+}
+
+void Territory::setArmyCnt(const unique_ptr<int> &armyCnt) {
+    Territory::armyCnt = armyCnt;
+}
+
 ////////////// Continent Class /////////////////////
 //Parameterized
 Continent::Continent(int cid, const string& cname) {
