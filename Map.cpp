@@ -98,16 +98,16 @@ const unique_ptr<string> &Territory::getPlayerInPossession() const {
     return playerInPossession;
 }
 
-void Territory::setPlayerInPossession(const unique_ptr<string> &playerInPossession) {
-    Territory::playerInPossession = playerInPossession;
+void Territory::setPlayerInPossession(unique_ptr<string> &playerInPossession) {
+    Territory::playerInPossession = std::move(playerInPossession);
 }
 
 const unique_ptr<int> &Territory::getArmyCnt() const {
     return armyCnt;
 }
 
-void Territory::setArmyCnt(const unique_ptr<int> &armyCnt) {
-    Territory::armyCnt = armyCnt;
+void Territory::setArmyCnt(unique_ptr<int> &armyCnt) {
+    Territory::armyCnt = std::move(armyCnt);
 }
 
 ////////////// Continent Class /////////////////////

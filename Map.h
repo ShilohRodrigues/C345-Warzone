@@ -50,12 +50,10 @@ public:
     int getContId() const;
 
     const unique_ptr<string> &getPlayerInPossession() const;
-
-    void setPlayerInPossession(const unique_ptr<string> &playerInPossession);
+    void setPlayerInPossession(unique_ptr<string> &playerInPossession);
 
     const unique_ptr<int> &getArmyCnt() const;
-
-    void setArmyCnt(const unique_ptr<int> &armyCnt);
+    void setArmyCnt(unique_ptr<int> &armyCnt);
 
 };
 
