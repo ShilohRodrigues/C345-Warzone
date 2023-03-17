@@ -35,15 +35,15 @@ Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Ter
 }
 
 // copy constructor
-Player::Player(const Player& player) {
-    this->name = player.name;
-    this->armyCount = player.armyCount;
-    this->reinforcementPool = player.reinforcementPool;
+Player::Player(const Player& player):
+    armyCount(player.armyCount),
+    reinforcementPool(player.reinforcementPool),
+    territories(make_unique<vector<shared_ptr<Territory>>>()),
+    cardHand(make_unique<Hand>(*player.cardHand)),
+    ordersList(make_unique<OrdersList>(*player.ordersList)) {
     for (const auto& t: *player.territories) {
         this->territories->push_back(t);
     }
-    this->cardHand = make_unique<Hand>(*player.cardHand);
-    this->ordersList = make_unique<OrdersList>(*player.ordersList);
 }
 
 // assignment operator
@@ -53,7 +53,6 @@ Player& Player::operator=(const Player& player) {
         return *this;
     } else {
         // change data members so that they match
-        this->name = player.name;
         this->armyCount = player.armyCount;
         this->reinforcementPool = player.reinforcementPool;
         territories->clear();
@@ -93,10 +92,6 @@ const string &Player::getName() const {
     return name;
 }
 
-void Player::setName(const string &name) {
-    Player::name = name;
-}
-
 int Player::getArmyCount() const {
     return armyCount;
 }
@@ -127,7 +122,8 @@ const unique_ptr<vector<shared_ptr<Territory>>> &Player::getTerritories() const 
 
 void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories) {
     for (const auto& territory : *territories) {
-        territory->setPlayerInPossession(make_unique<string>(this->name));
+        auto playerInPossession = make_unique<string>(this->name);
+        territory->setPlayerInPossession(playerInPossession);
         this->territories->push_back(territory);
     }
 }
