@@ -74,9 +74,8 @@ ostream& operator<<(ostream& os, const Player& player) {
     // make sure territories isn't null before iterating over it
     if (player.territories) {
         for (const auto& t : *player.territories) {
-            os << *t << endl;
+            os << *t;
         }
-        os << endl;
     } else {
         os << "null\n";
     }
