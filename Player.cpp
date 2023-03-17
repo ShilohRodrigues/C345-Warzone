@@ -67,8 +67,8 @@ Player& Player::operator=(const Player& player) {
 
 // stream insertion operator
 ostream& operator<<(ostream& os, const Player& player) {
-    os << "name: " << player.name << endl;
-    os << "armyCount: " << player.armyCount << endl;
+    os << "name: " << player.name << ", ";
+    os << "armyCount: " << player.armyCount << ", ";
     os << "reinforcementPool: " << player.reinforcementPool << endl;
     os << "Territories:\n";
     // make sure territories isn't null before iterating over it
