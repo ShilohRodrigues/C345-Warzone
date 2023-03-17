@@ -45,31 +45,91 @@ void Order::setNextId(int nextId) {
 
 // Deploy
 Deploy::Deploy():Order() {}
-Deploy::Deploy(const Deploy& deploy):Order() {} // no members to copy for now
+Deploy::Deploy(const unique_ptr<Player>& player,
+               const shared_ptr<Territory>& targetTerritory,
+               const int deployedArmies):
+    player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
+Deploy::Deploy(const Deploy& deploy):Order(deploy) {
+    this->player = deploy.player;
+    this->targetTerritory = deploy.targetTerritory;
+    this->deployedArmies = deploy.deployedArmies;
+}
 Deploy& Deploy::operator=(const Deploy& deploy) {
     if (this == &deploy) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = deploy.player;
+        this->targetTerritory = deploy.targetTerritory;
+        this->deployedArmies = deploy.deployedArmies;
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Deploy& deploy) {
     os << static_cast<const Order&>(deploy);
-    // no specific member info to return for now
+    os << " - player: " << deploy.player->getName();
+    os << " - targetTerritory: " << deploy.targetTerritory->getName();
+    os << " - deployedArmies: " << deploy.deployedArmies;
 
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target territory belongs to the player that issued the order
+ * 2) the player has the desired amount of armies in their reinforcement pool
+ * @return whether the order is valid or not
+ */
 bool Deploy::validate()  {
-    cout << "deploy order validated\n";
+    if (player && targetTerritory) {
+        if ((player->getName() == targetTerritory->getName())
+            && (player->getReinforcementPool() >= this->deployedArmies)) {
+            return true;
+        }
+    }
 
-    return true; // logic to be implemented in later assignments
+    return false;
 }
 
+/**
+ * Adds the selected number of player armies for deployment (deployedArmies)
+ * to the armies on the target territory.
+ */
 void Deploy::execute() {
-    // logic to be implemented in later assignments
-    cout << "deploy order executed\n";
+    if (validate()) {
+        // add deployed armies to existing armies
+        int updatedArmies = *targetTerritory->getArmyCnt() + deployedArmies;
+        targetTerritory->setArmyCnt(make_unique<int>(updatedArmies));
+
+        // remove deployed armies from the player's reinforcement pool
+        player->setReinforcementPool(player->getReinforcementPool() - deployedArmies);
+    } else {
+        cout << "Invalid deploy order. Could not execute.";
+    }
+}
+
+// getters and setters
+const unique_ptr<Player> &Deploy::getPlayer() const {
+    return player;
+}
+
+void Deploy::setPlayer(unique_ptr<Player> &player) {
+    Deploy::player = std::move(player);
+}
+
+const shared_ptr<Territory> &Deploy::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Deploy::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Deploy::targetTerritory = targetTerritory;
+}
+
+int Deploy::getDeployedArmies() const {
+    return deployedArmies;
+}
+
+void Deploy::setDeployedArmies(int deployedArmies) {
+    Deploy::deployedArmies = deployedArmies;
 }
 
 // Advance

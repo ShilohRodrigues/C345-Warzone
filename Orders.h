@@ -3,8 +3,13 @@
 
 #include <iostream>
 #include <list>
+#include "Player.h"
+#include "Map.h"
 
 using namespace std;
+
+class Player;
+class Territory;
 
 // superclass order
 class Order {
@@ -35,12 +40,29 @@ private:
 class Deploy : public Order {
 public:
     Deploy();
+    Deploy(const unique_ptr<Player>& player,
+           const shared_ptr<Territory>& targetTerritory,
+           const int deployedArmies);
     Deploy(const Deploy& deploy);
     Deploy& operator=(const Deploy& deploy);
     friend ostream& operator<<(ostream& os, const Deploy& deploy);
 
     bool validate() override;
     void execute() override;
+
+    const unique_ptr<Player> &getPlayer() const;
+    void setPlayer(unique_ptr<Player> &player);
+
+    const shared_ptr<Territory> &getTargetTerritory() const;
+    void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
+
+    int getDeployedArmies() const;
+    void setDeployedArmies(int deployedArmies);
+
+private:
+    unique_ptr<Player> player;
+    shared_ptr<Territory> targetTerritory;
+    int deployedArmies;
 };
 
 class Advance : public Order {
@@ -123,5 +145,6 @@ private:
 };
 
 void ordersDemo1();
+void ordersDemo2();
 
 #endif // ORDERS_H
