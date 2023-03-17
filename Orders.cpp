@@ -164,6 +164,13 @@ ostream& operator<<(ostream& os, const Advance& advance) {
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the source territory belongs to the player issuing the order
+ * 2) the target territory is adjacent to the source territory
+ * 3) the player issuing the order has enough armies to advance
+ * @return
+ */
 bool Advance::validate()  {
     cout << "advance order validated\n";
 
@@ -173,6 +180,39 @@ bool Advance::validate()  {
 void Advance::execute() {
     // logic to be implemented in later assignments
     cout << "advance order executed\n";
+}
+
+// getters and setters
+const shared_ptr<Player> &Advance::getPlayer() const {
+    return player;
+}
+
+void Advance::setPlayer(const shared_ptr<Player> &player) {
+    Advance::player = player;
+}
+
+const shared_ptr<Territory> &Advance::getSourceTerritory() const {
+    return sourceTerritory;
+}
+
+void Advance::setSourceTerritory(const shared_ptr<Territory> &sourceTerritory) {
+    Advance::sourceTerritory = sourceTerritory;
+}
+
+const shared_ptr<Territory> &Advance::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Advance::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Advance::targetTerritory = targetTerritory;
+}
+
+int Advance::getAdvanceArmies() const {
+    return advanceArmies;
+}
+
+void Advance::setAdvanceArmies(int advanceArmies) {
+    Advance::advanceArmies = advanceArmies;
 }
 
 // Bomb
