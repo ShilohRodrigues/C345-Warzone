@@ -183,8 +183,8 @@ bool Advance::validate()  {
         return false;
     }
     // TODO: check adjacency
-    if (player->getReinforcementPool() < advanceArmies) {
-        // player doesn't have enough armies
+    if (*sourceTerritory->getArmyCnt() < advanceArmies) {
+        // player doesn't have enough armies on the source territory
         return false;
     }
     return true;
