@@ -243,20 +243,33 @@ void Advance::attack() {
     mt19937 generator(randomDevice());
     uniform_int_distribution<int> distribution(0,99);
 
+    // decide which army goes first
+    bool attackersGoFirst = distribution(generator) < 50;
+
     // attack loop
     while (attackingArmies > 0 && defendingArmies > 0) {
-        // decide which army goes
-        bool attackersTurn = distribution(generator) < 50;
-        if (attackersTurn) {
+        if (attackersGoFirst) {
             if (distribution(generator) < 60) {
                 // killChance falls within the 60% chance of killing one defending army unit
                 defendingArmies--;
             }
+            if (defendingArmies != 0) {
+                // defenders go now
+                if (distribution(generator) < 70) {
+                    // killChance falls within the 70% chance of killing one attacking army unit
+                    attackingArmies--;
+                }
+            }
         } else {
-            // defenders roll first
+            // defenders go first
             if (distribution(generator) < 70) {
-                // killChance falls within the 70% chance of killing one attacking army unit
                 attackingArmies--;
+            }
+            if (attackingArmies != 0) {
+                // attackers go now
+                if (distribution(generator) < 60) {
+                    defendingArmies--;
+                }
             }
         }
     }
