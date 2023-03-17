@@ -13,11 +13,19 @@ Player::Player():
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {}
 
-// parameterized constructor (for testing)
+// parameterized constructors (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
     name("Player" + to_string(++nextID)),
     armyCount(3),
     reinforcementPool(3),
+    territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
+    cardHand(make_unique<Hand>()),
+    ordersList(make_unique<OrdersList>()) {}
+
+Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Territory>>& territories):
+    name("Player" + to_string(++nextID)),
+    armyCount(armyCount),
+    reinforcementPool(reinforcementPool),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {}

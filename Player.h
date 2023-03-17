@@ -15,6 +15,7 @@ public:
     // default constructor
     Player();
     explicit Player(const vector<shared_ptr<Territory>>& territories);
+    Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Territory>>& territories);
     // copy constructor
     Player(const Player& player);
     // assignment operator
