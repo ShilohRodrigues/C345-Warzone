@@ -81,7 +81,7 @@ ostream& operator<<(ostream& os, const Deploy& deploy) {
  */
 bool Deploy::validate()  {
     if (player && targetTerritory) {
-        if ((player->getName() == targetTerritory->getName())
+        if ((player->getName() == *targetTerritory->getPlayerInPossession())
             && (player->getReinforcementPool() >= this->deployedArmies)) {
             return true;
         }
