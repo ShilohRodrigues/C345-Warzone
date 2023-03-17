@@ -45,7 +45,7 @@ void Order::setNextId(int nextId) {
 
 // Deploy
 Deploy::Deploy():Order() {}
-Deploy::Deploy(const unique_ptr<Player>& player,
+Deploy::Deploy(const shared_ptr<Player>& player,
                const shared_ptr<Territory>& targetTerritory,
                const int deployedArmies):
     player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
@@ -98,7 +98,8 @@ void Deploy::execute() {
     if (validate()) {
         // add deployed armies to existing armies
         int updatedArmies = *targetTerritory->getArmyCnt() + deployedArmies;
-        targetTerritory->setArmyCnt(make_unique<int>(updatedArmies));
+        auto updatedArmiesPtr = make_unique<int>(updatedArmies);
+        targetTerritory->setArmyCnt(updatedArmiesPtr);
 
         // remove deployed armies from the player's reinforcement pool
         player->setReinforcementPool(player->getReinforcementPool() - deployedArmies);
@@ -108,12 +109,12 @@ void Deploy::execute() {
 }
 
 // getters and setters
-const unique_ptr<Player> &Deploy::getPlayer() const {
+const shared_ptr<Player> &Deploy::getPlayer() const {
     return player;
 }
 
-void Deploy::setPlayer(unique_ptr<Player> &player) {
-    Deploy::player = std::move(player);
+void Deploy::setPlayer(const shared_ptr<Player> &player) {
+    Deploy::player = player;
 }
 
 const shared_ptr<Territory> &Deploy::getTargetTerritory() const {

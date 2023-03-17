@@ -40,7 +40,7 @@ private:
 class Deploy : public Order {
 public:
     Deploy();
-    Deploy(const unique_ptr<Player>& player,
+    Deploy(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory,
            const int deployedArmies);
     Deploy(const Deploy& deploy);
@@ -50,8 +50,8 @@ public:
     bool validate() override;
     void execute() override;
 
-    const unique_ptr<Player> &getPlayer() const;
-    void setPlayer(unique_ptr<Player> &player);
+    const shared_ptr<Player> &getPlayer() const;
+    void setPlayer(const shared_ptr<Player> &player);
 
     const shared_ptr<Territory> &getTargetTerritory() const;
     void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
@@ -60,7 +60,7 @@ public:
     void setDeployedArmies(int deployedArmies);
 
 private:
-    unique_ptr<Player> player;
+    shared_ptr<Player> player;
     shared_ptr<Territory> targetTerritory;
     int deployedArmies;
 };
