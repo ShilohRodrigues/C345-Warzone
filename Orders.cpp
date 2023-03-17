@@ -238,7 +238,7 @@ void Advance::attack() {
     this->sourceTerritory->setArmyCnt(newSourceArmyPtr);
 
     // attack loop
-    while (attackingArmies > 0 || defendingArmies > 0) {
+    while (attackingArmies > 0 && defendingArmies > 0) {
         // decide army will roll
         bool attackersRollFirst = (rand() % 2 == 0);
         double killChance = (double) rand() / RAND_MAX; // roll
