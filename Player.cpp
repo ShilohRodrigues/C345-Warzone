@@ -20,7 +20,9 @@ Player::Player(const vector<shared_ptr<Territory>>& territories):
     reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()) {}
+    ordersList(make_unique<OrdersList>()) {
+    setTerritories(this->territories);
+}
 
 Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Territory>>& territories):
     name("Player" + to_string(++nextID)),
@@ -28,7 +30,9 @@ Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Ter
     reinforcementPool(reinforcementPool),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()) {}
+    ordersList(make_unique<OrdersList>()) {
+    setTerritories(this->territories)
+}
 
 // copy constructor
 Player::Player(const Player& player) {
@@ -122,7 +126,10 @@ const unique_ptr<vector<shared_ptr<Territory>>> &Player::getTerritories() const 
 }
 
 void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories) {
-    Player::territories = std::move(territories);
+    for (const auto& territory : *territories) {
+        territory->setPlayerInPossession(make_unique<string>(this->name));
+        this->territories->push_back(territory);
+    }
 }
 
 const unique_ptr<OrdersList> &Player::getOrdersList() const {
