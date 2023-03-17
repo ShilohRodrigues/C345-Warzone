@@ -191,6 +191,11 @@ bool Advance::validate()  {
 }
 
 void Advance::execute() {
+    // status report
+    cout << "Trying to advance " << advanceArmies << " armies from " << this->sourceTerritory->getName()
+        << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+        << " to " << this->targetTerritory->getName()
+        << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // check if the target territory is owned by the player issuing the order
         if (*this->sourceTerritory->getPlayerInPossession() == *this->targetTerritory->getPlayerInPossession()) {
@@ -207,13 +212,9 @@ void Advance::execute() {
             // the target territory is owned by another player
             attack();
         }
-        // remove the advanced armies from the player's reinforcement pool
-        int reinforcementPool = this->player->getReinforcementPool();
-        reinforcementPool = reinforcementPool - advanceArmies;
-        this->player->setReinforcementPool(reinforcementPool);
 
         // report outcome
-        cout << "Advance order completed. Target territory status: " << endl << targetTerritory;
+        cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
     }
 }
 
