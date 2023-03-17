@@ -10,11 +10,14 @@
 
 using namespace std;
 
+class OrdersList;
+
 class Player {
 public:
     // default constructor
     Player();
     explicit Player(const vector<shared_ptr<Territory>>& territories);
+    Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Territory>>& territories);
     // copy constructor
     Player(const Player& player);
     // assignment operator
@@ -31,7 +34,6 @@ public:
 
     // getters and setters
     const string &getName() const;
-    void setName(const string &name);
 
     int getArmyCount() const;
     void setArmyCount(int armyCount);
@@ -49,7 +51,8 @@ public:
     void setOrdersList(unique_ptr<OrdersList> &ordersList);
 
 private:
-    string name;
+    static int nextID;
+    const string name;
     int armyCount; // total army count available to the player
     int reinforcementPool; // armies the player can use every turn, decreases as the player uses them, replenishes later
     // player owns a hand of Warzone cards

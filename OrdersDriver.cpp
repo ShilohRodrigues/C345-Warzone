@@ -1,4 +1,6 @@
 #include "Orders.h"
+#include "Player.h"
+#include "Map.h"
 
 using namespace std;
 
@@ -40,4 +42,30 @@ void ordersDemo1() {
     cout << "[move(\"down\", 5) - swapping airlift (5) and negotiate (6)]\n";
     testOrdersList->move("down", 5);
     cout << *testOrdersList << endl;
+}
+
+void ordersDemo2() {
+    // DEPLOY TESTS
+    cout << "-- DEPLOY TESTS --" << endl;
+    auto testTerritoriesDeploy = make_unique<vector<shared_ptr<Territory>>>();
+    auto testDeployTerritory = make_shared<Territory>(0, "deployTerritory", 0, "test", 0);
+    testTerritoriesDeploy->push_back(testDeployTerritory);
+    cout << "Test deploy territory >> " << *testDeployTerritory << endl;
+
+    // create test player
+    auto testPlayerDeploy = make_shared<Player>(3, 3, *testTerritoriesDeploy);
+    cout << "Test player (deploy) >> " << *testPlayerDeploy << endl;
+
+    // valid deploy order
+    cout << "Deploying 3 armies to the test territory:" << endl;
+    auto testDeploy1 =
+            make_unique<Deploy>(testPlayerDeploy, testDeployTerritory, 3);
+    testDeploy1->execute();
+    cout << *testDeployTerritory << endl << *testPlayerDeploy << endl;
+
+    // invalid deploy order
+    cout << "Trying to deploy 1 army to the test territory:" << endl;
+    auto testDeploy2 =
+            make_unique<Deploy>(testPlayerDeploy, testDeployTerritory, 1);
+    testDeploy2->execute();
 }

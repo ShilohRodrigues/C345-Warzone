@@ -49,6 +49,12 @@ public:
     string getName() const; //Name getter
     int getContId() const;
 
+    const unique_ptr<string> &getPlayerInPossession() const;
+    void setPlayerInPossession(unique_ptr<string> &playerInPossession);
+
+    const unique_ptr<int> &getArmyCnt() const;
+    void setArmyCnt(unique_ptr<int> &armyCnt);
+
 };
 
 class Continent {

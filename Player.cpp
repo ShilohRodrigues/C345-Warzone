@@ -2,34 +2,48 @@
 
 using namespace std;
 
+int Player::nextID = 0;
+
 // default constructor
 Player::Player():
-    name("defaultPlayer"),
+    name("Player" + to_string(++nextID)),
     armyCount(3),
     reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>()),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {}
 
-// parameterized constructor (for testing)
+// parameterized constructors (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
-    name("defaultPlayer"),
+    name("Player" + to_string(++nextID)),
     armyCount(3),
     reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()) {}
+    ordersList(make_unique<OrdersList>()) {
+    setTerritories(this->territories);
+}
+
+Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Territory>>& territories):
+    name("Player" + to_string(++nextID)),
+    armyCount(armyCount),
+    reinforcementPool(reinforcementPool),
+    territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
+    cardHand(make_unique<Hand>()),
+    ordersList(make_unique<OrdersList>()) {
+    setTerritories(this->territories);
+}
 
 // copy constructor
-Player::Player(const Player& player) {
-    this->name = player.name;
-    this->armyCount = player.armyCount;
-    this->reinforcementPool = player.reinforcementPool;
+Player::Player(const Player& player):
+    armyCount(player.armyCount),
+    reinforcementPool(player.reinforcementPool),
+    territories(make_unique<vector<shared_ptr<Territory>>>()),
+    cardHand(make_unique<Hand>(*player.cardHand)),
+    ordersList(make_unique<OrdersList>(*player.ordersList)) {
     for (const auto& t: *player.territories) {
         this->territories->push_back(t);
     }
-    this->cardHand = make_unique<Hand>(*player.cardHand);
-    this->ordersList = make_unique<OrdersList>(*player.ordersList);
 }
 
 // assignment operator
@@ -39,7 +53,6 @@ Player& Player::operator=(const Player& player) {
         return *this;
     } else {
         // change data members so that they match
-        this->name = player.name;
         this->armyCount = player.armyCount;
         this->reinforcementPool = player.reinforcementPool;
         territories->clear();
@@ -54,16 +67,15 @@ Player& Player::operator=(const Player& player) {
 
 // stream insertion operator
 ostream& operator<<(ostream& os, const Player& player) {
-    os << "name: " << player.name << endl;
-    os << "armyCount: " << player.armyCount << endl;
+    os << "name: " << player.name << ", ";
+    os << "armyCount: " << player.armyCount << ", ";
     os << "reinforcementPool: " << player.reinforcementPool << endl;
     os << "Territories:\n";
     // make sure territories isn't null before iterating over it
     if (player.territories) {
         for (const auto& t : *player.territories) {
-            os << *t << endl;
+            os << *t;
         }
-        os << endl;
     } else {
         os << "null\n";
     }
@@ -77,10 +89,6 @@ ostream& operator<<(ostream& os, const Player& player) {
 // getters and setters
 const string &Player::getName() const {
     return name;
-}
-
-void Player::setName(const string &name) {
-    Player::name = name;
 }
 
 int Player::getArmyCount() const {
@@ -112,7 +120,13 @@ const unique_ptr<vector<shared_ptr<Territory>>> &Player::getTerritories() const 
 }
 
 void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories) {
-    Player::territories = std::move(territories);
+    if (territories) {
+        this->territories = std::move(territories);
+        for (const auto& territory : *this->territories) {
+            auto playerInPossession = make_unique<string>(this->name);
+            territory->setPlayerInPossession(playerInPossession);
+        }
+    }
 }
 
 const unique_ptr<OrdersList> &Player::getOrdersList() const {
