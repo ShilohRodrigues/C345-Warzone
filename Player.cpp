@@ -31,7 +31,7 @@ Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Ter
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()) {
-    setTerritories(this->territories)
+    setTerritories(this->territories);
 }
 
 // copy constructor
