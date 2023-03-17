@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 #include <algorithm>
+#include <random>
 
 using namespace std;
 
@@ -135,31 +136,190 @@ void Deploy::setDeployedArmies(int deployedArmies) {
 
 // Advance
 Advance::Advance():Order() {}
-Advance::Advance(const Advance& advance):Order() {} // no members to copy for now
+Advance::Advance(const shared_ptr<Player>& player,
+                 const shared_ptr<Territory>& sourceTerritory,
+                 const shared_ptr<Territory>& targetTerritory,
+                 int advanceArmies):
+                 player(player),
+                 sourceTerritory(sourceTerritory), targetTerritory(targetTerritory),
+                 advanceArmies(advanceArmies) {}
+Advance::Advance(const Advance& advance):Order(advance) {
+    this->player = advance.player;
+    this->sourceTerritory = advance.sourceTerritory;
+    this->targetTerritory = advance.targetTerritory;
+    this->advanceArmies = advance.advanceArmies;
+}
 Advance& Advance::operator=(const Advance& advance) {
     if (this == &advance) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = advance.player;
+        this->sourceTerritory = advance.sourceTerritory;
+        this->targetTerritory = advance.targetTerritory;
+        this->advanceArmies = advance.advanceArmies;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Advance& advance) {
     os << static_cast<const Order&>(advance);
-    // no specific member info to return for now
+    os << " - player: " << advance.player->getName();
+    os << " - sourceTerritory: " << advance.sourceTerritory->getName();
+    os << " - targetTerritory: " << advance.targetTerritory->getName();
+    os << " - advanceArmies: " << advance.advanceArmies;
 
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the source territory belongs to the player issuing the order
+ * 2) the target territory is adjacent to the source territory
+ * 3) the player issuing the order has enough armies to advance
+ * @return
+ */
 bool Advance::validate()  {
-    cout << "advance order validated\n";
-
-    return true; // logic to be implemented in later assignments
+    if (*sourceTerritory->getPlayerInPossession() != player->getName()) {
+        // source territory doesn't belong to player issuing the order
+        return false;
+    }
+    // TODO: check adjacency
+    if (*sourceTerritory->getArmyCnt() < advanceArmies) {
+        // player doesn't have enough armies on the source territory
+        return false;
+    }
+    return true;
 }
 
 void Advance::execute() {
-    // logic to be implemented in later assignments
-    cout << "advance order executed\n";
+    // status report
+    cout << "Trying to advance " << advanceArmies << " armies from " << this->sourceTerritory->getName()
+        << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+        << " to " << this->targetTerritory->getName()
+        << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
+    if (validate()) {
+        // check if the target territory is owned by the player issuing the order
+        if (*this->sourceTerritory->getPlayerInPossession() == *this->targetTerritory->getPlayerInPossession()) {
+            int sourceArmies = *this->sourceTerritory->getArmyCnt();
+            int targetArmies = *this->targetTerritory->getArmyCnt();
+            // just move the armies from source to target
+            sourceArmies = sourceArmies - advanceArmies;
+            targetArmies = targetArmies + advanceArmies;
+            auto newSourceArmyPtr = make_unique<int>(sourceArmies);
+            auto newTargetArmyPtr = make_unique<int>(targetArmies);
+            this->sourceTerritory->setArmyCnt(newSourceArmyPtr);
+            this->targetTerritory->setArmyCnt(newTargetArmyPtr);
+        } else {
+            // the target territory is owned by another player
+            attack();
+        }
+
+        // report outcome
+        cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+    }
+}
+
+/**
+ * Attack simulation following these rules:
+ * 1) each attacking unit has a 60% chance of killing one defending army unit
+ * 2) each defending unit has a 70% chance of killing one attacking army unit
+ * 3) if all defending armies are eliminated, the attacker captures the territory
+ * the surviving attacking units occupy the territory and ownership changes
+ * 4) a player receives a card at the end of his turn if they successfully conquered at least one territory
+ * during their turn TODO: discuss how to implement this (4)
+ */
+void Advance::attack() {
+    int sourceArmies = *this->sourceTerritory->getArmyCnt();
+    int attackingArmies = this->advanceArmies;
+    int defendingArmies = *this->targetTerritory->getArmyCnt();
+
+    // move armies out of the source territory
+    sourceArmies = sourceArmies - attackingArmies;
+    auto newSourceArmyPtr = make_unique<int>(sourceArmies);
+    this->sourceTerritory->setArmyCnt(newSourceArmyPtr);
+
+    // set up randomness
+    random_device randomDevice;
+    mt19937 generator(randomDevice());
+    uniform_int_distribution<int> distribution(0,99);
+
+    // decide which army goes first
+    bool attackersGoFirst = distribution(generator) < 50;
+
+    // attack loop
+    while (attackingArmies > 0 && defendingArmies > 0) {
+        if (attackersGoFirst) {
+            if (distribution(generator) < 60) {
+                // killChance falls within the 60% chance of killing one defending army unit
+                defendingArmies--;
+            }
+            if (defendingArmies != 0) {
+                // defenders go now
+                if (distribution(generator) < 70) {
+                    // killChance falls within the 70% chance of killing one attacking army unit
+                    attackingArmies--;
+                }
+            }
+        } else {
+            // defenders go first
+            if (distribution(generator) < 70) {
+                attackingArmies--;
+            }
+            if (attackingArmies != 0) {
+                // attackers go now
+                if (distribution(generator) < 60) {
+                    defendingArmies--;
+                }
+            }
+        }
+    }
+
+    // check who survived
+    if (defendingArmies == 0) {
+        // defeated defenders, proceed to claim the territory
+        auto newOwnerPtr = make_unique<string>(this->player->getName());
+        targetTerritory->setPlayerInPossession(newOwnerPtr);
+        // new army count is now the surviving attackers
+        auto newArmyCountPtr = make_unique<int>(attackingArmies);
+        targetTerritory->setArmyCnt(newArmyCountPtr);
+    } else {
+        // defenders won, no ownership change, update surviving defending armies
+        auto newArmyCountPtr = make_unique<int>(defendingArmies);
+        targetTerritory->setArmyCnt(newArmyCountPtr);
+    }
+}
+
+// getters and setters
+const shared_ptr<Player> &Advance::getPlayer() const {
+    return player;
+}
+
+void Advance::setPlayer(const shared_ptr<Player> &player) {
+    Advance::player = player;
+}
+
+const shared_ptr<Territory> &Advance::getSourceTerritory() const {
+    return sourceTerritory;
+}
+
+void Advance::setSourceTerritory(const shared_ptr<Territory> &sourceTerritory) {
+    Advance::sourceTerritory = sourceTerritory;
+}
+
+const shared_ptr<Territory> &Advance::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Advance::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Advance::targetTerritory = targetTerritory;
+}
+
+int Advance::getAdvanceArmies() const {
+    return advanceArmies;
+}
+
+void Advance::setAdvanceArmies(int advanceArmies) {
+    Advance::advanceArmies = advanceArmies;
 }
 
 // Bomb

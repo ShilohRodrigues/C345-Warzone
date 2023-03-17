@@ -45,7 +45,12 @@ void ordersDemo1() {
 }
 
 void ordersDemo2() {
-    // DEPLOY TESTS
+    deployDemo();
+    advanceDemo();
+}
+
+void deployDemo() {
+    // -- DEPLOY TESTS --
     cout << "-- DEPLOY TESTS --" << endl;
     auto testTerritoriesDeploy = make_unique<vector<shared_ptr<Territory>>>();
     auto testDeployTerritory = make_shared<Territory>(0, "deployTerritory", 0, "test", 0);
@@ -68,4 +73,45 @@ void ordersDemo2() {
     auto testDeploy2 =
             make_unique<Deploy>(testPlayerDeploy, testDeployTerritory, 1);
     testDeploy2->execute();
+}
+
+void advanceDemo() {
+    // -- ADVANCE TESTS --
+    cout << "\n\n-- ADVANCE TESTS --" << endl;
+    // prepare territories
+    auto testAdvanceTerritories = make_unique<vector<shared_ptr<Territory>>>();
+    auto testSourceTerritoryAdvance =
+            make_shared<Territory>(0, "sourceAdvanceTerritory", 0, "test", 4);
+    // one enemy territory
+    auto testTargetEnemyAdvance =
+            make_shared<Territory>(0, "targetAdvanceEnemyTerritory", 0, "EnemyPlayer", 2);
+    // one self-owned territory
+    auto testTargetOwnedAdvance =
+            make_shared<Territory>(0, "targetAdvanceOwnedTerritory", 0, "test", 2);
+    testAdvanceTerritories->push_back(testSourceTerritoryAdvance);
+    testAdvanceTerritories->push_back(testTargetOwnedAdvance);
+
+    // prepare player
+    auto testPlayerAdvance =
+            make_shared<Player>(6, 3, *testAdvanceTerritories);
+
+    // advance to own territory
+    cout << "---- Advancing to own territory ----" << endl;
+    auto advanceToOwnTerritory = make_unique<Advance>(testPlayerAdvance,
+                                                      testSourceTerritoryAdvance,
+                                                      testTargetOwnedAdvance,
+                                                      1);
+    cout << *testPlayerAdvance << endl;
+    advanceToOwnTerritory->execute();
+    cout << *testPlayerAdvance << endl;
+
+    // advancing to enemy territory
+    cout << "---- Advancing to enemy territory ----" << endl;
+    auto advanceToEnemyTerritory = make_unique<Advance>(testPlayerAdvance,
+                                                        testSourceTerritoryAdvance,
+                                                        testTargetEnemyAdvance,
+                                                        3);
+    cout << *testPlayerAdvance << endl;
+    advanceToEnemyTerritory->execute();
+    cout << *testPlayerAdvance << endl;
 }
