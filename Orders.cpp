@@ -172,9 +172,14 @@ ostream& operator<<(ostream& os, const Advance& advance) {
  * @return
  */
 bool Advance::validate()  {
-    cout << "advance order validated\n";
-
-    return true; // logic to be implemented in later assignments
+    if (*sourceTerritory->getPlayerInPossession() != player->getName()) {
+        return false;
+    }
+    // TODO: check adjacency
+    if (player->getReinforcementPool() < advanceArmies) {
+        return false;
+    }
+    return true;
 }
 
 void Advance::execute() {
