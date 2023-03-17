@@ -70,7 +70,8 @@ public:
     Advance();
     Advance(const shared_ptr<Player>& player,
             const shared_ptr<Territory>& sourceTerritory,
-            const shared_ptr<Territory>& targetTerritory);
+            const shared_ptr<Territory>& targetTerritory,
+            int advanceArmies);
     Advance(const Advance& advance);
     Advance& operator=(const Advance& advance);
     friend ostream& operator<<(ostream& os, const Advance& advance);

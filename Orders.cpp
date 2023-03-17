@@ -137,12 +137,16 @@ void Deploy::setDeployedArmies(int deployedArmies) {
 Advance::Advance():Order() {}
 Advance::Advance(const shared_ptr<Player>& player,
                  const shared_ptr<Territory>& sourceTerritory,
-                 const shared_ptr<Territory>& targetTerritory):
-                 player(player), sourceTerritory(sourceTerritory), targetTerritory(targetTerritory) {}
+                 const shared_ptr<Territory>& targetTerritory,
+                 int advanceArmies):
+                 player(player),
+                 sourceTerritory(sourceTerritory), targetTerritory(targetTerritory),
+                 advanceArmies(advanceArmies) {}
 Advance::Advance(const Advance& advance):Order(advance) {
     this->player = advance.player;
     this->sourceTerritory = advance.sourceTerritory;
     this->targetTerritory = advance.targetTerritory;
+    this->advanceArmies = advance.advanceArmies;
 }
 Advance& Advance::operator=(const Advance& advance) {
     if (this == &advance) {
@@ -151,6 +155,7 @@ Advance& Advance::operator=(const Advance& advance) {
         this->player = advance.player;
         this->sourceTerritory = advance.sourceTerritory;
         this->targetTerritory = advance.targetTerritory;
+        this->advanceArmies = advance.advanceArmies;
 
         return *this;
     }
@@ -160,6 +165,7 @@ ostream& operator<<(ostream& os, const Advance& advance) {
     os << " - player: " << advance.player->getName();
     os << " - sourceTerritory: " << advance.sourceTerritory->getName();
     os << " - targetTerritory: " << advance.targetTerritory->getName();
+    os << " - advanceArmies: " << advance.advanceArmies;
 
     return os;
 }
