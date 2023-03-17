@@ -120,10 +120,12 @@ const unique_ptr<vector<shared_ptr<Territory>>> &Player::getTerritories() const 
 }
 
 void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories) {
-    for (const auto& territory : *territories) {
-        auto playerInPossession = make_unique<string>(this->name);
-        territory->setPlayerInPossession(playerInPossession);
-        this->territories->push_back(territory);
+    if (territories) {
+        this->territories = std::move(territories);
+        for (const auto& territory : *this->territories) {
+            auto playerInPossession = make_unique<string>(this->name);
+            territory->setPlayerInPossession(playerInPossession);
+        }
     }
 }
 
