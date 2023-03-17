@@ -183,8 +183,62 @@ bool Advance::validate()  {
 }
 
 void Advance::execute() {
-    // logic to be implemented in later assignments
-    cout << "advance order executed\n";
+    if (validate()) {
+        attack();
+    }
+}
+
+/**
+ * Attack simulation following these rules:
+ * 1) each attacking unit has a 60% chance of killing one defending army unit
+ * 2) each defending unit has a 70% chance of killing one attacking army unit
+ * 3) if all defending armies are eliminated, the attacker captures the territory
+ * the surviving attacking units occupy the territory and ownership changes
+ * 4) a player receives a card at the end of his turn if they successfully conquered at least one territory
+ * during their turn TODO: discuss how to implement this (4)
+ */
+void Advance::attack() {
+    int sourceArmies = *this->sourceTerritory->getArmyCnt();
+    int attackingArmies = this->advanceArmies;
+    int defendingArmies = *this->targetTerritory->getArmyCnt();
+
+    // move armies out of the source territory
+    sourceArmies = sourceArmies - attackingArmies;
+    auto newSourceArmyPtr = make_unique<int>(sourceArmies);
+    this->sourceTerritory->setArmyCnt(newSourceArmyPtr);
+
+    // attack loop
+    while (attackingArmies > 0 || defendingArmies > 0) {
+        // decide army will roll
+        bool attackersRollFirst = (rand() % 2 == 0);
+        double killChance = (double) rand() / RAND_MAX; // roll
+        if (attackersRollFirst) {
+            if (killChance <= 0.6) {
+                // killChance falls within the 60% chance of killing one defending army unit
+                defendingArmies--;
+            }
+        } else {
+            // defenders roll first
+            if (killChance <= 0.7) {
+                // killChance falls within the 70% chance of killing one attacking army unit
+                attackingArmies--;
+            }
+        }
+    }
+
+    // check who survived
+    if (defendingArmies == 0) {
+        // defeated defenders, proceed to claim the territory
+        auto newOwnerPtr = make_unique<string>(this->player->getName());
+        targetTerritory->setPlayerInPossession(newOwnerPtr);
+        // new army count is now the surviving attackers
+        auto newArmyCountPtr = make_unique<int>(attackingArmies);
+        targetTerritory->setArmyCnt(newArmyCountPtr);
+    } else {
+        // defenders won, no ownership change, update surviving defending armies
+        auto newArmyCountPtr = make_unique<int>(defendingArmies);
+        targetTerritory->setArmyCnt(newArmyCountPtr);
+    }
 }
 
 // getters and setters
