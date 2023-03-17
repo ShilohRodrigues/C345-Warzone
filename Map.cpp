@@ -1,6 +1,7 @@
 #include "Map.h"
 
 #include <utility>
+#include <regex>
 
 //Custom hashing function
 size_t MyHash::operator()(Territory const& t) const noexcept {
@@ -298,9 +299,13 @@ void MapLoader::loadMap(Map& mp, const string& path) {
 
     string line = " ";
     while (getline(mapFile, line)) {
+        line = std::regex_replace(line, std::regex(R"(\r\n|\r|\n)"), "");
         if (line == "[continents]") {
-
             while (getline(mapFile, line) && !line.empty()) {
+                line = std::regex_replace(line, std::regex(R"(\r\n|\r|\n)"), "");
+                if (line.empty()) {
+                    break;
+                }
                 //Split the line into the ID and the Name
                 vector<string> sLine = split(line, ' ');
                 string name = sLine[0];
@@ -312,6 +317,10 @@ void MapLoader::loadMap(Map& mp, const string& path) {
 
         if (line == "[countries]") {
             while (getline(mapFile, line) && !line.empty()) {
+                line = std::regex_replace(line, std::regex(R"(\r\n|\r|\n)"), "");
+                if (line.empty()) {
+                    break;
+                }
                 //Split the line into the ID and the Name
                 vector<string> sLine = split(line, ' ');
                 int id = stoi(sLine[0]);
@@ -325,6 +334,10 @@ void MapLoader::loadMap(Map& mp, const string& path) {
 
         if (line == "[borders]") {
             while (getline(mapFile, line) && !line.empty()) {
+                line = std::regex_replace(line, std::regex(R"(\r\n|\r|\n)"), "");
+                if (line.empty()) {
+                    break;
+                }
                 //Split the line into separate country ids
                 vector<string> sLine = split(line, ' ');
                 //ERROR STARTING HERE
