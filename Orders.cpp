@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 #include <algorithm>
+#include <random>
 
 using namespace std;
 
@@ -237,19 +238,23 @@ void Advance::attack() {
     auto newSourceArmyPtr = make_unique<int>(sourceArmies);
     this->sourceTerritory->setArmyCnt(newSourceArmyPtr);
 
+    // set up randomness
+    random_device randomDevice;
+    mt19937 generator(randomDevice());
+    uniform_int_distribution<int> distribution(0,99);
+
     // attack loop
     while (attackingArmies > 0 && defendingArmies > 0) {
-        // decide army will roll
-        bool attackersRollFirst = (rand() % 2 == 0);
-        double killChance = (double) rand() / RAND_MAX; // roll
-        if (attackersRollFirst) {
-            if (killChance <= 0.6) {
+        // decide which army goes
+        bool attackersTurn = distribution(generator) < 50;
+        if (attackersTurn) {
+            if (distribution(generator) < 60) {
                 // killChance falls within the 60% chance of killing one defending army unit
                 defendingArmies--;
             }
         } else {
             // defenders roll first
-            if (killChance <= 0.7) {
+            if (distribution(generator) < 70) {
                 // killChance falls within the 70% chance of killing one attacking army unit
                 attackingArmies--;
             }
