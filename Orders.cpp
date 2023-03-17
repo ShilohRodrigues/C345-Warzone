@@ -173,10 +173,12 @@ ostream& operator<<(ostream& os, const Advance& advance) {
  */
 bool Advance::validate()  {
     if (*sourceTerritory->getPlayerInPossession() != player->getName()) {
+        // source territory doesn't belong to player issuing the order
         return false;
     }
     // TODO: check adjacency
     if (player->getReinforcementPool() < advanceArmies) {
+        // player doesn't have enough armies
         return false;
     }
     return true;
@@ -184,7 +186,28 @@ bool Advance::validate()  {
 
 void Advance::execute() {
     if (validate()) {
-        attack();
+        // check if the target territory is owned by the player issuing the order
+        if (*this->sourceTerritory->getPlayerInPossession() == *this->targetTerritory->getPlayerInPossession()) {
+            int sourceArmies = *this->sourceTerritory->getArmyCnt();
+            int targetArmies = *this->targetTerritory->getArmyCnt();
+            // just move the armies from source to target
+            sourceArmies = sourceArmies - advanceArmies;
+            targetArmies = targetArmies + advanceArmies;
+            auto newSourceArmyPtr = make_unique<int>(sourceArmies);
+            auto newTargetArmyPtr = make_unique<int>(targetArmies);
+            this->sourceTerritory->setArmyCnt(newSourceArmyPtr);
+            this->targetTerritory->setArmyCnt(newTargetArmyPtr);
+        } else {
+            // the target territory is owned by another player
+            attack();
+        }
+        // remove the advanced armies from the player's reinforcement pool
+        int reinforcementPool = this->player->getReinforcementPool();
+        reinforcementPool = reinforcementPool - advanceArmies;
+        this->player->setReinforcementPool(reinforcementPool);
+
+        // report outcome
+        cout << "Advance order completed. Target territory status: " << endl << targetTerritory;
     }
 }
 
