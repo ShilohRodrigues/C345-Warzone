@@ -45,6 +45,11 @@ void ordersDemo1() {
 }
 
 void ordersDemo2() {
+    deployDemo();
+    advanceDemo();
+}
+
+void deployDemo() {
     // -- DEPLOY TESTS --
     cout << "-- DEPLOY TESTS --" << endl;
     auto testTerritoriesDeploy = make_unique<vector<shared_ptr<Territory>>>();
@@ -68,7 +73,9 @@ void ordersDemo2() {
     auto testDeploy2 =
             make_unique<Deploy>(testPlayerDeploy, testDeployTerritory, 1);
     testDeploy2->execute();
+}
 
+void advanceDemo() {
     // -- ADVANCE TESTS --
     cout << "\n\n-- ADVANCE TESTS --" << endl;
     // prepare territories
@@ -101,9 +108,9 @@ void ordersDemo2() {
     // advancing to enemy territory
     cout << "---- Advancing to enemy territory ----" << endl;
     auto advanceToEnemyTerritory = make_unique<Advance>(testPlayerAdvance,
-                                                      testSourceTerritoryAdvance,
-                                                      testTargetEnemyAdvance,
-                                                      1);
+                                                        testSourceTerritoryAdvance,
+                                                        testTargetEnemyAdvance,
+                                                        3);
     cout << *testPlayerAdvance << endl;
     advanceToEnemyTerritory->execute();
     cout << *testPlayerAdvance << endl;

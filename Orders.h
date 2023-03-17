@@ -170,5 +170,7 @@ private:
 
 void ordersDemo1();
 void ordersDemo2();
+void deployDemo();
+void advanceDemo();
 
 #endif // ORDERS_H
