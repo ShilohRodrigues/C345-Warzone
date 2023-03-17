@@ -10,6 +10,8 @@
 
 using namespace std;
 
+class OrdersList;
+
 class Player {
 public:
     // default constructor
@@ -32,7 +34,6 @@ public:
 
     // getters and setters
     const string &getName() const;
-    void setName(const string &name);
 
     int getArmyCount() const;
     void setArmyCount(int armyCount);
