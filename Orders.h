@@ -42,7 +42,7 @@ public:
     Deploy();
     Deploy(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory,
-           const int deployedArmies);
+           int deployedArmies);
     Deploy(const Deploy& deploy);
     Deploy& operator=(const Deploy& deploy);
     friend ostream& operator<<(ostream& os, const Deploy& deploy);
@@ -68,12 +68,22 @@ private:
 class Advance : public Order {
 public:
     Advance();
+    Advance(const shared_ptr<Player>& player,
+            const shared_ptr<Territory>& sourceTerritory,
+            const shared_ptr<Territory>& targetTerritory);
     Advance(const Advance& advance);
     Advance& operator=(const Advance& advance);
     friend ostream& operator<<(ostream& os, const Advance& advance);
 
     bool validate() override;
     void execute() override;
+
+    void attack();
+
+private:
+    shared_ptr<Player> player;
+    shared_ptr<Territory> sourceTerritory;
+    shared_ptr<Territory> targetTerritory;
 };
 
 class Bomb : public Order {

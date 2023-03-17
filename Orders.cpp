@@ -135,18 +135,31 @@ void Deploy::setDeployedArmies(int deployedArmies) {
 
 // Advance
 Advance::Advance():Order() {}
-Advance::Advance(const Advance& advance):Order() {} // no members to copy for now
+Advance::Advance(const shared_ptr<Player>& player,
+                 const shared_ptr<Territory>& sourceTerritory,
+                 const shared_ptr<Territory>& targetTerritory):
+                 player(player), sourceTerritory(sourceTerritory), targetTerritory(targetTerritory) {}
+Advance::Advance(const Advance& advance):Order(advance) {
+    this->player = advance.player;
+    this->sourceTerritory = advance.sourceTerritory;
+    this->targetTerritory = advance.targetTerritory;
+}
 Advance& Advance::operator=(const Advance& advance) {
     if (this == &advance) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = advance.player;
+        this->sourceTerritory = advance.sourceTerritory;
+        this->targetTerritory = advance.targetTerritory;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Advance& advance) {
     os << static_cast<const Order&>(advance);
-    // no specific member info to return for now
+    os << " - player: " << advance.player->getName();
+    os << " - sourceTerritory: " << advance.sourceTerritory->getName();
+    os << " - targetTerritory: " << advance.targetTerritory->getName();
 
     return os;
 }
