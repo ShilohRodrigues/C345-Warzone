@@ -61,7 +61,7 @@ void ordersDemo2() {
     auto testDeploy1 =
             make_unique<Deploy>(testPlayerDeploy1, testDeployTerritory, 3);
     testDeploy1->execute();
-    cout << testDeployTerritory << endl << *testPlayerDeploy1 << endl;
+    cout << *testDeployTerritory << endl << *testPlayerDeploy1 << endl;
 
     // invalid deploy order
     cout << "Trying to deploy 1 army to the test territory:" << endl;
