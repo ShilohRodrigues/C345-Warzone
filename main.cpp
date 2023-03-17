@@ -11,6 +11,8 @@ int main() {
 //    gameEngineDemo1();
 //    ordersDemo1();
 //    playerDemo1();
-    mapDemo1();
+//    mapDemo1();
+
+ordersDemo2();
 
 }
