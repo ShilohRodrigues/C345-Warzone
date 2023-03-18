@@ -47,6 +47,7 @@ void ordersDemo1() {
 void ordersDemo2() {
     deployDemo();
     advanceDemo();
+    airliftDemo();
 }
 
 void deployDemo() {
@@ -114,4 +115,8 @@ void advanceDemo() {
     cout << *testPlayerAdvance << endl;
     advanceToEnemyTerritory->execute();
     cout << *testPlayerAdvance << endl;
+}
+
+void airliftDemo() {
+
 }
