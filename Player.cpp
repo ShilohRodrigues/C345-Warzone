@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -181,4 +182,18 @@ void Player::issueOrder() {
     ordersList->add(testOrder);
 }
 
+void Player::addTerritory(const shared_ptr<Territory>& territory) {
+    this->territories->push_back(territory);
+}
 
+void Player::removeTerritory(const shared_ptr<Territory>& territory) {
+    auto iterator = find_if(this->territories->begin(), this->territories->end(),
+                            [territory](const shared_ptr<Territory>& t) {
+        return t->getId() == territory->getId();
+    });
+
+    if (iterator != this->territories->end()) {
+        // element is found
+        this->territories->erase(iterator);
+    }
+}
