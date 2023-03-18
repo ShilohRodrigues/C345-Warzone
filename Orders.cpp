@@ -216,6 +216,8 @@ void Advance::execute() {
 
         // report outcome
         cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+    } else {
+        cout << "Invalid advance order. Could not complete." << endl;
     }
 }
 
@@ -417,7 +419,9 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
 }
 
 /**
- * Check if the source and target territories belong to the player issuing the order.
+ * Check if:
+ * 1) the source and target territories belong to the player issuing the order
+ * 2) the source territory has the required armies
  * TODO: ensure airlift order can only be created by playing the airlift card
  * @return whether the order is valid or not
  */
@@ -427,12 +431,22 @@ bool Airlift::validate()  {
         return false;
     }
 
-    return true; // logic to be implemented in later assignments
+    if (*this->sourceTerritory->getArmyCnt() < this->airliftArmies) {
+        // source territory doesn't have enough armies
+        return false;
+    }
+
+    return true;
 }
 
+/**
+ * Moves desired armies from a source to target territory without them needing to be adjacent.
+ */
 void Airlift::execute() {
-    // logic to be implemented in later assignments
-    cout << "airlift order executed\n";
+    if (validate()) {
+        int sourceArmies = *this->sourceTerritory->getArmyCnt();
+        int targetArmies = *this->targetTerritory->getArmyCnt();
+    }
 }
 
 // Negotiate
