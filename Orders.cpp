@@ -452,9 +452,33 @@ bool Blockade::validate()  {
     return true;
 }
 
+/**
+ * Doubles the number number of armies on the territory and transfer the ownership
+ * to the Neutral player.
+ * TODO: ensure the blockade order can only be created by playing the blockade card
+ */
 void Blockade::execute() {
-    // logic to be implemented in later assignments
-    cout << "blockade order executed\n";
+    if (validate()) {
+        // status report
+        cout << "Trying to blockade the territory:" << endl;
+        cout << *this->targetTerritory;
+        // double the number of armies on the territory
+        int targetArmies = *this->targetTerritory->getArmyCnt();
+        targetArmies = targetArmies * 2;
+        auto newTargetArmiesPtr = make_unique<int>(targetArmies);
+        this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
+
+        // transfer ownership to the Neutral player
+        string neutralPlayerName = *this->targetTerritory->getPlayerInPossession();
+        auto neutralPlayerNamePtr = make_unique<string>(neutralPlayerName);
+        this->targetTerritory->setPlayerInPossession(neutralPlayerNamePtr);
+
+        // update report
+        cout << "Successfully blockaded the territory:" << endl;
+        cout << *this->targetTerritory;
+    } else {
+        cout << "Invalid blockade order. Could not execute." << endl;
+    }
 }
 
 // getters and setters
@@ -638,7 +662,7 @@ OrdersList::OrdersList():orderList(make_unique<list<shared_ptr<Order>>>()) {}
 // copy constructor
 OrdersList::OrdersList(const OrdersList& ordersList) {
     for (const auto& order : *ordersList.orderList) {
-        // TODO: check if deep copy?
+        // shallow copy
         this->orderList->push_back(order);
     }
 }
@@ -650,7 +674,7 @@ OrdersList& OrdersList::operator=(const OrdersList& ordersList) {
         // make sure we're not iterating over a nullptr
         if (ordersList.orderList) {
             for (const auto& order : *ordersList.orderList) {
-                // TODO: check if deep copy?
+                // shallow copy
                 this->orderList->push_back(order);
             }
         }
