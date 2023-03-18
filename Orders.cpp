@@ -350,12 +350,27 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target does not belong to the player issuing the order
+ * 2) the target territory is adjacent to one of the territories owned
+ * by the player issuing the order
+ * @return whether or not the order is valid
+ */
 bool Bomb::validate()  {
-    cout << "bomb order validated\n";
+    if (*this->targetTerritory->getPlayerInPossession() == this->player->getName()) {
+        // can't bomb own territory
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    // TODO: check adjacency to any player-owned territory
+
+    return true;
 }
 
+/**
+ * Removes half of the armies on the target territory.
+ */
 void Bomb::execute() {
     // logic to be implemented in later assignments
     cout << "bomb order executed\n";
