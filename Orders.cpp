@@ -457,10 +457,10 @@ bool Blockade::validate()  {
  * TODO: ensure the blockade order can only be created by playing the blockade card
  */
 void Blockade::execute() {
+    // status report
+    cout << "Trying to blockade the territory:" << endl;
+    cout << *this->targetTerritory;
     if (validate()) {
-        // status report
-        cout << "Trying to blockade the territory:" << endl;
-        cout << *this->targetTerritory;
         // double the number of armies on the territory
         int targetArmies = *this->targetTerritory->getArmyCnt();
         targetArmies = targetArmies * 2;
