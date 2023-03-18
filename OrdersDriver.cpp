@@ -49,6 +49,7 @@ void ordersDemo2() {
     advanceDemo();
     airliftDemo();
     bombDemo();
+    blockadeDemo();
 }
 
 void deployDemo() {
@@ -196,4 +197,31 @@ void bombDemo() {
                                               testTargetBomb);
     cout << *testPlayerBomb << endl;
     bombEnemyTerritory->execute();
+}
+
+void blockadeDemo() {
+    // -- BLOCKADE TESTS --
+    cout << "\n\n-- BLOCKADE TESTS --" << endl;
+    // prepare territories
+    auto testBlockadeTerritories = make_unique<vector<shared_ptr<Territory>>>();
+    auto testOwnBlockade =
+            make_shared<Territory>(0, "targetOwnBlockade", 0, "test", 2);
+    testBlockadeTerritories->push_back(testOwnBlockade);
+
+    // prepare player
+    auto testPlayerBlockade =
+            make_shared<Player>(2, 3, *testBlockadeTerritories);
+    auto neutralPlayer = make_shared<Player>();
+
+    // blockade own territory
+    cout << "---- Blockade own territory ----" << endl;
+    auto blockadeOrder = make_unique<Blockade>(testPlayerBlockade, neutralPlayer,
+                                               testOwnBlockade);
+    cout << *testPlayerBlockade << endl;
+    blockadeOrder->execute();
+    cout << *testPlayerBlockade << endl;
+
+    // blockade not owned territory
+    cout << "---- Blockade not owned territory ----" << endl;
+    blockadeOrder->execute(); // blockading again, but now it's owned by the neutral player
 }
