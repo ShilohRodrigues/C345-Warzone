@@ -444,8 +444,21 @@ bool Airlift::validate()  {
  */
 void Airlift::execute() {
     if (validate()) {
+        // update source and target army counts
         int sourceArmies = *this->sourceTerritory->getArmyCnt();
         int targetArmies = *this->targetTerritory->getArmyCnt();
+        sourceArmies = sourceArmies - airliftArmies;
+        targetArmies = targetArmies + airliftArmies;
+
+        // create pointers to the new counts
+        auto newSourceArmiesPtr = make_unique<int>(sourceArmies);
+        auto newTargetArmiesPtr = make_unique<int>(targetArmies);
+
+        // change source and target army count pointers to the new counts
+        this->sourceTerritory->setArmyCnt(newSourceArmiesPtr);
+        this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
+    } else {
+        cout << "Invalid airlift order. Could not complete." << endl;
     }
 }
 
