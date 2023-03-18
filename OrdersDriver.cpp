@@ -127,7 +127,7 @@ void airliftDemo() {
     auto testTargetOwnedAirlift =
             make_shared<Territory>(0, "targetAirliftOwned", 0, "test", 2);
     auto testTargetEnemyAirlift =
-            make_shared<Territory>(0, "targetAirliftEnemy", 0, "test", 2);
+            make_shared<Territory>(0, "targetAirliftEnemy", 0, "Enemy", 2);
     testAirliftTerritories->push_back(testSourceTerritoryAirlift);
     testAirliftTerritories->push_back(testTargetOwnedAirlift);
 
@@ -152,7 +152,7 @@ void airliftDemo() {
                                                       testTargetEnemyAirlift,
                                                       1);
     cout << *testPlayerAirlift << endl;
-    airliftToOwnTerritory->execute();
+    airliftToEnemyTerritory->execute();
     cout << *testPlayerAirlift << endl;
 
     // airlift without enough armies
