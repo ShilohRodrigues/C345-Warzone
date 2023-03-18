@@ -326,12 +326,20 @@ void Advance::setAdvanceArmies(int advanceArmies) {
 
 // Bomb
 Bomb::Bomb():Order() {}
-Bomb::Bomb(const Bomb& bomb):Order() {} // no members to copy for now
+Bomb::Bomb(const shared_ptr<Player>& player,
+           const shared_ptr<Territory>& targetTerritory):
+           player(player), targetTerritory(targetTerritory) {}
+Bomb::Bomb(const Bomb& bomb):Order(bomb) {
+    this->player = bomb.player;
+    this->targetTerritory = bomb.targetTerritory;
+}
 Bomb& Bomb::operator=(const Bomb& bomb) {
     if (this == &bomb) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = bomb.player;
+        this->targetTerritory = bomb.targetTerritory;
+
         return *this;
     }
 }
@@ -351,6 +359,22 @@ bool Bomb::validate()  {
 void Bomb::execute() {
     // logic to be implemented in later assignments
     cout << "bomb order executed\n";
+}
+
+const shared_ptr<Player> &Bomb::getPlayer() const {
+    return player;
+}
+
+void Bomb::setPlayer(const shared_ptr<Player> &player) {
+    Bomb::player = player;
+}
+
+const shared_ptr<Territory> &Bomb::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Bomb::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Bomb::targetTerritory = targetTerritory;
 }
 
 // Blockade

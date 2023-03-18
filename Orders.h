@@ -103,12 +103,24 @@ private:
 class Bomb : public Order {
 public:
     Bomb();
+    Bomb(const shared_ptr<Player>& player,
+         const shared_ptr<Territory>& targetTerritory);
     Bomb(const Bomb& bomb);
     Bomb& operator=(const Bomb& bomb);
     friend ostream& operator<<(ostream& os, const Bomb& bomb);
 
     bool validate() override;
     void execute() override;
+
+    const shared_ptr<Player> &getPlayer() const;
+    void setPlayer(const shared_ptr<Player> &player);
+
+    const shared_ptr<Territory> &getTargetTerritory() const;
+    void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
+
+private:
+    shared_ptr<Player> player;
+    shared_ptr<Territory> targetTerritory;
 };
 
 class Blockade : public Order {
