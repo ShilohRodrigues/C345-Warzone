@@ -221,9 +221,11 @@ private:
 
 void ordersDemo1();
 void ordersDemo2();
+
 void deployDemo();
 void advanceDemo();
 void airliftDemo();
 void bombDemo();
+void blockadeDemo();
 
 #endif // ORDERS_H
