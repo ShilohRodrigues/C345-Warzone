@@ -372,8 +372,21 @@ bool Bomb::validate()  {
  * Removes half of the armies on the target territory.
  */
 void Bomb::execute() {
-    // logic to be implemented in later assignments
-    cout << "bomb order executed\n";
+    // status report
+    cout << "Trying to bomb territory:" << endl;
+    cout << *this->targetTerritory;
+    if (validate()) {
+        int targetArmies = *this->targetTerritory->getArmyCnt();
+        targetArmies = targetArmies / 2;
+        auto newTargetArmiesPtr = make_unique<int>(targetArmies);
+        this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
+
+        // update report
+        cout << "Successfully bombed territory:" << endl;
+        cout << *this->targetTerritory;
+    } else {
+        cout << "Invalid bomb order. Could not execute." << endl;
+    }
 }
 
 const shared_ptr<Player> &Bomb::getPlayer() const {
