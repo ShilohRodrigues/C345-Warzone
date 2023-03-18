@@ -207,5 +207,6 @@ void ordersDemo2();
 void deployDemo();
 void advanceDemo();
 void airliftDemo();
+void bombDemo();
 
 #endif // ORDERS_H
