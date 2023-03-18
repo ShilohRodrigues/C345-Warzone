@@ -443,6 +443,11 @@ bool Airlift::validate()  {
  * Moves desired armies from a source to target territory without them needing to be adjacent.
  */
 void Airlift::execute() {
+    // status report
+    cout << "Trying to advance " << airliftArmies << " armies from " << this->sourceTerritory->getName()
+         << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+         << " to " << this->targetTerritory->getName()
+         << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // update source and target army counts
         int sourceArmies = *this->sourceTerritory->getArmyCnt();
@@ -457,6 +462,9 @@ void Airlift::execute() {
         // change source and target army count pointers to the new counts
         this->sourceTerritory->setArmyCnt(newSourceArmiesPtr);
         this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
+
+        // report outcome
+        cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
     } else {
         cout << "Invalid airlift order. Could not complete." << endl;
     }
