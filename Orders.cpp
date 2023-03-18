@@ -279,8 +279,7 @@ void Advance::attack() {
     // check who survived
     if (defendingArmies == 0) {
         // defeated defenders, proceed to claim the territory
-        auto newOwnerPtr = make_unique<string>(this->player->getName());
-        targetTerritory->setPlayerInPossession(newOwnerPtr);
+        this->player->addTerritory(this->targetTerritory);
         // new army count is now the surviving attackers
         auto newArmyCountPtr = make_unique<int>(attackingArmies);
         targetTerritory->setArmyCnt(newArmyCountPtr);
@@ -469,9 +468,7 @@ void Blockade::execute() {
         this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
 
         // transfer ownership to the Neutral player
-        string neutralPlayerName = *this->targetTerritory->getPlayerInPossession();
-        auto neutralPlayerNamePtr = make_unique<string>(neutralPlayerName);
-        this->targetTerritory->setPlayerInPossession(neutralPlayerNamePtr);
+        this->player->removeTerritory(targetTerritory, neutralPlayer);
 
         // update report
         cout << "Successfully blockaded the territory:" << endl;
