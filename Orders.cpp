@@ -470,6 +470,39 @@ void Airlift::execute() {
     }
 }
 
+// getters and setters
+const shared_ptr<Player> &Airlift::getPlayer() const {
+    return player;
+}
+
+void Airlift::setPlayer(const shared_ptr<Player> &player) {
+    Airlift::player = player;
+}
+
+const shared_ptr<Territory> &Airlift::getSourceTerritory() const {
+    return sourceTerritory;
+}
+
+void Airlift::setSourceTerritory(const shared_ptr<Territory> &sourceTerritory) {
+    Airlift::sourceTerritory = sourceTerritory;
+}
+
+const shared_ptr<Territory> &Airlift::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Airlift::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Airlift::targetTerritory = targetTerritory;
+}
+
+int Airlift::getAirliftArmies() const {
+    return airliftArmies;
+}
+
+void Airlift::setAirliftArmies(int airliftArmies) {
+    Airlift::airliftArmies = airliftArmies;
+}
+
 // Negotiate
 Negotiate::Negotiate():Order() {}
 Negotiate::Negotiate(const Negotiate& negotiate):Order() {} // no members to copy for now

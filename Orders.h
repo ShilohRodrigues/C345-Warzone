@@ -136,6 +136,18 @@ public:
     bool validate() override;
     void execute() override;
 
+    const shared_ptr<Player> &getPlayer() const;
+    void setPlayer(const shared_ptr<Player> &player);
+
+    const shared_ptr<Territory> &getSourceTerritory() const;
+    void setSourceTerritory(const shared_ptr<Territory> &sourceTerritory);
+
+    const shared_ptr<Territory> &getTargetTerritory() const;
+    void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
+
+    int getAirliftArmies() const;
+    void setAirliftArmies(int airliftArmies);
+
 private:
     shared_ptr<Player> player;
     shared_ptr<Territory> sourceTerritory;
