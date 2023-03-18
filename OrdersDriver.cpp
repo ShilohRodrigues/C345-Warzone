@@ -48,6 +48,7 @@ void ordersDemo2() {
     deployDemo();
     advanceDemo();
     airliftDemo();
+    bombDemo();
 }
 
 void deployDemo() {
@@ -164,4 +165,35 @@ void airliftDemo() {
     cout << *testPlayerAirlift << endl;
     airliftToOwnTerritory->execute();
     cout << *testPlayerAirlift << endl;
+}
+
+void bombDemo() {
+    // -- BOMB TESTS --
+    cout << "\n\n-- BOMB TESTS --" << endl;
+    // prepare territories
+    auto testBombTerritories = make_unique<vector<shared_ptr<Territory>>>();
+    auto testOwnBomb =
+            make_shared<Territory>(0, "targetOwnBomb", 0, "test", 2);
+    auto testTargetBomb =
+            make_shared<Territory>(0, "targetEnemyBomb", 0, "Enemy", 6);
+    testBombTerritories->push_back(testOwnBomb);
+
+    // prepare player
+    auto testPlayerBomb =
+            make_shared<Player>(2, 3, *testBombTerritories);
+
+    // bomb own territory
+    cout << "---- Bomb own territory ----" << endl;
+    auto bombOwnTerritory = make_unique<Bomb>(testPlayerBomb,
+                                                      testOwnBomb);
+    cout << *testPlayerBomb << endl;
+    bombOwnTerritory->execute();
+    cout << *testPlayerBomb << endl;
+
+    // bomb enemy territory
+    cout << "---- Bomb enemy territory ----" << endl;
+    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
+                                              testTargetBomb);
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
 }

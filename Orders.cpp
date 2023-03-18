@@ -326,12 +326,20 @@ void Advance::setAdvanceArmies(int advanceArmies) {
 
 // Bomb
 Bomb::Bomb():Order() {}
-Bomb::Bomb(const Bomb& bomb):Order() {} // no members to copy for now
+Bomb::Bomb(const shared_ptr<Player>& player,
+           const shared_ptr<Territory>& targetTerritory):
+           player(player), targetTerritory(targetTerritory) {}
+Bomb::Bomb(const Bomb& bomb):Order(bomb) {
+    this->player = bomb.player;
+    this->targetTerritory = bomb.targetTerritory;
+}
 Bomb& Bomb::operator=(const Bomb& bomb) {
     if (this == &bomb) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = bomb.player;
+        this->targetTerritory = bomb.targetTerritory;
+
         return *this;
     }
 }
@@ -342,15 +350,59 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target does not belong to the player issuing the order
+ * 2) the target territory is adjacent to one of the territories owned
+ * by the player issuing the order
+ * @return whether or not the order is valid
+ */
 bool Bomb::validate()  {
-    cout << "bomb order validated\n";
+    if (*this->targetTerritory->getPlayerInPossession() == this->player->getName()) {
+        // can't bomb own territory
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    // TODO: check adjacency to any player-owned territory
+
+    return true;
 }
 
+/**
+ * Removes half of the armies on the target territory.
+ */
 void Bomb::execute() {
-    // logic to be implemented in later assignments
-    cout << "bomb order executed\n";
+    // status report
+    cout << "Trying to bomb territory:" << endl;
+    cout << *this->targetTerritory;
+    if (validate()) {
+        int targetArmies = *this->targetTerritory->getArmyCnt();
+        targetArmies = targetArmies / 2;
+        auto newTargetArmiesPtr = make_unique<int>(targetArmies);
+        this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
+
+        // update report
+        cout << "Successfully bombed territory:" << endl;
+        cout << *this->targetTerritory;
+    } else {
+        cout << "Invalid bomb order. Could not execute." << endl;
+    }
+}
+
+const shared_ptr<Player> &Bomb::getPlayer() const {
+    return player;
+}
+
+void Bomb::setPlayer(const shared_ptr<Player> &player) {
+    Bomb::player = player;
+}
+
+const shared_ptr<Territory> &Bomb::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Bomb::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Bomb::targetTerritory = targetTerritory;
 }
 
 // Blockade
