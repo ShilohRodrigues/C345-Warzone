@@ -438,10 +438,18 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target territory belongs to the player issuing the order
+ * @return whether the order is valid or not
+ */
 bool Blockade::validate()  {
-    cout << "blockade order validated\n";
+    if (*this->targetTerritory->getPlayerInPossession() != this->player->getName()) {
+        // target territory doesn't belong to player
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    return true;
 }
 
 void Blockade::execute() {
