@@ -183,7 +183,12 @@ void Player::issueOrder() {
 }
 
 void Player::addTerritory(const shared_ptr<Territory>& territory) {
+    // add territory to territories vector
     this->territories->push_back(territory);
+
+    // change player in possession
+    auto playerNamePtr = make_unique<string>(this->name);
+    territory->setPlayerInPossession(playerNamePtr);
 }
 
 void Player::removeTerritory(const shared_ptr<Territory>& territory) {
@@ -196,4 +201,11 @@ void Player::removeTerritory(const shared_ptr<Territory>& territory) {
         // element is found
         this->territories->erase(iterator);
     }
+}
+
+void Player::removeTerritory(const shared_ptr<Territory> &territory, const shared_ptr<Player> &newOwner) {
+    removeTerritory(territory);
+    // change player in possession
+    auto newOwnerNamePtr = make_unique<string>(newOwner->getName());
+    territory->setPlayerInPossession(newOwnerNamePtr);
 }
