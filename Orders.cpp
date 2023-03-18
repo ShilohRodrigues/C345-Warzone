@@ -422,7 +422,10 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
  * @return whether the order is valid or not
  */
 bool Airlift::validate()  {
-    cout << "airlift order validated\n";
+    if (*this->sourceTerritory->getPlayerInPossession() != *this->targetTerritory->getPlayerInPossession()) {
+        // source and target territories belong to different players
+        return false;
+    }
 
     return true; // logic to be implemented in later assignments
 }
