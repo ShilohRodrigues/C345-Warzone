@@ -355,6 +355,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
  * 1) the target does not belong to the player issuing the order
  * 2) the target territory is adjacent to one of the territories owned
  * by the player issuing the order
+ * TODO: ensure that the bomb order can only be created by playing the bomb card
  * @return whether or not the order is valid
  */
 bool Bomb::validate()  {
