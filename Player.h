@@ -32,6 +32,11 @@ public:
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     void issueOrder();
 
+    // extra methods
+    void addTerritory(const shared_ptr<Territory>& territory);
+    void removeTerritory(const shared_ptr<Territory>& territory);
+    void removeTerritory(const shared_ptr<Territory>& territory, const shared_ptr<Player>& newOwner);
+
     // getters and setters
     const string &getName() const;
 

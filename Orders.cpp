@@ -279,8 +279,7 @@ void Advance::attack() {
     // check who survived
     if (defendingArmies == 0) {
         // defeated defenders, proceed to claim the territory
-        auto newOwnerPtr = make_unique<string>(this->player->getName());
-        targetTerritory->setPlayerInPossession(newOwnerPtr);
+        this->player->addTerritory(this->targetTerritory);
         // new army count is now the surviving attackers
         auto newArmyCountPtr = make_unique<int>(attackingArmies);
         targetTerritory->setArmyCnt(newArmyCountPtr);
@@ -345,7 +344,8 @@ Bomb& Bomb::operator=(const Bomb& bomb) {
 }
 ostream& operator<<(ostream& os, const Bomb& bomb) {
     os << static_cast<const Order&>(bomb);
-    // no specific member info to return for now
+    os << " - player: " << bomb.player->getName();
+    os << " - targetTerritory: " << bomb.targetTerritory->getName();
 
     return os;
 }
@@ -355,6 +355,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
  * 1) the target does not belong to the player issuing the order
  * 2) the target territory is adjacent to one of the territories owned
  * by the player issuing the order
+ * TODO: ensure that the bomb order can only be created by playing the bomb card
  * @return whether or not the order is valid
  */
 bool Bomb::validate()  {
@@ -407,31 +408,99 @@ void Bomb::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
 
 // Blockade
 Blockade::Blockade():Order() {}
-Blockade::Blockade(const Blockade& blockade):Order() {} // no members to copy for now
+Blockade::Blockade(const shared_ptr<Player>& player,
+                   const shared_ptr<Player>& neutralPlayer,
+                   const shared_ptr<Territory>& targetTerritory):
+                   player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
+Blockade::Blockade(const Blockade& blockade):Order(blockade) {
+    this->player = blockade.player;
+    this->neutralPlayer = blockade.neutralPlayer;
+    this->targetTerritory = blockade.targetTerritory;
+}
 Blockade& Blockade::operator=(const Blockade& blockade) {
     if (this == &blockade) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = blockade.player;
+        this->neutralPlayer = blockade.neutralPlayer;
+        this->targetTerritory = blockade.targetTerritory;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Blockade& blockade) {
     os << static_cast<const Order&>(blockade);
-    // no specific member info to return for now
+    os << " - player: " << blockade.player->getName();
+    os << " - neutralPlayer: " << blockade.neutralPlayer->getName();
+    os << " - targetTerritory: " << blockade.targetTerritory->getName();
 
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target territory belongs to the player issuing the order
+ * @return whether the order is valid or not
+ */
 bool Blockade::validate()  {
-    cout << "blockade order validated\n";
+    if (*this->targetTerritory->getPlayerInPossession() != this->player->getName()) {
+        // target territory doesn't belong to player
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    return true;
 }
 
+/**
+ * Doubles the number number of armies on the territory and transfer the ownership
+ * to the Neutral player.
+ * TODO: ensure the blockade order can only be created by playing the blockade card
+ */
 void Blockade::execute() {
-    // logic to be implemented in later assignments
-    cout << "blockade order executed\n";
+    // status report
+    cout << "Trying to blockade the territory:" << endl;
+    cout << *this->targetTerritory;
+    if (validate()) {
+        // double the number of armies on the territory
+        int targetArmies = *this->targetTerritory->getArmyCnt();
+        targetArmies = targetArmies * 2;
+        auto newTargetArmiesPtr = make_unique<int>(targetArmies);
+        this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
+
+        // transfer ownership to the Neutral player
+        this->player->removeTerritory(targetTerritory, neutralPlayer);
+
+        // update report
+        cout << "Successfully blockaded the territory:" << endl;
+        cout << *this->targetTerritory;
+    } else {
+        cout << "Invalid blockade order. Could not execute." << endl;
+    }
+}
+
+// getters and setters
+const shared_ptr<Player> &Blockade::getPlayer() const {
+    return player;
+}
+
+void Blockade::setPlayer(const shared_ptr<Player> &player) {
+    Blockade::player = player;
+}
+
+const shared_ptr<Player> &Blockade::getNeutralPlayer() const {
+    return neutralPlayer;
+}
+
+void Blockade::setNeutralPlayer(const shared_ptr<Player> &neutralPlayer) {
+    Blockade::neutralPlayer = neutralPlayer;
+}
+
+const shared_ptr<Territory> &Blockade::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Blockade::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Blockade::targetTerritory = targetTerritory;
 }
 
 // Airlift
@@ -590,7 +659,7 @@ OrdersList::OrdersList():orderList(make_unique<list<shared_ptr<Order>>>()) {}
 // copy constructor
 OrdersList::OrdersList(const OrdersList& ordersList) {
     for (const auto& order : *ordersList.orderList) {
-        // TODO: check if deep copy?
+        // shallow copy
         this->orderList->push_back(order);
     }
 }
@@ -602,7 +671,7 @@ OrdersList& OrdersList::operator=(const OrdersList& ordersList) {
         // make sure we're not iterating over a nullptr
         if (ordersList.orderList) {
             for (const auto& order : *ordersList.orderList) {
-                // TODO: check if deep copy?
+                // shallow copy
                 this->orderList->push_back(order);
             }
         }
