@@ -345,7 +345,8 @@ Bomb& Bomb::operator=(const Bomb& bomb) {
 }
 ostream& operator<<(ostream& os, const Bomb& bomb) {
     os << static_cast<const Order&>(bomb);
-    // no specific member info to return for now
+    os << " - player: " << bomb.player->getName();
+    os << " - targetTerritory: " << bomb.targetTerritory->getName();
 
     return os;
 }
@@ -408,18 +409,31 @@ void Bomb::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
 
 // Blockade
 Blockade::Blockade():Order() {}
-Blockade::Blockade(const Blockade& blockade):Order() {} // no members to copy for now
+Blockade::Blockade(const shared_ptr<Player>& player,
+                   const shared_ptr<Player>& neutralPlayer,
+                   const shared_ptr<Territory>& targetTerritory):
+                   player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
+Blockade::Blockade(const Blockade& blockade):Order(blockade) {
+    this->player = blockade.player;
+    this->neutralPlayer = blockade.neutralPlayer;
+    this->targetTerritory = blockade.targetTerritory;
+}
 Blockade& Blockade::operator=(const Blockade& blockade) {
     if (this == &blockade) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = blockade.player;
+        this->neutralPlayer = blockade.neutralPlayer;
+        this->targetTerritory = blockade.targetTerritory;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Blockade& blockade) {
     os << static_cast<const Order&>(blockade);
-    // no specific member info to return for now
+    os << " - player: " << blockade.player->getName();
+    os << " - neutralPlayer: " << blockade.neutralPlayer->getName();
+    os << " - targetTerritory: " << blockade.targetTerritory->getName();
 
     return os;
 }
@@ -433,6 +447,31 @@ bool Blockade::validate()  {
 void Blockade::execute() {
     // logic to be implemented in later assignments
     cout << "blockade order executed\n";
+}
+
+// getters and setters
+const shared_ptr<Player> &Blockade::getPlayer() const {
+    return player;
+}
+
+void Blockade::setPlayer(const shared_ptr<Player> &player) {
+    Blockade::player = player;
+}
+
+const shared_ptr<Player> &Blockade::getNeutralPlayer() const {
+    return neutralPlayer;
+}
+
+void Blockade::setNeutralPlayer(const shared_ptr<Player> &neutralPlayer) {
+    Blockade::neutralPlayer = neutralPlayer;
+}
+
+const shared_ptr<Territory> &Blockade::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Blockade::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Blockade::targetTerritory = targetTerritory;
 }
 
 // Airlift

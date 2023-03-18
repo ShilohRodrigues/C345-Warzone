@@ -126,12 +126,29 @@ private:
 class Blockade : public Order {
 public:
     Blockade();
+    Blockade(const shared_ptr<Player>& player,
+             const shared_ptr<Player>& neutralPlayer,
+             const shared_ptr<Territory>& targetTerritory);
     Blockade(const Blockade& blockade);
     Blockade& operator=(const Blockade& blockade);
     friend ostream& operator<<(ostream& os, const Blockade& blockade);
 
     bool validate() override;
     void execute() override;
+
+    const shared_ptr<Player> &getPlayer() const;
+    void setPlayer(const shared_ptr<Player> &player);
+
+    const shared_ptr<Player> &getNeutralPlayer() const;
+    void setNeutralPlayer(const shared_ptr<Player> &neutralPlayer);
+
+    const shared_ptr<Territory> &getTargetTerritory() const;
+    void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
+
+private:
+    shared_ptr<Player> player;
+    shared_ptr<Player> neutralPlayer;
+    shared_ptr<Territory> targetTerritory;
 };
 
 class Airlift : public Order {
