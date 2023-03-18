@@ -382,22 +382,45 @@ void Blockade::execute() {
 
 // Airlift
 Airlift::Airlift():Order() {}
-Airlift::Airlift(const Airlift& airlift):Order() {} // no members to copy for now
+Airlift::Airlift(const shared_ptr<Player>& player,
+                 const shared_ptr<Territory>& sourceTerritory,
+                 const shared_ptr<Territory>& targetTerritory,
+                 int airliftArmies):
+                 player(player), sourceTerritory(sourceTerritory),
+                 targetTerritory(targetTerritory), airliftArmies(airliftArmies) {}
+Airlift::Airlift(const Airlift& airlift):Order(airlift) {
+    this->player = airlift.player;
+    this->sourceTerritory = airlift.sourceTerritory;
+    this->targetTerritory = airlift.targetTerritory;
+    this->airliftArmies = airlift.airliftArmies;
+}
 Airlift& Airlift::operator=(const Airlift& airlift) {
     if (this == &airlift) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = airlift.player;
+        this->sourceTerritory = airlift.sourceTerritory;
+        this->targetTerritory = airlift.targetTerritory;
+        this->airliftArmies = airlift.airliftArmies;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Airlift& airlift) {
     os << static_cast<const Order&>(airlift);
-    // no specific member info to return for now
+    os << " - player: " << airlift.player->getName();
+    os << " - sourceTerritory: " << airlift.sourceTerritory->getName();
+    os << " - targetTerritory: " << airlift.targetTerritory->getName();
+    os << " - advanceArmies: " << airlift.airliftArmies;
 
     return os;
 }
 
+/**
+ * Check if the source and target territories belong to the player issuing the order.
+ * TODO: ensure airlift order can only be created by playing the airlift card
+ * @return whether the order is valid or not
+ */
 bool Airlift::validate()  {
     cout << "airlift order validated\n";
 
