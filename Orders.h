@@ -125,12 +125,34 @@ public:
 class Airlift : public Order {
 public:
     Airlift();
+    Airlift(const shared_ptr<Player>& player,
+            const shared_ptr<Territory>& sourceTerritory,
+            const shared_ptr<Territory>& targetTerritory,
+            int airliftArmies);
     Airlift(const Airlift& airlift);
     Airlift& operator=(const Airlift& airlift);
     friend ostream& operator<<(ostream& os, const Airlift& airlift);
 
     bool validate() override;
     void execute() override;
+
+    const shared_ptr<Player> &getPlayer() const;
+    void setPlayer(const shared_ptr<Player> &player);
+
+    const shared_ptr<Territory> &getSourceTerritory() const;
+    void setSourceTerritory(const shared_ptr<Territory> &sourceTerritory);
+
+    const shared_ptr<Territory> &getTargetTerritory() const;
+    void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
+
+    int getAirliftArmies() const;
+    void setAirliftArmies(int airliftArmies);
+
+private:
+    shared_ptr<Player> player;
+    shared_ptr<Territory> sourceTerritory;
+    shared_ptr<Territory> targetTerritory;
+    int airliftArmies;
 };
 
 class Negotiate : public Order {
@@ -172,5 +194,6 @@ void ordersDemo1();
 void ordersDemo2();
 void deployDemo();
 void advanceDemo();
+void airliftDemo();
 
 #endif // ORDERS_H

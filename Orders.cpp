@@ -216,6 +216,8 @@ void Advance::execute() {
 
         // report outcome
         cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+    } else {
+        cout << "Invalid advance order. Could not complete." << endl;
     }
 }
 
@@ -382,31 +384,123 @@ void Blockade::execute() {
 
 // Airlift
 Airlift::Airlift():Order() {}
-Airlift::Airlift(const Airlift& airlift):Order() {} // no members to copy for now
+Airlift::Airlift(const shared_ptr<Player>& player,
+                 const shared_ptr<Territory>& sourceTerritory,
+                 const shared_ptr<Territory>& targetTerritory,
+                 int airliftArmies):
+                 player(player), sourceTerritory(sourceTerritory),
+                 targetTerritory(targetTerritory), airliftArmies(airliftArmies) {}
+Airlift::Airlift(const Airlift& airlift):Order(airlift) {
+    this->player = airlift.player;
+    this->sourceTerritory = airlift.sourceTerritory;
+    this->targetTerritory = airlift.targetTerritory;
+    this->airliftArmies = airlift.airliftArmies;
+}
 Airlift& Airlift::operator=(const Airlift& airlift) {
     if (this == &airlift) {
         return *this;
     } else {
-        // no members to copy for now
+        this->player = airlift.player;
+        this->sourceTerritory = airlift.sourceTerritory;
+        this->targetTerritory = airlift.targetTerritory;
+        this->airliftArmies = airlift.airliftArmies;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Airlift& airlift) {
     os << static_cast<const Order&>(airlift);
-    // no specific member info to return for now
+    os << " - player: " << airlift.player->getName();
+    os << " - sourceTerritory: " << airlift.sourceTerritory->getName();
+    os << " - targetTerritory: " << airlift.targetTerritory->getName();
+    os << " - advanceArmies: " << airlift.airliftArmies;
 
     return os;
 }
 
+/**
+ * Check if:
+ * 1) the source and target territories belong to the player issuing the order
+ * 2) the source territory has the required armies
+ * TODO: ensure airlift order can only be created by playing the airlift card
+ * @return whether the order is valid or not
+ */
 bool Airlift::validate()  {
-    cout << "airlift order validated\n";
+    if (*this->sourceTerritory->getPlayerInPossession() != *this->targetTerritory->getPlayerInPossession()) {
+        // source and target territories belong to different players
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    if (*this->sourceTerritory->getArmyCnt() < this->airliftArmies) {
+        // source territory doesn't have enough armies
+        return false;
+    }
+
+    return true;
 }
 
+/**
+ * Moves desired armies from a source to target territory without them needing to be adjacent.
+ */
 void Airlift::execute() {
-    // logic to be implemented in later assignments
-    cout << "airlift order executed\n";
+    // status report
+    cout << "Trying to advance " << airliftArmies << " armies from " << this->sourceTerritory->getName()
+         << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+         << " to " << this->targetTerritory->getName()
+         << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
+    if (validate()) {
+        // update source and target army counts
+        int sourceArmies = *this->sourceTerritory->getArmyCnt();
+        int targetArmies = *this->targetTerritory->getArmyCnt();
+        sourceArmies = sourceArmies - airliftArmies;
+        targetArmies = targetArmies + airliftArmies;
+
+        // create pointers to the new counts
+        auto newSourceArmiesPtr = make_unique<int>(sourceArmies);
+        auto newTargetArmiesPtr = make_unique<int>(targetArmies);
+
+        // change source and target army count pointers to the new counts
+        this->sourceTerritory->setArmyCnt(newSourceArmiesPtr);
+        this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
+
+        // report outcome
+        cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+    } else {
+        cout << "Invalid airlift order. Could not complete." << endl;
+    }
+}
+
+// getters and setters
+const shared_ptr<Player> &Airlift::getPlayer() const {
+    return player;
+}
+
+void Airlift::setPlayer(const shared_ptr<Player> &player) {
+    Airlift::player = player;
+}
+
+const shared_ptr<Territory> &Airlift::getSourceTerritory() const {
+    return sourceTerritory;
+}
+
+void Airlift::setSourceTerritory(const shared_ptr<Territory> &sourceTerritory) {
+    Airlift::sourceTerritory = sourceTerritory;
+}
+
+const shared_ptr<Territory> &Airlift::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Airlift::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
+    Airlift::targetTerritory = targetTerritory;
+}
+
+int Airlift::getAirliftArmies() const {
+    return airliftArmies;
+}
+
+void Airlift::setAirliftArmies(int airliftArmies) {
+    Airlift::airliftArmies = airliftArmies;
 }
 
 // Negotiate
