@@ -152,9 +152,15 @@ Hand& Hand::operator=(const Hand& h)
 }
 // stream insertion operator
 ostream& operator<<(ostream& os, const Hand& hand) {
+    os << "Hand cards: ";
 	for (const auto& card : hand.handCards) {
 		os << *card << " ";
 	}
+
+    os << "\nPlay cards: ";
+    for (const auto& card : hand.playCards) {
+        os << *card << " ";
+    }
 	return os;
 }
 

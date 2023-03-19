@@ -91,7 +91,7 @@ ostream& operator<<(ostream& os, const Player& player) {
         os << "null\n";
     }
 
-    os << "Hand: " << *player.cardHand << endl;
+    os << *player.cardHand << endl;
     os << "Orders: " << *player.ordersList << endl;
     os << "negotiatedPlayers:" << endl;
     if (player.negotiatedPlayers) {
