@@ -590,7 +590,7 @@ bool Airlift::validate()  {
  */
 void Airlift::execute() {
     // status report
-    cout << "Trying to advance " << airliftArmies << " armies from " << this->sourceTerritory->getName()
+    cout << "Trying to airlift " << airliftArmies << " armies from " << this->sourceTerritory->getName()
          << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
          << " to " << this->targetTerritory->getName()
          << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
@@ -610,7 +610,7 @@ void Airlift::execute() {
         this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
 
         // report outcome
-        cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+        cout << "Airlift order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
     } else {
         cout << "Invalid airlift order. Could not complete." << endl;
     }
