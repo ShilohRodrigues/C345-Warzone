@@ -225,4 +225,12 @@ void Player::removeTerritory(const shared_ptr<Territory> &territory, const share
     territory->setPlayerInPossession(newOwnerNamePtr);
 }
 
+void Player::addNegotiatedPlayer(const shared_ptr<Player>& player) {
+    this->negotiatedPlayers->push_back(player);
+}
+
+void Player::clearNegotiatedPlayers() {
+    this->negotiatedPlayers->clear();
+}
+
 

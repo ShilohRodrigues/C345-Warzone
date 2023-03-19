@@ -37,6 +37,9 @@ public:
     void removeTerritory(const shared_ptr<Territory>& territory);
     void removeTerritory(const shared_ptr<Territory>& territory, const shared_ptr<Player>& newOwner);
 
+    void addNegotiatedPlayer(const shared_ptr<Player>& player);
+    void clearNegotiatedPlayers();
+
     // getters and setters
     const string &getName() const;
 
@@ -56,7 +59,6 @@ public:
     void setOrdersList(unique_ptr<OrdersList> &ordersList);
 
     const unique_ptr<vector<shared_ptr<Player>>> &getNegotiatedPlayers() const;
-
     void setNegotiatedPlayers(const unique_ptr<vector<shared_ptr<Player>>> &negotiatedPlayers);
 
 private:
