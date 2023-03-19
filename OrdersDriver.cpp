@@ -49,8 +49,8 @@ void ordersDemo2() {
 //    advanceDemo();
 //    airliftDemo();
 //    bombDemo();
-    blockadeDemo();
-//    negotiateDemo();
+//    blockadeDemo();
+    negotiateDemo();
 }
 
 void deployDemo() {
@@ -307,6 +307,7 @@ void negotiateDemo() {
 
     // Negotiate with other
     cout << "\n---- Negotiate with other ----" << endl;
+    testPlayerNegotiate1->playCard(deck, "Diplomacy");
     auto negotiateOther = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate2);
     cout << *testPlayerNegotiate1 << endl;
     cout << *testPlayerNegotiate2 << endl;
