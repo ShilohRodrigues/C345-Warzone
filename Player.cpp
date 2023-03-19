@@ -93,10 +93,10 @@ ostream& operator<<(ostream& os, const Player& player) {
 
     os << *player.cardHand << endl;
     os << "Orders: " << *player.ordersList << endl;
-    os << "negotiatedPlayers:" << endl;
+    os << "negotiatedPlayers: ";
     if (player.negotiatedPlayers) {
         for (const auto& p : *player.negotiatedPlayers) {
-            os << "    " << p->getName();
+            os << p->getName() << "  ";
         }
     }
     os << "\nhasConqueredTerritory: " << player.hasConqueredTerritory << endl;
