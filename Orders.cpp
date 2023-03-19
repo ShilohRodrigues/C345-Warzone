@@ -93,8 +93,9 @@ bool Deploy::validate()  {
 /**
  * Adds the selected number of player armies for deployment (deployedArmies)
  * to the armies on the target territory.
+ * @return 0 if successful, -1 otherwise
  */
-void Deploy::execute() {
+int Deploy::execute() {
     if (validate()) {
         // add deployed armies to existing armies
         int updatedArmies = *targetTerritory->getArmyCnt() + deployedArmies;
@@ -103,8 +104,11 @@ void Deploy::execute() {
 
         // remove deployed armies from the player's reinforcement pool
         player->setReinforcementPool(player->getReinforcementPool() - deployedArmies);
+
+        return 0;
     } else {
         cout << "Invalid deploy order. Could not execute.";
+        return -1;
     }
 }
 
@@ -197,7 +201,7 @@ bool Advance::validate()  {
     return true;
 }
 
-void Advance::execute() {
+int Advance::execute() {
     // status report
     cout << "Trying to advance " << advanceArmies << " armies from " << this->sourceTerritory->getName()
         << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
@@ -222,8 +226,10 @@ void Advance::execute() {
 
         // report outcome
         cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+        return 0;
     } else {
         cout << "Invalid advance order. Could not complete." << endl;
+        return -1;
     }
 }
 
@@ -388,8 +394,9 @@ bool Bomb::validate()  {
 
 /**
  * Removes half of the armies on the target territory.
+ * @return 0 if successful, -1 otherwise
  */
-void Bomb::execute() {
+int Bomb::execute() {
     // status report
     cout << "Trying to bomb territory:" << endl;
     cout << *this->targetTerritory;
@@ -402,12 +409,22 @@ void Bomb::execute() {
         // update report
         cout << "Successfully bombed territory:" << endl;
         cout << *this->targetTerritory;
+
+        // remove the played card
+        this->player->getCardHand()->deletePlayedCardFromPlayCards("Bomb");
+
+        return 0;
     } else {
         cout << "Invalid bomb order. Could not execute." << endl;
-    }
 
-    // remove the played card
-    this->player->getCardHand()->deletePlayedCardFromPlayCards("Bomb");
+        // put the card back in the player hand
+        if (this->player->hasPlayedCard("Bomb")) {
+            this->player->getCardHand()->deletePlayedCardFromPlayCards("Bomb");
+            this->player->getCardHand()->addCardToHand("Bomb");
+        }
+
+        return -1;
+    }
 }
 
 const shared_ptr<Player> &Bomb::getPlayer() const {
@@ -479,8 +496,9 @@ bool Blockade::validate()  {
 /**
  * Doubles the number number of armies on the territory and transfer the ownership
  * to the Neutral player.
+ * @return 0 if successful, -1 otherwise
  */
-void Blockade::execute() {
+int Blockade::execute() {
     // status report
     cout << "Trying to blockade the territory:" << endl;
     cout << *this->targetTerritory;
@@ -497,11 +515,23 @@ void Blockade::execute() {
         // update report
         cout << "Successfully blockaded the territory:" << endl;
         cout << *this->targetTerritory;
+
+        // remove the played card
+        this->player->getCardHand()->deletePlayedCardFromPlayCards("Blockade");
+
+        return 0;
     } else {
         cout << "Invalid blockade order. Could not execute." << endl;
+
+        // put the card back in the player hand
+        // put the card back in the player hand
+        if (this->player->hasPlayedCard("Blockade")) {
+            this->player->getCardHand()->deletePlayedCardFromPlayCards("Blockade");
+            this->player->getCardHand()->addCardToHand("Blockade");
+        }
+
+        return -1;
     }
-    // remove the played card
-    this->player->getCardHand()->deletePlayedCardFromPlayCards("Blockade");
 }
 
 // getters and setters
@@ -592,8 +622,9 @@ bool Airlift::validate()  {
 
 /**
  * Moves desired armies from a source to target territory without them needing to be adjacent.
+ * @return 0 if successful, -1 otherwise
  */
-void Airlift::execute() {
+int Airlift::execute() {
     // status report
     cout << "Trying to airlift " << airliftArmies << " armies from " << this->sourceTerritory->getName()
          << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
@@ -616,12 +647,22 @@ void Airlift::execute() {
 
         // report outcome
         cout << "Airlift order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+
+        // remove the played card
+        this->player->getCardHand()->deletePlayedCardFromPlayCards("Airlift");
+
+        return 0;
     } else {
         cout << "Invalid airlift order. Could not complete." << endl;
-    }
 
-    // remove the played card
-    this->player->getCardHand()->deletePlayedCardFromPlayCards("Airlift");
+        // put the card back in the player hand
+        if (this->player->hasPlayedCard("Airlift")) {
+            this->player->getCardHand()->deletePlayedCardFromPlayCards("Airlift");
+            this->player->getCardHand()->addCardToHand("Airlift");
+        }
+
+        return -1;
+    }
 }
 
 // getters and setters
@@ -706,8 +747,9 @@ bool Negotiate::validate()  {
  * Prevents attacks between the two players.
  * This method specifically adds each player to their own negotiatedPlayers vector.
  * The attack orders will not attack players in players' negotiatedPlayers vector.
+ * @return 0 if successful, -1 otherwise
  */
-void Negotiate::execute() {
+int Negotiate::execute() {
     // status report
     cout << "Trying to negotiate between " << issuer->getName()
         << " and " << targetPlayer->getName() << endl;
@@ -718,11 +760,22 @@ void Negotiate::execute() {
 
         // update report
         cout << "Negotiation succeeded." << endl;
+
+        // remove the played card
+        this->issuer->getCardHand()->deletePlayedCardFromPlayCards("Diplomacy");
+
+        return 0;
     } else {
         cout << "Invalid negotiate order. Could not execute." << endl;
+
+        // put the card back in the player hand
+        if (this->issuer->hasPlayedCard("Diplomacy")) {
+            this->issuer->getCardHand()->deletePlayedCardFromPlayCards("Diplomacy");
+            this->issuer->getCardHand()->addCardToHand("Diplomacy");
+        }
+
+        return -1;
     }
-    // remove the played card
-    this->issuer->getCardHand()->deletePlayedCardFromPlayCards("Diplomacy");
 }
 
 const shared_ptr<Player> &Negotiate::getIssuer() const {
