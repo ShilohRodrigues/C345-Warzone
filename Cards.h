@@ -64,6 +64,7 @@ public:
 	void clearPlayedCards();
 
     void addCardtoHand(Card* card);
+    static int findFirstCard(vector<Card*>* handOrPlayCards, const string& cardType);
 
 	// stream insertion operator
 	friend ostream& operator<<(ostream& os, const Hand& hand);

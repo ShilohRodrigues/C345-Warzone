@@ -231,3 +231,21 @@ void Hand::clearPlayedCards()
 void Hand::addCardtoHand(Card *card) {
     handCards.push_back(card);
 }
+
+/**
+ * Finds the first card in the hand or play cards matching the given card type.
+ * @param handOrPlayCards handCards or playCards
+ * @param cardType the type of the card
+ * @return the index of the first matching card
+ */
+int Hand::findFirstCard(vector<Card *> *handOrPlayCards, const string& cardType) {
+    for (int i = 0; i < handOrPlayCards->size(); i++) {
+        if ((*handOrPlayCards)[i]->getCardType() == cardType) {
+            // If we found a card with the specified type, return its index
+            return i;
+        }
+    }
+
+    // If we didn't find a card with the specified type, return -1 to indicate failure
+    return -1;
+}
