@@ -234,7 +234,7 @@ void Advance::execute() {
  * 3) if all defending armies are eliminated, the attacker captures the territory
  * the surviving attacking units occupy the territory and ownership changes
  * 4) a player receives a card at the end of his turn if they successfully conquered at least one territory
- * during their turn TODO: discuss how to implement this (4)
+ * during their turn TODO: get game engine to call Player::update() for all players after every turn
  */
 void Advance::attack() {
     int sourceArmies = *this->sourceTerritory->getArmyCnt();
@@ -289,17 +289,13 @@ void Advance::attack() {
         // new army count is now the surviving attackers
         auto newArmyCountPtr = make_unique<int>(attackingArmies);
         targetTerritory->setArmyCnt(newArmyCountPtr);
+        // note that the player has successfully conquered at least one territory this turn
+        this->player->setHasConqueredTerritory(true);
     } else {
         // defenders won, no ownership change, update surviving defending armies
         auto newArmyCountPtr = make_unique<int>(defendingArmies);
         targetTerritory->setArmyCnt(newArmyCountPtr);
     }
-
-    // TODO: after every turn
-    //  1) update army count
-    //  2) update reinforcement pool
-    //  3) update territories
-    //  4) clear negotiated players
 }
 
 // getters and setters

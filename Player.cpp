@@ -13,7 +13,8 @@ Player::Player():
     territories(make_unique<vector<shared_ptr<Territory>>>()),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()),
-    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){}
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()),
+    hasConqueredTerritory(false) {}
 
 // parameterized constructors (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
@@ -23,7 +24,8 @@ Player::Player(const vector<shared_ptr<Territory>>& territories):
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()),
-    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()),
+    hasConqueredTerritory(false) {
     setTerritories(this->territories);
 }
 
@@ -34,7 +36,8 @@ Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Ter
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
     ordersList(make_unique<OrdersList>()),
-    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()),
+    hasConqueredTerritory(false) {
     setTerritories(this->territories);
 }
 
@@ -45,7 +48,8 @@ Player::Player(const Player& player):
     territories(make_unique<vector<shared_ptr<Territory>>>()),
     cardHand(make_unique<Hand>(*player.cardHand)),
     ordersList(make_unique<OrdersList>(*player.ordersList)),
-    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()),
+    hasConqueredTerritory(player.hasConqueredTerritory) {
     for (const auto& t: *player.territories) {
         this->territories->push_back(t);
     }
@@ -67,6 +71,7 @@ Player& Player::operator=(const Player& player) {
         this->cardHand = make_unique<Hand>(*player.cardHand);
         this->ordersList = make_unique<OrdersList>(*player.ordersList);
         this->setNegotiatedPlayers(player.negotiatedPlayers);
+        this->hasConqueredTerritory = player.hasConqueredTerritory;
         return *this;
     }
 }
@@ -94,6 +99,7 @@ ostream& operator<<(ostream& os, const Player& player) {
             os << "    " << p->getName();
         }
     }
+    os << "hasConqueredTerritory: " << player.hasConqueredTerritory << endl;
 
     return os;
 }
@@ -157,6 +163,14 @@ void Player::setNegotiatedPlayers(const unique_ptr<vector<shared_ptr<Player>>> &
     for (const auto& player : *negotiatedPlayers) {
         this->negotiatedPlayers->push_back(player);
     }
+}
+
+bool Player::getHasConqueredTerritory() const {
+    return hasConqueredTerritory;
+}
+
+void Player::setHasConqueredTerritory(bool hasConqueredTerritory) {
+    Player::hasConqueredTerritory = hasConqueredTerritory;
 }
 
 // destructor
@@ -272,5 +286,47 @@ int Player::updateArmyCount() {
     this->armyCount = newArmyCount;
     return newArmyCount;
 }
+
+/**
+ * Checks if the player has conquered any territory this turn, and if so
+ * draws a card from the deck and adds it to the player's hand of cards.
+ *
+ * Meant to be called at the end of every turn.
+ * @param deck shared pointer to the deck of cards used during the game
+ */
+void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
+    if (hasConqueredTerritory) {
+        Card* card = deck->draw();
+        this->cardHand->addCardtoHand(card);
+    }
+}
+
+/**
+ * Updates all the player data members that need to be updated after every turn
+ * and executes any additional actions that need to be done every turn.
+ *
+ * Updates to be done every turn:
+ * 1) update army count
+ * 2) update reinforcement pool
+ * 3) update territories
+ * 4) clear negotiated players
+ * 5) draw if hasConqueredTerritory
+ * 6) clear hasConqueredTerritory
+ *
+ * This method is meant to be called at the end of every turn on every player.
+ *
+ * @param deck shared pointer to the deck of cards used during the game
+ */
+void Player::update(const shared_ptr<Deck>& deck) {
+    this->updateArmyCount();
+    this->reinforcementPool = this->armyCount;
+    this->updateTerritories();
+    this->clearNegotiatedPlayers();
+    this->drawIfHasConquered(deck);
+    this->hasConqueredTerritory = false;
+}
+
+
+
 
 

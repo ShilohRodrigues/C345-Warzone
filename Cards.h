@@ -62,6 +62,9 @@ public:
 	vector<Card*>* getPlayCards();
 	void deletePlayedCardsFromHand(Card* r_card);
 	void clearPlayedCards();
+
+    void addCardtoHand(Card* card);
+
 	// stream insertion operator
 	friend ostream& operator<<(ostream& os, const Hand& hand);
 
