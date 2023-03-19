@@ -16,11 +16,11 @@ int main() {
 //    playerDemo1();
 //    mapDemo1();
 
-  //ordersDemo2();
+  ordersDemo2();
 
-  GameEngine *game = new GameEngine();
-  game->startupPhase();
-  delete game;
+//  GameEngine *game = new GameEngine();
+//  game->startupPhase();
+//  delete game;
 
    return 0;
 
