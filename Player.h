@@ -36,6 +36,7 @@ public:
     void addTerritory(const shared_ptr<Territory>& territory);
     void removeTerritory(const shared_ptr<Territory>& territory);
     void removeTerritory(const shared_ptr<Territory>& territory, const shared_ptr<Player>& newOwner);
+    void updateTerritories();
 
     void addNegotiatedPlayer(const shared_ptr<Player>& player);
     void clearNegotiatedPlayers();

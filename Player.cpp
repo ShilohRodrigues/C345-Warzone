@@ -237,6 +237,17 @@ void Player::removeTerritory(const shared_ptr<Territory> &territory, const share
     territory->setPlayerInPossession(newOwnerNamePtr);
 }
 
+/**
+ * Clean up territories to remove territories not owned by the player anymore.
+ */
+void Player::updateTerritories() {
+    for (const auto& territory : *this->territories) {
+        if (*territory->getPlayerInPossession() != this->name) {
+            this->removeTerritory(territory);
+        }
+    }
+}
+
 void Player::addNegotiatedPlayer(const shared_ptr<Player>& player) {
     this->negotiatedPlayers->push_back(player);
 }
