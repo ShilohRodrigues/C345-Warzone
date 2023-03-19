@@ -650,10 +650,19 @@ ostream& operator<<(ostream& os, const Negotiate& negotiate) {
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target is not the player issuing the order
+ * TODO: ensure that the negotiate order can only be created by playing the diplomacy card
+ * @return whether the order is valid or not
+ */
 bool Negotiate::validate()  {
-    cout << "negotiate order validated\n";
+    if (this->targetPlayer->getName() == this->issuer->getName()) {
+        // player can't negotiate with itself
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    return true;
 }
 
 void Negotiate::execute() {
