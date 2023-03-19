@@ -210,17 +210,23 @@ void Player::addTerritory(const shared_ptr<Territory>& territory) {
     // change player in possession
     auto playerNamePtr = make_unique<string>(this->name);
     territory->setPlayerInPossession(playerNamePtr);
+
+    // update army count
+    this->armyCount += *territory->getArmyCnt();
 }
 
 void Player::removeTerritory(const shared_ptr<Territory>& territory) {
+    // find the territory
     auto iterator = find_if(this->territories->begin(), this->territories->end(),
                             [territory](const shared_ptr<Territory>& t) {
         return t->getId() == territory->getId();
     });
 
     if (iterator != this->territories->end()) {
-        // element is found
+        // territory is found, remove it
         this->territories->erase(iterator);
+        // update army count
+        this->armyCount -= *territory->getArmyCnt();
     }
 }
 
