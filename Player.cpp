@@ -99,7 +99,7 @@ ostream& operator<<(ostream& os, const Player& player) {
             os << "    " << p->getName();
         }
     }
-    os << "hasConqueredTerritory: " << player.hasConqueredTerritory;
+    os << "hasConqueredTerritory: " << player.hasConqueredTerritory << endl;
 
     return os;
 }
