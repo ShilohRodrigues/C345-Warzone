@@ -4,7 +4,10 @@
 
 using namespace std;
 
+////////////////// 3 Phases ///////////////////////////////////////
+
 void GameEngine::reinforcementPhase() {
+  cout << "\n********** Reinforcement Phase **********\n" << endl;
     // Iterate through all players and calculate their reinforcement armies
     for (auto player : players) {
         int armies = player->getTerritories().get()->size() / 3;
@@ -25,10 +28,10 @@ void GameEngine::reinforcementPhase() {
         }
         player->setReinforcementPool(armies);
     }
-
 }
 
 void GameEngine::issueOrdersPhase() {
+  cout << "\n********** Issuing Orders Phase **********\n" << endl;
     // Iterate through all players in round robin fashion
     for (int i = 0; i < players.size(); i++) {
         Player* currentPlayer = players[currentPlayerIndex];
@@ -41,9 +44,10 @@ void GameEngine::issueOrdersPhase() {
 
 void GameEngine::sortOrders(OrdersList* orderList) {
     // Sort orders in descending order of priority
-    std::sort(orderList->getOrderList()->begin(), orderList->getOrderList()->end(),
-        [](const Order* a, const Order* b) { return a->getOrderId() > b->getOrderId(); });
+    orderList->getOrderList()->sort([](const shared_ptr<Order>& a, const shared_ptr<Order>& b) {
+        return a->getOrderId() > b->getOrderId(); });
 }
+
 
 int GameEngine::executeOrdersPhase() {
     cout << "\n********** Executing Orders **********\n" << endl;
@@ -64,9 +68,7 @@ int GameEngine::executeOrdersPhase() {
                 order->execute();
                 numExecuted++;
             }
-
         }
-
     }
     return numExecuted;
 }

@@ -24,13 +24,15 @@ class GameEngine {
     int nextState(string cmd);
     shared_ptr<State> getState();
     void setState(shared_ptr<State> newState);
+    // part 3 add//
     void reinforcementPhase();
     void issueOrdersPhase();
     int executeOrdersPhase();
     void sortOrders(OrdersList* orderList);
-    
+
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
+    // part 3 add//
     Map* map;
     vector<Player*> players;
     int currentPlayerIndex = 0;
