@@ -227,3 +227,7 @@ void Hand::clearPlayedCards()
 	playCards.clear();
 	cout << "\n Play Cards are Cleaned." << endl;
 }
+
+void Hand::addCardtoHand(Card *card) {
+    handCards.push_back(card);
+}
