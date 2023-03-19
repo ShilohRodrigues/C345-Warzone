@@ -200,7 +200,7 @@ void Hand::play(Card* a_card, Deck* a_Deck)
 {
 	playCards.push_back(a_card);
 	returnPlayedCardToDeck(a_Deck);
-	deletePlayedCardsFromHand(a_card);
+    deletePlayedCardFromHand(a_card);
 }
 // Return the played card to the deck
 void Hand::returnPlayedCardToDeck(Deck* a_Deck)
@@ -220,7 +220,7 @@ vector<Card*>* Hand::getPlayCards()
 	return &playCards;
 }
 // Delete the played card from the hand
-void Hand::deletePlayedCardsFromHand(Card* r_card)
+void Hand::deletePlayedCardFromHand(Card* r_card)
 {
 	// Iterate the elements of the handCards vector
 	for (vector<Card*>::iterator it = handCards.begin(); it != handCards.end(); it++) {
@@ -265,4 +265,18 @@ int Hand::findFirstCard(vector<Card *> *handOrPlayCards, const string& cardType)
 
     // If we didn't find a card with the specified type, return -1 to indicate failure
     return -1;
+}
+
+Card* Hand::getCardFromHandCards(const string& cardType) {
+    int cardIndex = Hand::findFirstCard(this->getHandOfCards(), cardType);
+    auto card = *this->handCards[cardIndex];
+    Card* cardPtr = &card;
+    return cardPtr;
+}
+
+Card* Hand::getCardFromPlayCards(string cardType) {
+    int cardIndex = Hand::findFirstCard(this->getPlayCards(), cardType);
+    auto card = *this->handCards[cardIndex];
+    Card* cardPtr = &card;
+    return cardPtr;
 }

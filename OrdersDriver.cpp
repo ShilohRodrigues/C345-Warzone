@@ -45,12 +45,12 @@ void ordersDemo1() {
 }
 
 void ordersDemo2() {
-    deployDemo();
-    advanceDemo();
+//    deployDemo();
+//    advanceDemo();
     airliftDemo();
-    bombDemo();
-    blockadeDemo();
-    negotiateDemo();
+//    bombDemo();
+//    blockadeDemo();
+//    negotiateDemo();
 }
 
 void deployDemo() {
@@ -131,7 +131,7 @@ void airliftDemo() {
     // prepare territories
     auto testAirliftTerritories = make_unique<vector<shared_ptr<Territory>>>();
     auto testSourceTerritoryAirlift =
-            make_shared<Territory>(0, "sourceAirliftTerritory", 0, "test", 4);
+            make_shared<Territory>(0, "sourceAirliftTerritory", 0, "test", 10);
     auto testTargetOwnedAirlift =
             make_shared<Territory>(0, "targetAirliftOwned", 0, "test", 2);
     auto testTargetEnemyAirlift =
@@ -143,6 +143,15 @@ void airliftDemo() {
     auto testPlayerAirlift =
             make_shared<Player>(6, 3, *testAirliftTerritories);
 
+    // play airlift card
+    cout << "---- Playing Airlift Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
+    cout << *testPlayerAirlift << endl;
+    testPlayerAirlift->playCard(deck, "Airlift");
+    cout << *testPlayerAirlift << endl;
+
     // airlift to own territory
     cout << "---- Airlift to own territory ----" << endl;
     auto airliftToOwnTerritory = make_unique<Airlift>(testPlayerAirlift,
@@ -153,6 +162,9 @@ void airliftDemo() {
     airliftToOwnTerritory->execute();
     cout << *testPlayerAirlift << endl;
 
+    cout << "---- Airlift to own territory again ----" << endl;
+    airliftToOwnTerritory->execute();
+
     // airlift to enemy territory
     cout << "---- Airlift to enemy territory ----" << endl;
     auto airliftToEnemyTerritory = make_unique<Airlift>(testPlayerAirlift,
@@ -161,17 +173,15 @@ void airliftDemo() {
                                                       1);
     cout << *testPlayerAirlift << endl;
     airliftToEnemyTerritory->execute();
-    cout << *testPlayerAirlift << endl;
 
     // airlift without enough armies
-    cout << "---- Airlift without enough source armies ----" << endl;
+    cout << "\n---- Airlift without enough source armies ----" << endl;
     auto airliftShort = make_unique<Airlift>(testPlayerAirlift,
                                                         testSourceTerritoryAirlift,
                                                         testTargetOwnedAirlift,
                                                         3);
     cout << *testPlayerAirlift << endl;
     airliftToOwnTerritory->execute();
-    cout << *testPlayerAirlift << endl;
 }
 
 void bombDemo() {

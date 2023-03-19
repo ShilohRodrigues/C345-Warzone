@@ -62,12 +62,14 @@ public:
 	void returnPlayedCardToDeck(Deck* a_Deck);
 	vector<Card*>* getHandOfCards();
 	vector<Card*>* getPlayCards();
-	void deletePlayedCardsFromHand(Card* r_card);
+	void deletePlayedCardFromHand(Card* r_card);
 	void clearPlayedCards();
 
     void addCardToHand(Card* card);
     void addCardToHand(string cardType);
     static int findFirstCard(vector<Card*>* handOrPlayCards, const string& cardType);
+    Card* getCardFromHandCards(const string& cardType);
+    Card* getCardFromPlayCards(string cardType);
 
 	// stream insertion operator
 	friend ostream& operator<<(ostream& os, const Hand& hand);
