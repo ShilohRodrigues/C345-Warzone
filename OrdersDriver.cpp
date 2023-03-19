@@ -50,6 +50,7 @@ void ordersDemo2() {
     airliftDemo();
     bombDemo();
     blockadeDemo();
+    negotiateDemo();
 }
 
 void deployDemo() {
@@ -224,4 +225,28 @@ void blockadeDemo() {
     // blockade not owned territory
     cout << "---- Blockade not owned territory ----" << endl;
     blockadeOrder->execute(); // blockading again, but now it's owned by the neutral player
+}
+
+void negotiateDemo() {
+    // -- NEGOTIATE TESTS --
+    cout << "\n\n-- NEGOTIATE TESTS --" << endl;
+
+    // prepare player
+    auto testPlayerNegotiate1 = make_shared<Player>();
+    auto testPlayerNegotiate2 = make_shared<Player>();
+
+    // Negotiate with self
+    cout << "---- Negotiate with self ----" << endl;
+    auto negotiateSelf = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate1);
+    cout << *testPlayerNegotiate1 << endl;
+    negotiateSelf->execute();
+
+    // Negotiate with other
+    cout << "\n---- Negotiate with other ----" << endl;
+    auto negotiateOther = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate2);
+    cout << *testPlayerNegotiate1 << endl;
+    cout << *testPlayerNegotiate2 << endl;
+    negotiateOther->execute();
+    cout << *testPlayerNegotiate1 << endl << endl;
+    cout << *testPlayerNegotiate2 << endl;
 }
