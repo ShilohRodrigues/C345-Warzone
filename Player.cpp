@@ -239,4 +239,12 @@ void Player::clearNegotiatedPlayers() {
     this->negotiatedPlayers->clear();
 }
 
+bool Player::isInNegotiatedPlayers(string playerName) {
+    return any_of(this->negotiatedPlayers->begin(),
+                  this->negotiatedPlayers->end(),
+                  [&](const auto& player) {
+        return player->getName() == playerName;
+    });
+}
+
 

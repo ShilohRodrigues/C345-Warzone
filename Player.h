@@ -39,6 +39,7 @@ public:
 
     void addNegotiatedPlayer(const shared_ptr<Player>& player);
     void clearNegotiatedPlayers();
+    bool isInNegotiatedPlayers(string playerName);
 
     // getters and setters
     const string &getName() const;
