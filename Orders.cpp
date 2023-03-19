@@ -45,11 +45,10 @@ void Order::setNextId(int nextId) {
 // execute() for every subclass
 
 // Deploy
-Deploy::Deploy():Order() {}
 Deploy::Deploy(const shared_ptr<Player>& player,
                const shared_ptr<Territory>& targetTerritory,
                const int deployedArmies):
-    player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
+    Order(), player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
 Deploy::Deploy(const Deploy& deploy):Order(deploy) {
     this->player = deploy.player;
     this->targetTerritory = deploy.targetTerritory;
@@ -135,11 +134,11 @@ void Deploy::setDeployedArmies(int deployedArmies) {
 }
 
 // Advance
-Advance::Advance():Order() {}
 Advance::Advance(const shared_ptr<Player>& player,
                  const shared_ptr<Territory>& sourceTerritory,
                  const shared_ptr<Territory>& targetTerritory,
                  int advanceArmies):
+                 Order(),
                  player(player),
                  sourceTerritory(sourceTerritory), targetTerritory(targetTerritory),
                  advanceArmies(advanceArmies) {}
@@ -176,7 +175,8 @@ ostream& operator<<(ostream& os, const Advance& advance) {
  * 1) the source territory belongs to the player issuing the order
  * 2) the target territory is adjacent to the source territory
  * 3) the player issuing the order has enough armies to advance
- * @return
+ * 4) the owner of the target territory is not in the issuing player's negotiatedPlayers
+ * @return whether the order is valid or not
  */
 bool Advance::validate()  {
     if (*sourceTerritory->getPlayerInPossession() != player->getName()) {
@@ -188,6 +188,12 @@ bool Advance::validate()  {
         // player doesn't have enough armies on the source territory
         return false;
     }
+
+    if (this->player->isInNegotiatedPlayers(*targetTerritory->getPlayerInPossession())) {
+        // can't attack a player in a negotiation agreement
+        return false;
+    }
+
     return true;
 }
 
@@ -288,6 +294,12 @@ void Advance::attack() {
         auto newArmyCountPtr = make_unique<int>(defendingArmies);
         targetTerritory->setArmyCnt(newArmyCountPtr);
     }
+
+    // TODO: after every turn
+    //  1) update army count
+    //  2) update reinforcement pool
+    //  3) update territories
+    //  4) clear negotiated players
 }
 
 // getters and setters
@@ -324,10 +336,9 @@ void Advance::setAdvanceArmies(int advanceArmies) {
 }
 
 // Bomb
-Bomb::Bomb():Order() {}
 Bomb::Bomb(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory):
-           player(player), targetTerritory(targetTerritory) {}
+           Order(), player(player), targetTerritory(targetTerritory) {}
 Bomb::Bomb(const Bomb& bomb):Order(bomb) {
     this->player = bomb.player;
     this->targetTerritory = bomb.targetTerritory;
@@ -365,6 +376,11 @@ bool Bomb::validate()  {
     }
 
     // TODO: check adjacency to any player-owned territory
+
+    if (this->player->isInNegotiatedPlayers(*targetTerritory->getPlayerInPossession())) {
+        // can't attack a player in a negotiation agreement
+        return false;
+    }
 
     return true;
 }
@@ -407,11 +423,10 @@ void Bomb::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
 }
 
 // Blockade
-Blockade::Blockade():Order() {}
 Blockade::Blockade(const shared_ptr<Player>& player,
                    const shared_ptr<Player>& neutralPlayer,
                    const shared_ptr<Territory>& targetTerritory):
-                   player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
+                   Order(), player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
 Blockade::Blockade(const Blockade& blockade):Order(blockade) {
     this->player = blockade.player;
     this->neutralPlayer = blockade.neutralPlayer;
@@ -461,14 +476,14 @@ void Blockade::execute() {
     cout << "Trying to blockade the territory:" << endl;
     cout << *this->targetTerritory;
     if (validate()) {
+        // transfer ownership to the Neutral player
+        this->player->removeTerritory(targetTerritory, neutralPlayer);
+
         // double the number of armies on the territory
         int targetArmies = *this->targetTerritory->getArmyCnt();
         targetArmies = targetArmies * 2;
         auto newTargetArmiesPtr = make_unique<int>(targetArmies);
         this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
-
-        // transfer ownership to the Neutral player
-        this->player->removeTerritory(targetTerritory, neutralPlayer);
 
         // update report
         cout << "Successfully blockaded the territory:" << endl;
@@ -504,12 +519,11 @@ void Blockade::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) 
 }
 
 // Airlift
-Airlift::Airlift():Order() {}
 Airlift::Airlift(const shared_ptr<Player>& player,
                  const shared_ptr<Territory>& sourceTerritory,
                  const shared_ptr<Territory>& targetTerritory,
                  int airliftArmies):
-                 player(player), sourceTerritory(sourceTerritory),
+                 Order(), player(player), sourceTerritory(sourceTerritory),
                  targetTerritory(targetTerritory), airliftArmies(airliftArmies) {}
 Airlift::Airlift(const Airlift& airlift):Order(airlift) {
     this->player = airlift.player;
@@ -625,32 +639,80 @@ void Airlift::setAirliftArmies(int airliftArmies) {
 }
 
 // Negotiate
-Negotiate::Negotiate():Order() {}
-Negotiate::Negotiate(const Negotiate& negotiate):Order() {} // no members to copy for now
+Negotiate::Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer):
+    Order(), issuer(issuer), targetPlayer(targetPlayer) {}
+Negotiate::Negotiate(const Negotiate& negotiate):Order(negotiate) {
+    this->issuer = negotiate.issuer;
+    this->targetPlayer = negotiate.targetPlayer;
+}
 Negotiate& Negotiate::operator=(const Negotiate& negotiate) {
     if (this == &negotiate) {
         return *this;
     } else {
-        // no members to copy for now
+        this->issuer = negotiate.issuer;
+        this->targetPlayer = negotiate.targetPlayer;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Negotiate& negotiate) {
     os << static_cast<const Order&>(negotiate);
-    // no specific member info to return for now
+    os << " - issuer: " << negotiate.getIssuer()->getName();
+    os << " - targetPlayer: " << negotiate.getTargetPlayer()->getName();
 
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target is not the player issuing the order
+ * TODO: ensure that the negotiate order can only be created by playing the diplomacy card
+ * @return whether the order is valid or not
+ */
 bool Negotiate::validate()  {
-    cout << "negotiate order validated\n";
+    if (this->targetPlayer->getName() == this->issuer->getName()) {
+        // player can't negotiate with itself
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    return true;
 }
 
+/**
+ * Prevents attacks between the two players.
+ * This method specifically adds each player to their own negotiatedPlayers vector.
+ * The attack orders will not attack players in players' negotiatedPlayers vector.
+ */
 void Negotiate::execute() {
-    // logic to be implemented in later assignments
-    cout << "negotiate order executed\n";
+    // status report
+    cout << "Trying to negotiate between " << issuer->getName()
+        << " and " << targetPlayer->getName() << endl;
+    if (validate()) {
+        // add each player to each other's negotiatedPlayers
+        this->issuer->addNegotiatedPlayer(targetPlayer);
+        this->targetPlayer->addNegotiatedPlayer(issuer);
+
+        // update report
+        cout << "Negotiation succeeded." << endl;
+    } else {
+        cout << "Invalid negotiate order. Could not execute." << endl;
+    }
+}
+
+const shared_ptr<Player> &Negotiate::getIssuer() const {
+    return issuer;
+}
+
+void Negotiate::setIssuer(const shared_ptr<Player> &issuer) {
+    Negotiate::issuer = issuer;
+}
+
+const shared_ptr<Player> &Negotiate::getTargetPlayer() const {
+    return targetPlayer;
+}
+
+void Negotiate::setTargetPlayer(const shared_ptr<Player> &targetPlayer) {
+    Negotiate::targetPlayer = targetPlayer;
 }
 
 // OrdersList

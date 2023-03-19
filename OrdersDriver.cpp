@@ -5,43 +5,43 @@
 using namespace std;
 
 void ordersDemo1() {
-    // create order of every kind
-    auto testDeploy = make_shared<Deploy>();
-    auto testAdvance = make_shared<Advance>();
-    auto testBomb = make_shared<Bomb>();
-    auto testBlockade = make_shared<Blockade>();
-    auto testAirlift = make_shared<Airlift>();
-    auto testNegotiate = make_shared<Negotiate>();
-
-    // create a list of orders
-    auto testOrdersList = make_unique<OrdersList>();
-    testOrdersList->add(testDeploy);
-    testOrdersList->add(testAdvance);
-    testOrdersList->add(testBomb);
-    testOrdersList->add(testBlockade);
-    testOrdersList->add(testAirlift);
-    testOrdersList->add(testNegotiate);
-
-    cout << "\n== OrdersList Stream Insertion Operator ==\n" << *testOrdersList << endl;
-
-    for (const auto& order : *testOrdersList->getOrderList()) {
-        // every order subclass has validate()
-        order->validate();
-        // every order subclass has execute()
-        order->execute();
-    }
-
-    // OrdersList has remove()
-    testOrdersList->remove(3); // remove bomb
-    cout << "\n== OrdersLost::remove() ==\n[removing order with orderID 3 (bomb)]\n" << *testOrdersList << endl;
-
-    //OrdersList has move()
-    cout << "\n== OrdersLost::move() ==\n[move(\"up\", 2) - swapping advance (2) and deploy (1)]\n";
-    testOrdersList->move("up", 2); // swap advance and deploy
-    cout << *testOrdersList << endl;
-    cout << "[move(\"down\", 5) - swapping airlift (5) and negotiate (6)]\n";
-    testOrdersList->move("down", 5);
-    cout << *testOrdersList << endl;
+//    // create order of every kind
+//    auto testDeploy = make_shared<Deploy>();
+//    auto testAdvance = make_shared<Advance>();
+//    auto testBomb = make_shared<Bomb>();
+//    auto testBlockade = make_shared<Blockade>();
+//    auto testAirlift = make_shared<Airlift>();
+//    auto testNegotiate = make_shared<Negotiate>();
+//
+//    // create a list of orders
+//    auto testOrdersList = make_unique<OrdersList>();
+//    testOrdersList->add(testDeploy);
+//    testOrdersList->add(testAdvance);
+//    testOrdersList->add(testBomb);
+//    testOrdersList->add(testBlockade);
+//    testOrdersList->add(testAirlift);
+//    testOrdersList->add(testNegotiate);
+//
+//    cout << "\n== OrdersList Stream Insertion Operator ==\n" << *testOrdersList << endl;
+//
+//    for (const auto& order : *testOrdersList->getOrderList()) {
+//        // every order subclass has validate()
+//        order->validate();
+//        // every order subclass has execute()
+//        order->execute();
+//    }
+//
+//    // OrdersList has remove()
+//    testOrdersList->remove(3); // remove bomb
+//    cout << "\n== OrdersLost::remove() ==\n[removing order with orderID 3 (bomb)]\n" << *testOrdersList << endl;
+//
+//    //OrdersList has move()
+//    cout << "\n== OrdersLost::move() ==\n[move(\"up\", 2) - swapping advance (2) and deploy (1)]\n";
+//    testOrdersList->move("up", 2); // swap advance and deploy
+//    cout << *testOrdersList << endl;
+//    cout << "[move(\"down\", 5) - swapping airlift (5) and negotiate (6)]\n";
+//    testOrdersList->move("down", 5);
+//    cout << *testOrdersList << endl;
 }
 
 void ordersDemo2() {
@@ -50,6 +50,7 @@ void ordersDemo2() {
     airliftDemo();
     bombDemo();
     blockadeDemo();
+    negotiateDemo();
 }
 
 void deployDemo() {
@@ -224,4 +225,40 @@ void blockadeDemo() {
     // blockade not owned territory
     cout << "---- Blockade not owned territory ----" << endl;
     blockadeOrder->execute(); // blockading again, but now it's owned by the neutral player
+}
+
+void negotiateDemo() {
+    // -- NEGOTIATE TESTS --
+    cout << "\n\n-- NEGOTIATE TESTS --" << endl;
+
+    // prepare territories
+    auto testTerritory1 = make_shared<Territory>(0, "testTerritory1", 0, "test", 3);
+    auto testTerritory2 = make_shared<Territory>(0, "testTerritory2", 0, "test", 2);
+
+    // prepare player
+    auto testPlayerNegotiate1 = make_shared<Player>();
+    auto testPlayerNegotiate2 = make_shared<Player>();
+
+    testPlayerNegotiate1->addTerritory(testTerritory1);
+    testPlayerNegotiate2->addTerritory(testTerritory2);
+
+    // Negotiate with self
+    cout << "---- Negotiate with self ----" << endl;
+    auto negotiateSelf = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate1);
+    cout << *testPlayerNegotiate1 << endl;
+    negotiateSelf->execute();
+
+    // Negotiate with other
+    cout << "\n---- Negotiate with other ----" << endl;
+    auto negotiateOther = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate2);
+    cout << *testPlayerNegotiate1 << endl;
+    cout << *testPlayerNegotiate2 << endl;
+    negotiateOther->execute();
+    cout << *testPlayerNegotiate1 << endl << endl;
+    cout << *testPlayerNegotiate2 << endl;
+
+    // Try to attack negotiated player
+    cout << "\n---- Attacking negotiated player ----" << endl;
+    auto advance = make_unique<Advance>(testPlayerNegotiate1, testTerritory1, testTerritory2, 2);
+    advance->execute();
 }
