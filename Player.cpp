@@ -88,6 +88,12 @@ ostream& operator<<(ostream& os, const Player& player) {
 
     os << "Hand: " << *player.cardHand << endl;
     os << "Orders: " << *player.ordersList << endl;
+    os << "negotiatedPlayers:" << endl;
+    if (player.negotiatedPlayers) {
+        for (const auto& p : *player.negotiatedPlayers) {
+            os << "    " << p->getName();
+        }
+    }
 
     return os;
 }
