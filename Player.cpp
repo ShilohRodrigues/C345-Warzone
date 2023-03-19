@@ -302,6 +302,15 @@ void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
 }
 
 /**
+ * Checks whether the given card type is within the cards that the player has played.
+ * @param cardType the type of the card to be checked
+ * @return whether the given card type is within the cards that the player has played
+ */
+bool Player::hasPlayedCard(const string& cardType) {
+    return Hand::findFirstCard(this->cardHand->getPlayCards(), cardType) != -1;
+}
+
+/**
  * Updates all the player data members that need to be updated after every turn
  * and executes any additional actions that need to be done every turn.
  *
