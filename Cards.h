@@ -63,6 +63,7 @@ public:
 	vector<Card*>* getHandOfCards();
 	vector<Card*>* getPlayCards();
 	void deletePlayedCardFromHand(Card* r_card);
+    void deletePlayedCardFromPlayCards(const string& cardType);
 	void clearPlayedCards();
 
     void addCardToHand(Card* card);

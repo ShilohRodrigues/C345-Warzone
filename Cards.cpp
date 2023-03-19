@@ -232,6 +232,17 @@ void Hand::deletePlayedCardFromHand(Card* r_card)
 		}
 	}
 }
+
+void Hand::deletePlayedCardFromPlayCards(const string& cardType) {
+    for (auto it = playCards.begin(); it != playCards.end(); ++it) {
+        if ((*it)->getCardType() == cardType) {
+            // Remove the card from the playCards vector
+            playCards.erase(it);
+            cout << "Deleted " << cardType << " card from the playCards." << endl;
+            return;
+        }
+    }
+}
 // Clear the play cards	
 void Hand::clearPlayedCards()
 {
