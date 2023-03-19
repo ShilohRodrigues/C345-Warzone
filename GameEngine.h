@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "Player.h"
 using namespace std;
 
 class State;
@@ -23,9 +24,16 @@ class GameEngine {
     int nextState(string cmd);
     shared_ptr<State> getState();
     void setState(shared_ptr<State> newState);
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    int executeOrdersPhase();
+    void sortOrders(OrdersList* orderList);
     
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
+    Map* map;
+    vector<Player*> players;
+    int currentPlayerIndex = 0;
 };
 
 //State Interface, all states must inherit this class and implement all its methods

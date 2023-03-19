@@ -4,6 +4,73 @@
 
 using namespace std;
 
+void GameEngine::reinforcementPhase() {
+    // Iterate through all players and calculate their reinforcement armies
+    for (auto player : players) {
+        int armies = player->getTerritories().get()->size() / 3;
+        if (armies < 3) {
+            armies = 3;
+        }
+        for (auto continent : map->getContinents()) {
+            bool ownsContinent = true;
+            for (auto territory : continent.getTerritories()) {
+                if (*territory.first.getPlayerInPossession() != player->getName()) {
+                    ownsContinent = false;
+                    break;
+                }
+            }
+            if (ownsContinent) {
+                armies += 1;
+            }
+        }
+        player->setReinforcementPool(armies);
+    }
+
+}
+
+void GameEngine::issueOrdersPhase() {
+    // Iterate through all players in round robin fashion
+    for (int i = 0; i < players.size(); i++) {
+        Player* currentPlayer = players[currentPlayerIndex];
+        currentPlayer->issueOrder();
+
+        // Move to the next player
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    }
+}
+
+void GameEngine::sortOrders(OrdersList* orderList) {
+    // Sort orders in descending order of priority
+    std::sort(orderList->getOrderList()->begin(), orderList->getOrderList()->end(),
+        [](const Order* a, const Order* b) { return a->getOrderId() > b->getOrderId(); });
+}
+
+int GameEngine::executeOrdersPhase() {
+    cout << "\n********** Executing Orders **********\n" << endl;
+
+    int numExecuted = 0;
+
+    // Loop through all players in turn order
+    for (auto& player : players) {
+
+        // Sort player's orders by priority
+        sortOrders(player->getOrdersList().get());
+
+        // Loop through all orders for the player
+        for (auto& order : *(player->getOrdersList()->getOrderList())) {
+
+            // Try to execute the order
+            if (order->validate()) {
+                order->execute();
+                numExecuted++;
+            }
+
+        }
+
+    }
+    return numExecuted;
+}
+
 ///////////////// Game Class Implementations //////////////////////////
 //Game constructor, initializes the state to the starting state
 GameEngine::GameEngine() {
