@@ -117,7 +117,12 @@ void advanceDemo() {
                                                         3);
     cout << *testPlayerAdvance << endl;
     advanceToEnemyTerritory->execute();
-    cout << *testPlayerAdvance << endl;
+
+    cout << "Simulating end of turn . . ." << endl;
+    shared_ptr<Deck> deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerAdvance->update(deck);
+    cout << "Player status: " << endl << *testPlayerAdvance << endl;
 }
 
 void airliftDemo() {

@@ -234,7 +234,7 @@ void Advance::execute() {
  * 3) if all defending armies are eliminated, the attacker captures the territory
  * the surviving attacking units occupy the territory and ownership changes
  * 4) a player receives a card at the end of his turn if they successfully conquered at least one territory
- * during their turn TODO: discuss how to implement this (4)
+ * during their turn TODO: get game engine to call Player::update() for all players after every turn
  */
 void Advance::attack() {
     int sourceArmies = *this->sourceTerritory->getArmyCnt();
