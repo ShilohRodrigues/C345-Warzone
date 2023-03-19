@@ -231,9 +231,16 @@ void negotiateDemo() {
     // -- NEGOTIATE TESTS --
     cout << "\n\n-- NEGOTIATE TESTS --" << endl;
 
+    // prepare territories
+    auto testTerritory1 = make_shared<Territory>(0, "testTerritory1", 0, "test", 3);
+    auto testTerritory2 = make_shared<Territory>(0, "testTerritory2", 0, "test", 2);
+
     // prepare player
     auto testPlayerNegotiate1 = make_shared<Player>();
     auto testPlayerNegotiate2 = make_shared<Player>();
+
+    testPlayerNegotiate1->addTerritory(testTerritory1);
+    testPlayerNegotiate2->addTerritory(testTerritory2);
 
     // Negotiate with self
     cout << "---- Negotiate with self ----" << endl;
@@ -249,4 +256,9 @@ void negotiateDemo() {
     negotiateOther->execute();
     cout << *testPlayerNegotiate1 << endl << endl;
     cout << *testPlayerNegotiate2 << endl;
+
+    // Try to attack negotiated player
+    cout << "\n---- Attacking negotiated player ----" << endl;
+    auto advance = make_unique<Advance>(testPlayerNegotiate1, testTerritory1, testTerritory2, 2);
+    advance->execute();
 }
