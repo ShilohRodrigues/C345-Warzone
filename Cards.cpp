@@ -16,6 +16,7 @@
 Card::Card() {
 
 }
+Card::Card(string *cardType): aCardType(cardType) {}
 // Destructor
 Card::~Card() {
 
@@ -54,6 +55,11 @@ const string& Card::getCardType() const
 {
 	return *aCardType;
 }
+
+void Card::setCardType(string *cardType) {
+    Card::aCardType = cardType;
+}
+
 //---------------------------------------------------DECK---------------------------------------------------
 // Default constructor
 Deck::Deck()
@@ -146,9 +152,15 @@ Hand& Hand::operator=(const Hand& h)
 }
 // stream insertion operator
 ostream& operator<<(ostream& os, const Hand& hand) {
+    os << "Hand cards: ";
 	for (const auto& card : hand.handCards) {
 		os << *card << " ";
 	}
+
+    os << "\nPlay cards: ";
+    for (const auto& card : hand.playCards) {
+        os << *card << " ";
+    }
 	return os;
 }
 
@@ -188,8 +200,7 @@ void Hand::play(Card* a_card, Deck* a_Deck)
 {
 	playCards.push_back(a_card);
 	returnPlayedCardToDeck(a_Deck);
-	deletePlayedCardsFromHand(a_card);
-	playCards.pop_back();
+    deletePlayedCardFromHand(a_card);
 }
 // Return the played card to the deck
 void Hand::returnPlayedCardToDeck(Deck* a_Deck)
@@ -209,7 +220,7 @@ vector<Card*>* Hand::getPlayCards()
 	return &playCards;
 }
 // Delete the played card from the hand
-void Hand::deletePlayedCardsFromHand(Card* r_card)
+void Hand::deletePlayedCardFromHand(Card* r_card)
 {
 	// Iterate the elements of the handCards vector
 	for (vector<Card*>::iterator it = handCards.begin(); it != handCards.end(); it++) {
@@ -221,9 +232,62 @@ void Hand::deletePlayedCardsFromHand(Card* r_card)
 		}
 	}
 }
+
+void Hand::deletePlayedCardFromPlayCards(const string& cardType) {
+    for (auto it = playCards.begin(); it != playCards.end(); ++it) {
+        if ((*it)->getCardType() == cardType) {
+            // Remove the card from the playCards vector
+            playCards.erase(it);
+            cout << "Deleted " << cardType << " card from the playCards." << endl;
+            return;
+        }
+    }
+}
 // Clear the play cards	
 void Hand::clearPlayedCards()
 {
 	playCards.clear();
 	cout << "\n Play Cards are Cleaned." << endl;
+}
+
+void Hand::addCardToHand(Card *card) {
+    handCards.push_back(card);
+}
+
+void Hand::addCardToHand(const string& cardType) {
+    auto* cardTypePtr = new string(cardType);
+    Card* newCard = new Card(cardTypePtr);
+    this->addCardToHand(newCard);
+}
+
+/**
+ * Finds the first card in the hand or play cards matching the given card type.
+ * @param handOrPlayCards handCards or playCards
+ * @param cardType the type of the card
+ * @return the index of the first matching card
+ */
+int Hand::findFirstCard(vector<Card *> *handOrPlayCards, const string& cardType) {
+    for (int i = 0; i < handOrPlayCards->size(); i++) {
+        if ((*handOrPlayCards)[i]->getCardType() == cardType) {
+            // If we found a card with the specified type, return its index
+            return i;
+        }
+    }
+
+    // If we didn't find a card with the specified type, return -1 to indicate failure
+    return -1;
+}
+
+Card* Hand::getCardFromHandCards(const string& cardType) {
+    int cardIndex = Hand::findFirstCard(this->getHandOfCards(), cardType);
+    auto card = *this->handCards[cardIndex];
+    Card* cardPtr = &card;
+    return cardPtr;
+}
+
+Card* Hand::getCardFromPlayCards(string cardType) {
+    int cardIndex = Hand::findFirstCard(this->getPlayCards(), cardType);
+    auto card = *this->handCards[cardIndex];
+    Card* cardPtr = &card;
+    return cardPtr;
 }

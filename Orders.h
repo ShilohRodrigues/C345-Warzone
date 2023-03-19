@@ -21,7 +21,7 @@ public:
     Order& operator=(const Order& order);
     // each subclass needs validate(), execute()
     virtual bool validate()=0;
-    virtual void execute()=0;
+    virtual int execute()=0;
     // stream insertion operator
     friend ostream& operator<<(ostream& os, const Order& order);
 
@@ -39,7 +39,6 @@ private:
 // deploy(), advance(), bomb(), blockade(), airlift(), negotiate()
 class Deploy : public Order {
 public:
-    Deploy();
     Deploy(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory,
            int deployedArmies);
@@ -48,7 +47,7 @@ public:
     friend ostream& operator<<(ostream& os, const Deploy& deploy);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -67,7 +66,6 @@ private:
 
 class Advance : public Order {
 public:
-    Advance();
     Advance(const shared_ptr<Player>& player,
             const shared_ptr<Territory>& sourceTerritory,
             const shared_ptr<Territory>& targetTerritory,
@@ -89,7 +87,7 @@ public:
     void setAdvanceArmies(int advanceArmies);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     void attack();
 
@@ -102,7 +100,6 @@ private:
 
 class Bomb : public Order {
 public:
-    Bomb();
     Bomb(const shared_ptr<Player>& player,
          const shared_ptr<Territory>& targetTerritory);
     Bomb(const Bomb& bomb);
@@ -110,7 +107,7 @@ public:
     friend ostream& operator<<(ostream& os, const Bomb& bomb);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -125,7 +122,6 @@ private:
 
 class Blockade : public Order {
 public:
-    Blockade();
     Blockade(const shared_ptr<Player>& player,
              const shared_ptr<Player>& neutralPlayer,
              const shared_ptr<Territory>& targetTerritory);
@@ -134,7 +130,7 @@ public:
     friend ostream& operator<<(ostream& os, const Blockade& blockade);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -153,7 +149,6 @@ private:
 
 class Airlift : public Order {
 public:
-    Airlift();
     Airlift(const shared_ptr<Player>& player,
             const shared_ptr<Territory>& sourceTerritory,
             const shared_ptr<Territory>& targetTerritory,
@@ -163,7 +158,7 @@ public:
     friend ostream& operator<<(ostream& os, const Airlift& airlift);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -186,13 +181,23 @@ private:
 
 class Negotiate : public Order {
 public:
-    Negotiate();
+    Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer);
     Negotiate(const Negotiate& negotiate);
     Negotiate& operator=(const Negotiate& negotiate);
     friend ostream& operator<<(ostream& os, const Negotiate& negotiate);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
+
+    const shared_ptr<Player> &getIssuer() const;
+    void setIssuer(const shared_ptr<Player> &issuer);
+
+    const shared_ptr<Player> &getTargetPlayer() const;
+    void setTargetPlayer(const shared_ptr<Player> &targetPlayer);
+
+private:
+    shared_ptr<Player> issuer; // player issuing the order
+    shared_ptr<Player> targetPlayer;
 };
 
 class OrdersList {
@@ -227,5 +232,6 @@ void advanceDemo();
 void airliftDemo();
 void bombDemo();
 void blockadeDemo();
+void negotiateDemo();
 
 #endif // ORDERS_H
