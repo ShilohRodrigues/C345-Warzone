@@ -91,15 +91,15 @@ ostream& operator<<(ostream& os, const Player& player) {
         os << "null\n";
     }
 
-    os << "Hand: " << *player.cardHand << endl;
+    os << *player.cardHand << endl;
     os << "Orders: " << *player.ordersList << endl;
-    os << "negotiatedPlayers:" << endl;
+    os << "negotiatedPlayers: ";
     if (player.negotiatedPlayers) {
         for (const auto& p : *player.negotiatedPlayers) {
-            os << "    " << p->getName();
+            os << p->getName() << "  ";
         }
     }
-    os << "hasConqueredTerritory: " << player.hasConqueredTerritory << endl;
+    os << "\nhasConqueredTerritory: " << player.hasConqueredTerritory << endl;
 
     return os;
 }
@@ -297,7 +297,38 @@ int Player::updateArmyCount() {
 void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
     if (hasConqueredTerritory) {
         Card* card = deck->draw();
-        this->cardHand->addCardtoHand(card);
+        this->cardHand->addCardToHand(card);
+    }
+}
+
+/**
+ * Checks whether the given card type is within the cards that the player has played.
+ * @param cardType the type of the card to be checked
+ * @return whether the given card type is within the cards that the player has played
+ */
+bool Player::hasPlayedCard(const string& cardType) {
+    return Hand::findFirstCard(this->cardHand->getPlayCards(), cardType) != -1;
+}
+
+bool Player::hasCardInHand(const string &cardType) {
+    return Hand::findFirstCard(this->cardHand->getHandOfCards(), cardType) != -1;
+}
+
+/**
+ * Plays a card of the given type that the player has in their hand.
+ * @param deck shared ptr to the deck
+ * @param cardType the type of card that needs to be played
+ */
+void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
+    if (this->hasCardInHand(cardType)) {
+        // get the card
+        int cardIndex = Hand::findFirstCard(this->cardHand->getHandOfCards(), cardType);
+        auto handOfCards = *this->cardHand->getHandOfCards();
+        Card* card = handOfCards[cardIndex];
+        // get the deck pointer
+        Deck* deckPtr = deck.get();
+        // play the card
+        this->cardHand->play(card, deckPtr);
     }
 }
 
@@ -312,6 +343,7 @@ void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
  * 4) clear negotiated players
  * 5) draw if hasConqueredTerritory
  * 6) clear hasConqueredTerritory
+ * 7) clear player's played cards
  *
  * This method is meant to be called at the end of every turn on every player.
  *
@@ -324,6 +356,7 @@ void Player::update(const shared_ptr<Deck>& deck) {
     this->clearNegotiatedPlayers();
     this->drawIfHasConquered(deck);
     this->hasConqueredTerritory = false;
+    this->cardHand->clearPlayedCards();
 }
 
 

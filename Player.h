@@ -45,6 +45,9 @@ public:
     int updateArmyCount();
 
     void drawIfHasConquered(const shared_ptr<Deck>& deck);
+    bool hasPlayedCard(const string& cardType);
+    bool hasCardInHand(const string& cardType);
+    void playCard(const shared_ptr<Deck>& deck, const string& cardType);
 
     void update(const shared_ptr<Deck>& deck);
 
