@@ -41,6 +41,8 @@ public:
     void clearNegotiatedPlayers();
     bool isInNegotiatedPlayers(string playerName);
 
+    int updateArmyCount();
+
     // getters and setters
     const string &getName() const;
 

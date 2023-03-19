@@ -253,4 +253,13 @@ bool Player::isInNegotiatedPlayers(string playerName) {
     });
 }
 
+int Player::updateArmyCount() {
+    int newArmyCount = 0;
+    for (const auto& territory : *this->territories) {
+        newArmyCount += *territory->getArmyCnt();
+    }
+    this->armyCount = newArmyCount;
+    return newArmyCount;
+}
+
 
