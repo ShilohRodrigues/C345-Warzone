@@ -238,5 +238,6 @@ void advanceDemo();
 void airliftDemo();
 void bombDemo();
 void blockadeDemo();
+void negotiateDemo();
 
 #endif // ORDERS_H
