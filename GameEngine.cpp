@@ -320,6 +320,15 @@ int PlayersAddedState::next(GameEngine *game, string cmd) {
     }
     cout << endl << endl;
 
+    cout << "Giving every player starting army count of 50." << endl;
+    for (auto& p : game->getPlayers()) {
+      p.setArmyCount(50);
+      cout << p.getName() << " army count: " << p.getArmyCount() << " | ";   
+    }
+    cout << endl << endl;
+
+    cout << "Drawing 2 cards for every player.." << endl;
+
     game->setState(shared_ptr<State>(new AssignReinforcementState()));
     return 0;
   }

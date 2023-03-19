@@ -193,7 +193,7 @@ bool Advance::validate()  {
         return false;
     }
 
-    if (this->player->isInNegotiatedPlayers(*targetTerritory->getPlayerInPossession())) {
+    if (this->player->isInNegotiatedPlayers(targetTerritory->getPlayerInPossession())) {
         // can't attack a player in a negotiation agreement
         return false;
     }
@@ -379,7 +379,7 @@ bool Bomb::validate()  {
 
     // TODO: check adjacency to any player-owned territory
 
-    if (this->player->isInNegotiatedPlayers(*targetTerritory->getPlayerInPossession())) {
+    if (this->player->isInNegotiatedPlayers(targetTerritory->getPlayerInPossession())) {
         // can't attack a player in a negotiation agreement
         return false;
     }

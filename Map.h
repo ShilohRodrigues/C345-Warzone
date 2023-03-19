@@ -48,6 +48,7 @@ public:
     int getId() const; //ID getter
     string getName() const; //Name getter
     int getContId() const;
+    string getNameID() const;
 
     const string &getPlayerInPossession() const;
     void setPlayerInPossession(string playerInPossession);
