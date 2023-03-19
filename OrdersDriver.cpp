@@ -48,8 +48,8 @@ void ordersDemo2() {
 //    deployDemo();
 //    advanceDemo();
 //    airliftDemo();
-    bombDemo();
-//    blockadeDemo();
+//    bombDemo();
+    blockadeDemo();
 //    negotiateDemo();
 }
 
@@ -249,15 +249,30 @@ void blockadeDemo() {
     auto neutralPlayer = make_shared<Player>();
 
     // blockade own territory
-    cout << "---- Blockade own territory ----" << endl;
+    cout << "---- Blockade own territory (no card) ----" << endl;
     auto blockadeOrder = make_unique<Blockade>(testPlayerBlockade, neutralPlayer,
                                                testOwnBlockade);
     cout << *testPlayerBlockade << endl;
+    blockadeOrder->execute();
+
+    // play blockade card
+    cout << "---- Playing Blockade Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerBlockade->getCardHand()->addCardToHand("Blockade");
+    cout << *testPlayerBlockade << endl;
+    testPlayerBlockade->playCard(deck, "Blockade");
+    cout << *testPlayerBlockade << endl;
+
+    // blockade own territory
+    cout << "---- Blockade own territory (with card) ----" << endl;
     blockadeOrder->execute();
     cout << *testPlayerBlockade << endl;
 
     // blockade not owned territory
     cout << "---- Blockade not owned territory ----" << endl;
+    testPlayerBlockade->getCardHand()->addCardToHand("Blockade");
+    testPlayerBlockade->playCard(deck, "Blockade");
     blockadeOrder->execute(); // blockading again, but now it's owned by the neutral player
 }
 

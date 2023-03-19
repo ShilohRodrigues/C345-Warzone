@@ -500,6 +500,8 @@ void Blockade::execute() {
     } else {
         cout << "Invalid blockade order. Could not execute." << endl;
     }
+    // remove the played card
+    this->player->getCardHand()->deletePlayedCardFromPlayCards("Blockade");
 }
 
 // getters and setters
@@ -719,6 +721,8 @@ void Negotiate::execute() {
     } else {
         cout << "Invalid negotiate order. Could not execute." << endl;
     }
+    // remove the played card
+    this->issuer->getCardHand()->deletePlayedCardFromPlayCards("Diplomacy");
 }
 
 const shared_ptr<Player> &Negotiate::getIssuer() const {
