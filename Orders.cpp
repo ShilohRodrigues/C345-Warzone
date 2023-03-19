@@ -476,14 +476,14 @@ void Blockade::execute() {
     cout << "Trying to blockade the territory:" << endl;
     cout << *this->targetTerritory;
     if (validate()) {
+        // transfer ownership to the Neutral player
+        this->player->removeTerritory(targetTerritory, neutralPlayer);
+
         // double the number of armies on the territory
         int targetArmies = *this->targetTerritory->getArmyCnt();
         targetArmies = targetArmies * 2;
         auto newTargetArmiesPtr = make_unique<int>(targetArmies);
         this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
-
-        // transfer ownership to the Neutral player
-        this->player->removeTerritory(targetTerritory, neutralPlayer);
 
         // update report
         cout << "Successfully blockaded the territory:" << endl;
