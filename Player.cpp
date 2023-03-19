@@ -310,6 +310,28 @@ bool Player::hasPlayedCard(const string& cardType) {
     return Hand::findFirstCard(this->cardHand->getPlayCards(), cardType) != -1;
 }
 
+bool Player::hasCardInHand(const string &cardType) {
+    return Hand::findFirstCard(this->cardHand->getHandOfCards(), cardType) != -1;
+}
+
+/**
+ * Plays a card of the given type that the player has in their hand.
+ * @param deck shared ptr to the deck
+ * @param cardType the type of card that needs to be played
+ */
+void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
+    if (this->hasCardInHand(cardType)) {
+        // get the card
+        int cardIndex = Hand::findFirstCard(this->cardHand->getHandOfCards(), cardType);
+        auto handOfCards = *this->cardHand->getHandOfCards();
+        Card* card = handOfCards[cardIndex];
+        // get the deck pointer
+        Deck* deckPtr = deck.get();
+        // play the card
+        this->cardHand->play(card, deckPtr);
+    }
+}
+
 /**
  * Updates all the player data members that need to be updated after every turn
  * and executes any additional actions that need to be done every turn.
