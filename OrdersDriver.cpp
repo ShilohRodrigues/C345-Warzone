@@ -45,11 +45,11 @@ void ordersDemo1() {
 }
 
 void ordersDemo2() {
-//    deployDemo();
-//    advanceDemo();
-//    airliftDemo();
-//    bombDemo();
-//    blockadeDemo();
+    deployDemo();
+    advanceDemo();
+    airliftDemo();
+    bombDemo();
+    blockadeDemo();
     negotiateDemo();
 }
 
@@ -117,6 +117,7 @@ void advanceDemo() {
                                                         3);
     cout << *testPlayerAdvance << endl;
     advanceToEnemyTerritory->execute();
+    cout << *testPlayerAdvance << endl;
 
     cout << "Simulating end of turn . . ." << endl;
     shared_ptr<Deck> deck = make_shared<Deck>();
