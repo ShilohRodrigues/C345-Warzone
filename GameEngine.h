@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <random>
 #include "Map.h"
 #include "Player.h"
 using namespace std;
@@ -32,7 +34,9 @@ class GameEngine {
 
     void addPlayer(Player &p);
     int playerCount();
-    string getPlayerName(int i);
+    Player getPlayer(int i);
+    vector<Player> getPlayers();
+    void shufflePlayers();
     
   private:
     shared_ptr<State> state;  //Tracks the state of the game  

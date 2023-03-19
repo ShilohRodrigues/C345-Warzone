@@ -37,6 +37,7 @@ Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Ter
 
 // copy constructor
 Player::Player(const Player& player):
+    name(player.name),
     armyCount(player.armyCount),
     reinforcementPool(player.reinforcementPool),
     territories(make_unique<vector<shared_ptr<Territory>>>()),
@@ -54,6 +55,7 @@ Player& Player::operator=(const Player& player) {
         return *this;
     } else {
         // change data members so that they match
+        this->name = player.name;
         this->armyCount = player.armyCount;
         this->reinforcementPool = player.reinforcementPool;
         territories->clear();
@@ -88,7 +90,7 @@ ostream& operator<<(ostream& os, const Player& player) {
 }
 
 // getters and setters
-const string &Player::getName() const {
+string Player::getName() {
     return name;
 }
 
@@ -124,7 +126,7 @@ void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territori
     if (territories) {
         this->territories = std::move(territories);
         for (const auto& territory : *this->territories) {
-            auto playerInPossession = make_unique<string>(this->name);
+            auto playerInPossession = this->name;
             territory->setPlayerInPossession(playerInPossession);
         }
     }
@@ -187,8 +189,7 @@ void Player::addTerritory(const shared_ptr<Territory>& territory) {
     this->territories->push_back(territory);
 
     // change player in possession
-    auto playerNamePtr = make_unique<string>(this->name);
-    territory->setPlayerInPossession(playerNamePtr);
+    territory->setPlayerInPossession(this->name);
 }
 
 void Player::removeTerritory(const shared_ptr<Territory>& territory) {
@@ -206,6 +207,5 @@ void Player::removeTerritory(const shared_ptr<Territory>& territory) {
 void Player::removeTerritory(const shared_ptr<Territory> &territory, const shared_ptr<Player> &newOwner) {
     removeTerritory(territory);
     // change player in possession
-    auto newOwnerNamePtr = make_unique<string>(newOwner->getName());
-    territory->setPlayerInPossession(newOwnerNamePtr);
+    territory->setPlayerInPossession(newOwner->getName());
 }

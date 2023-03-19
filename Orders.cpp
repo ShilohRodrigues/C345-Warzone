@@ -82,7 +82,7 @@ ostream& operator<<(ostream& os, const Deploy& deploy) {
  */
 bool Deploy::validate()  {
     if (player && targetTerritory) {
-        if ((player->getName() == *targetTerritory->getPlayerInPossession())
+        if ((player->getName() == targetTerritory->getPlayerInPossession())
             && (player->getReinforcementPool() >= this->deployedArmies)) {
             return true;
         }
@@ -179,7 +179,7 @@ ostream& operator<<(ostream& os, const Advance& advance) {
  * @return
  */
 bool Advance::validate()  {
-    if (*sourceTerritory->getPlayerInPossession() != player->getName()) {
+    if (sourceTerritory->getPlayerInPossession() != player->getName()) {
         // source territory doesn't belong to player issuing the order
         return false;
     }
@@ -194,12 +194,12 @@ bool Advance::validate()  {
 void Advance::execute() {
     // status report
     cout << "Trying to advance " << advanceArmies << " armies from " << this->sourceTerritory->getName()
-        << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+        << " belonging to " << this->sourceTerritory->getPlayerInPossession()
         << " to " << this->targetTerritory->getName()
-        << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
+        << " belonging to " << this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // check if the target territory is owned by the player issuing the order
-        if (*this->sourceTerritory->getPlayerInPossession() == *this->targetTerritory->getPlayerInPossession()) {
+        if (this->sourceTerritory->getPlayerInPossession() == this->targetTerritory->getPlayerInPossession()) {
             int sourceArmies = *this->sourceTerritory->getArmyCnt();
             int targetArmies = *this->targetTerritory->getArmyCnt();
             // just move the armies from source to target
@@ -359,7 +359,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
  * @return whether or not the order is valid
  */
 bool Bomb::validate()  {
-    if (*this->targetTerritory->getPlayerInPossession() == this->player->getName()) {
+    if (this->targetTerritory->getPlayerInPossession() == this->player->getName()) {
         // can't bomb own territory
         return false;
     }
@@ -443,7 +443,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
  * @return whether the order is valid or not
  */
 bool Blockade::validate()  {
-    if (*this->targetTerritory->getPlayerInPossession() != this->player->getName()) {
+    if (this->targetTerritory->getPlayerInPossession() != this->player->getName()) {
         // target territory doesn't belong to player
         return false;
     }
@@ -547,7 +547,7 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
  * @return whether the order is valid or not
  */
 bool Airlift::validate()  {
-    if (*this->sourceTerritory->getPlayerInPossession() != *this->targetTerritory->getPlayerInPossession()) {
+    if (this->sourceTerritory->getPlayerInPossession() != this->targetTerritory->getPlayerInPossession()) {
         // source and target territories belong to different players
         return false;
     }
@@ -566,9 +566,9 @@ bool Airlift::validate()  {
 void Airlift::execute() {
     // status report
     cout << "Trying to advance " << airliftArmies << " armies from " << this->sourceTerritory->getName()
-         << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+         << " belonging to " << this->sourceTerritory->getPlayerInPossession()
          << " to " << this->targetTerritory->getName()
-         << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
+         << " belonging to " << this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // update source and target army counts
         int sourceArmies = *this->sourceTerritory->getArmyCnt();

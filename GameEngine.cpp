@@ -86,6 +86,16 @@ void GameEngine::addPlayer(Player &p) {
 int GameEngine::playerCount() {
   return players.size();
 }
+Player GameEngine::getPlayer(int i) {
+  return players[i];
+}
+vector<Player> GameEngine::getPlayers() {
+  return players;
+}
+void GameEngine::shufflePlayers() {
+  auto rng = default_random_engine {};
+  shuffle(players.begin(), players.end(), rng);
+}
 
 ///////////////// State Class Implementations //////////////////////////
 //State class insertion stream
@@ -286,7 +296,30 @@ int PlayersAddedState::next(GameEngine *game, string cmd) {
       cout << "2 players are needed to start the game, please add more players." << endl << endl;
       return 1;
     }
-    //TODO !!!!!!!!!!!!!!!!!!
+
+    //Loop through the territories and assign to a player
+    cout << "Assigning territories evenly among players..." << endl << endl;
+    int playerIndex = 0;
+    vector<vector<Territory>> playersTerritories(game->playerCount());
+    for (auto& [territory, neighbors] : game->getMap()->getTerritories()) {
+      Player player = game->getPlayer(playerIndex);
+      playersTerritories[playerIndex].push_back(territory);
+      cout << player.getName() << " gets territory: " << territory.getName() << endl;
+      ++playerIndex;
+      if (playerIndex >= game->playerCount()) playerIndex = 0; //Reset to first player
+    }
+    cout << endl;
+
+    //Shuffle the players randomly to track turns
+    game->shufflePlayers();
+    //Print new player order
+    cout << "Shuffling player order to determine the order of play..." << endl;
+    cout << "Order of play: ";
+    for (auto& p : game->getPlayers()) {
+      cout << p.getName() << " | ";
+    }
+    cout << endl << endl;
+
     game->setState(shared_ptr<State>(new AssignReinforcementState()));
     return 0;
   }

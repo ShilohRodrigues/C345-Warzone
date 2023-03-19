@@ -31,7 +31,7 @@ class Territory {
 private:
     unique_ptr<int> id;
     unique_ptr<std::string> name;
-    unique_ptr<string> playerInPossession;
+    string playerInPossession;
     unique_ptr<int> continentId;
     unique_ptr<int> armyCnt;
 
@@ -49,8 +49,8 @@ public:
     string getName() const; //Name getter
     int getContId() const;
 
-    const unique_ptr<string> &getPlayerInPossession() const;
-    void setPlayerInPossession(unique_ptr<string> &playerInPossession);
+    const string &getPlayerInPossession() const;
+    void setPlayerInPossession(string playerInPossession);
 
     const unique_ptr<int> &getArmyCnt() const;
     void setArmyCnt(unique_ptr<int> &armyCnt);
@@ -98,6 +98,7 @@ public:
     void printContinents();
     bool validate();
     bool isConnected(unordered_map<Territory, list<Territory>, MyHash> territories);
+    unordered_map<Territory, list<Territory>, MyHash> getTerritories();
 
 };
 
