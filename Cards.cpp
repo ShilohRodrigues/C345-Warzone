@@ -18,13 +18,12 @@ Card::Card() {
 }
 // Destructor
 Card::~Card() {
-
+	delete aCardType;
 }
 // Copy constructor
 Card::Card(const Card& c)
 {
-	this->cardsTypes = c.cardsTypes;
-	this->aCardType = c.aCardType;
+	
 }
 // Assignment operator
 Card& Card::operator=(const Card& c)
@@ -63,7 +62,9 @@ Deck::Deck()
 // Destructor
 Deck::~Deck()
 {
-
+	for (auto card : deck) {
+		delete card;
+	}
 }
 // Copy constructor
 Deck::Deck(const Deck& d)
@@ -129,7 +130,12 @@ Hand::Hand()
 // Destructor
 Hand::~Hand()
 {
-
+	for (auto card : handCards) {
+		delete card;
+	}
+	for (auto card : playCards) {
+		delete card;
+	}
 }
 // Copy constructor
 Hand::Hand(const Hand& h)
