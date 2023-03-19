@@ -405,6 +405,9 @@ void Bomb::execute() {
     } else {
         cout << "Invalid bomb order. Could not execute." << endl;
     }
+
+    // remove the played card
+    this->player->getCardHand()->deletePlayedCardFromPlayCards("Bomb");
 }
 
 const shared_ptr<Player> &Bomb::getPlayer() const {

@@ -47,8 +47,8 @@ void ordersDemo1() {
 void ordersDemo2() {
 //    deployDemo();
 //    advanceDemo();
-    airliftDemo();
-//    bombDemo();
+//    airliftDemo();
+    bombDemo();
 //    blockadeDemo();
 //    negotiateDemo();
 }
@@ -203,6 +203,15 @@ void bombDemo() {
     auto testPlayerBomb =
             make_shared<Player>(2, 3, *testBombTerritories);
 
+    // play bomb card
+    cout << "---- Playing Bomb Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    cout << *testPlayerBomb << endl;
+    testPlayerBomb->playCard(deck, "Bomb");
+    cout << *testPlayerBomb << endl;
+
     // bomb own territory
     cout << "---- Bomb own territory ----" << endl;
     auto bombOwnTerritory = make_unique<Bomb>(testPlayerBomb,
@@ -212,9 +221,15 @@ void bombDemo() {
     cout << *testPlayerBomb << endl;
 
     // bomb enemy territory
-    cout << "---- Bomb enemy territory ----" << endl;
+    cout << "---- Bomb enemy territory (no card) ----" << endl;
     auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
                                               testTargetBomb);
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
+
+    cout << "\n---- Bomb enemy territory (with card) ----" << endl;
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    testPlayerBomb->playCard(deck, "Bomb");
     cout << *testPlayerBomb << endl;
     bombEnemyTerritory->execute();
 }
