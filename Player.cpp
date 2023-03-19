@@ -343,6 +343,7 @@ void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
  * 4) clear negotiated players
  * 5) draw if hasConqueredTerritory
  * 6) clear hasConqueredTerritory
+ * 7) clear player's played cards
  *
  * This method is meant to be called at the end of every turn on every player.
  *
@@ -355,6 +356,7 @@ void Player::update(const shared_ptr<Deck>& deck) {
     this->clearNegotiatedPlayers();
     this->drawIfHasConquered(deck);
     this->hasConqueredTerritory = false;
+    this->cardHand->clearPlayedCards();
 }
 
 
