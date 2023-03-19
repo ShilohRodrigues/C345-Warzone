@@ -718,11 +718,33 @@ void Negotiate::setTargetPlayer(const shared_ptr<Player> &targetPlayer) {
 // OrdersList
 // default constructor
 OrdersList::OrdersList():orderList(make_unique<list<shared_ptr<Order>>>()) {}
-// copy constructor
+// deep copy constructor
 OrdersList::OrdersList(const OrdersList& ordersList) {
+    this->orderList = make_unique<list<shared_ptr<Order>>>();
     for (const auto& order : *ordersList.orderList) {
-        // shallow copy
-        this->orderList->push_back(order);
+        // create a new shared_ptr for each order and add it to the new list
+        if (dynamic_cast<Deploy*>(order.get())) {
+            shared_ptr<Deploy> deploy = make_shared<Deploy>(*dynamic_cast<Deploy*>(order.get()));
+            this->orderList->push_back(deploy);
+        } else if (dynamic_cast<Advance*>(order.get())) {
+            shared_ptr<Advance> advance = make_shared<Advance>(*dynamic_cast<Advance*>(order.get()));
+            this->orderList->push_back(advance);
+        } else if (dynamic_cast<Bomb*>(order.get())) {
+            shared_ptr<Bomb> bomb = make_shared<Bomb>(*dynamic_cast<Bomb*>(order.get()));
+            this->orderList->push_back(bomb);
+        } else if (dynamic_cast<Blockade*>(order.get())) {
+            shared_ptr<Blockade> blockade = make_shared<Blockade>(*dynamic_cast<Blockade*>(order.get()));
+            this->orderList->push_back(blockade);
+        } else if (dynamic_cast<Airlift*>(order.get())) {
+            shared_ptr<Airlift> airlift = make_shared<Airlift>(*dynamic_cast<Airlift*>(order.get()));
+            this->orderList->push_back(airlift);
+        } else if (dynamic_cast<Negotiate*>(order.get())) {
+            shared_ptr<Negotiate> negotiate = make_shared<Negotiate>(*dynamic_cast<Negotiate*>(order.get()));
+            this->orderList->push_back(negotiate);
+        } else {
+            // this should never happen since Order is an abstract base class
+            throw runtime_error("Unknown order type");
+        }
     }
 }
 // assignment operator

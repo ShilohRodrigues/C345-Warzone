@@ -285,7 +285,7 @@ vector<string> split(string str, char separator) {
 }
 
 //Static function that loads parses a map file and returns a map object
-void MapLoader::loadMap(Map& mp, const string& path) {
+bool MapLoader::loadMap(Map& mp, const string& path) {
 
     ifstream mapFile(path);
     int count = 0;
@@ -294,7 +294,7 @@ void MapLoader::loadMap(Map& mp, const string& path) {
 
     if (!mapFile.is_open()) {
         cout << "Error: Unable to open file" << endl;
-        throw std::runtime_error("Error: Unable to open file");
+        return false;
     }
 
     string line = " ";
@@ -368,4 +368,5 @@ void MapLoader::loadMap(Map& mp, const string& path) {
         }
     }
     mapFile.close();
+    return true;
 }
