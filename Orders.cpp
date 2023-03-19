@@ -362,7 +362,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
  * 1) the target does not belong to the player issuing the order
  * 2) the target territory is adjacent to one of the territories owned
  * by the player issuing the order
- * TODO: ensure that the bomb order can only be created by playing the bomb card
+ * 3) the bomb order can only be created by playing the bomb card
  * @return whether or not the order is valid
  */
 bool Bomb::validate()  {
@@ -375,6 +375,11 @@ bool Bomb::validate()  {
 
     if (this->player->isInNegotiatedPlayers(*targetTerritory->getPlayerInPossession())) {
         // can't attack a player in a negotiation agreement
+        return false;
+    }
+
+    if (!this->player->hasPlayedCard("Bomb")) {
+        // player hasn't played the bomb card
         return false;
     }
 
@@ -451,11 +456,17 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
 /**
  * Checks that:
  * 1) the target territory belongs to the player issuing the order
+ * 2) the blockade order can only be created by playing the blockade card
  * @return whether the order is valid or not
  */
 bool Blockade::validate()  {
     if (*this->targetTerritory->getPlayerInPossession() != this->player->getName()) {
         // target territory doesn't belong to player
+        return false;
+    }
+
+    if (!this->player->hasPlayedCard("Blockade")) {
+        // players hasn't played Blockade card
         return false;
     }
 
@@ -465,7 +476,6 @@ bool Blockade::validate()  {
 /**
  * Doubles the number number of armies on the territory and transfer the ownership
  * to the Neutral player.
- * TODO: ensure the blockade order can only be created by playing the blockade card
  */
 void Blockade::execute() {
     // status report
@@ -550,10 +560,10 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
 }
 
 /**
- * Check if:
+ * Check that:
  * 1) the source and target territories belong to the player issuing the order
  * 2) the source territory has the required armies
- * TODO: ensure airlift order can only be created by playing the airlift card
+ * 3) the airlift order can only be created by playing the airlift card
  * @return whether the order is valid or not
  */
 bool Airlift::validate()  {
@@ -564,6 +574,11 @@ bool Airlift::validate()  {
 
     if (*this->sourceTerritory->getArmyCnt() < this->airliftArmies) {
         // source territory doesn't have enough armies
+        return false;
+    }
+
+    if (!this->player->hasPlayedCard("Airlift")) {
+        // players hasn't played Airlift card
         return false;
     }
 
@@ -662,12 +677,17 @@ ostream& operator<<(ostream& os, const Negotiate& negotiate) {
 /**
  * Checks that:
  * 1) the target is not the player issuing the order
- * TODO: ensure that the negotiate order can only be created by playing the diplomacy card
+ * 2) ensure that the negotiate order can only be created by playing the diplomacy card
  * @return whether the order is valid or not
  */
 bool Negotiate::validate()  {
     if (this->targetPlayer->getName() == this->issuer->getName()) {
         // player can't negotiate with itself
+        return false;
+    }
+
+    if (!this->issuer->hasPlayedCard("Diplomacy")) {
+        // players hasn't played Blockade card
         return false;
     }
 
