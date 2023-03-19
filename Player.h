@@ -46,6 +46,8 @@ public:
 
     void drawIfHasConquered(const shared_ptr<Deck>& deck);
 
+    void update(const shared_ptr<Deck>& deck);
+
     // getters and setters
     const string &getName() const;
 

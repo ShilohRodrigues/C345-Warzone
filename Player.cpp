@@ -301,6 +301,31 @@ void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
     }
 }
 
+/**
+ * Updates all the player data members that need to be updated after every turn
+ * and executes any additional actions that need to be done every turn.
+ *
+ * Updates to be done every turn:
+ * 1) update army count
+ * 2) update reinforcement pool
+ * 3) update territories
+ * 4) clear negotiated players
+ * 5) draw if hasConqueredTerritory
+ * 6) clear hasConqueredTerritory
+ *
+ * This method is meant to be called at the end of every turn on every player.
+ *
+ * @param deck shared pointer to the deck of cards used during the game
+ */
+void Player::update(const shared_ptr<Deck>& deck) {
+    this->updateArmyCount();
+    this->reinforcementPool = this->armyCount;
+    this->updateTerritories();
+    this->clearNegotiatedPlayers();
+    this->drawIfHasConquered(deck);
+    this->hasConqueredTerritory = false;
+}
+
 
 
 
