@@ -47,8 +47,8 @@ void ordersDemo1() {
 void ordersDemo2() {
 //    deployDemo();
 //    advanceDemo();
-    airliftDemo();
-//    bombDemo();
+//    airliftDemo();
+    bombDemo();
 //    blockadeDemo();
 //    negotiateDemo();
 }
@@ -210,26 +210,26 @@ void bombDemo() {
     testPlayerBomb->playCard(deck, "Bomb");
     cout << *testPlayerBomb << endl;
 
+    // bomb enemy territory
+    cout << "---- Bomb enemy territory (with card) ----" << endl;
+    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
+                                                testTargetBomb);
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
+
+    cout << "\n---- Bomb enemy territory (no card) ----" << endl;
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
+
     // bomb own territory
-    cout << "---- Bomb own territory ----" << endl;
+    cout << "\n---- Bomb own territory ----" << endl;
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    testPlayerBomb->playCard(deck, "Bomb");
     auto bombOwnTerritory = make_unique<Bomb>(testPlayerBomb,
                                                       testOwnBomb);
     cout << *testPlayerBomb << endl;
     bombOwnTerritory->execute();
     cout << *testPlayerBomb << endl;
-
-    // bomb enemy territory
-    cout << "---- Bomb enemy territory (no card) ----" << endl;
-    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
-                                              testTargetBomb);
-    cout << *testPlayerBomb << endl;
-    bombEnemyTerritory->execute();
-
-    cout << "\n---- Bomb enemy territory (with card) ----" << endl;
-    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
-    testPlayerBomb->playCard(deck, "Bomb");
-    cout << *testPlayerBomb << endl;
-    bombEnemyTerritory->execute();
 }
 
 void blockadeDemo() {
