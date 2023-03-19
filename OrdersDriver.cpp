@@ -47,9 +47,9 @@ void ordersDemo1() {
 void ordersDemo2() {
 //    deployDemo();
 //    advanceDemo();
-//    airliftDemo();
+    airliftDemo();
 //    bombDemo();
-    blockadeDemo();
+//    blockadeDemo();
 //    negotiateDemo();
 }
 
@@ -178,8 +178,6 @@ void airliftDemo() {
 
     // airlift without enough armies
     cout << "\n---- Airlift without enough source armies ----" << endl;
-    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
-    testPlayerAirlift->playCard(deck, "Airlift");
     auto airliftShort = make_unique<Airlift>(testPlayerAirlift,
                                                         testSourceTerritoryAirlift,
                                                         testTargetOwnedAirlift,
@@ -290,6 +288,15 @@ void negotiateDemo() {
 
     testPlayerNegotiate1->addTerritory(testTerritory1);
     testPlayerNegotiate2->addTerritory(testTerritory2);
+
+    // play diplomacy card
+    cout << "---- Playing Diplomacy Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerNegotiate1->getCardHand()->addCardToHand("Diplomacy");
+    cout << *testPlayerNegotiate1 << endl;
+    testPlayerNegotiate1->playCard(deck, "Diplomacy");
+    cout << *testPlayerNegotiate1 << endl;
 
     // Negotiate with self
     cout << "---- Negotiate with self ----" << endl;
