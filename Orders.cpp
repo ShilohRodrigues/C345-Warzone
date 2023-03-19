@@ -683,7 +683,7 @@ void Negotiate::execute() {
         // update report
         cout << "Negotiation succeeded." << endl;
     } else {
-        cout << "Invalid negotiate order. Could not execute.";
+        cout << "Invalid negotiate order. Could not execute." << endl;
     }
 }
 
