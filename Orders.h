@@ -39,7 +39,6 @@ private:
 // deploy(), advance(), bomb(), blockade(), airlift(), negotiate()
 class Deploy : public Order {
 public:
-    Deploy();
     Deploy(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory,
            int deployedArmies);
@@ -67,7 +66,6 @@ private:
 
 class Advance : public Order {
 public:
-    Advance();
     Advance(const shared_ptr<Player>& player,
             const shared_ptr<Territory>& sourceTerritory,
             const shared_ptr<Territory>& targetTerritory,
@@ -102,7 +100,6 @@ private:
 
 class Bomb : public Order {
 public:
-    Bomb();
     Bomb(const shared_ptr<Player>& player,
          const shared_ptr<Territory>& targetTerritory);
     Bomb(const Bomb& bomb);
@@ -125,7 +122,6 @@ private:
 
 class Blockade : public Order {
 public:
-    Blockade();
     Blockade(const shared_ptr<Player>& player,
              const shared_ptr<Player>& neutralPlayer,
              const shared_ptr<Territory>& targetTerritory);
@@ -153,7 +149,6 @@ private:
 
 class Airlift : public Order {
 public:
-    Airlift();
     Airlift(const shared_ptr<Player>& player,
             const shared_ptr<Territory>& sourceTerritory,
             const shared_ptr<Territory>& targetTerritory,
@@ -186,7 +181,6 @@ private:
 
 class Negotiate : public Order {
 public:
-    Negotiate();
     Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer);
     Negotiate(const Negotiate& negotiate);
     Negotiate& operator=(const Negotiate& negotiate);

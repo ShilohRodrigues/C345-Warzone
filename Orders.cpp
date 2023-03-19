@@ -45,11 +45,10 @@ void Order::setNextId(int nextId) {
 // execute() for every subclass
 
 // Deploy
-Deploy::Deploy():Order() {}
 Deploy::Deploy(const shared_ptr<Player>& player,
                const shared_ptr<Territory>& targetTerritory,
                const int deployedArmies):
-    player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
+    Order(), player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
 Deploy::Deploy(const Deploy& deploy):Order(deploy) {
     this->player = deploy.player;
     this->targetTerritory = deploy.targetTerritory;
@@ -135,11 +134,11 @@ void Deploy::setDeployedArmies(int deployedArmies) {
 }
 
 // Advance
-Advance::Advance():Order() {}
 Advance::Advance(const shared_ptr<Player>& player,
                  const shared_ptr<Territory>& sourceTerritory,
                  const shared_ptr<Territory>& targetTerritory,
                  int advanceArmies):
+                 Order(),
                  player(player),
                  sourceTerritory(sourceTerritory), targetTerritory(targetTerritory),
                  advanceArmies(advanceArmies) {}
@@ -295,6 +294,12 @@ void Advance::attack() {
         auto newArmyCountPtr = make_unique<int>(defendingArmies);
         targetTerritory->setArmyCnt(newArmyCountPtr);
     }
+
+    // TODO: after every turn
+    //  1) update army count
+    //  2) update reinforcement pool
+    //  3) update territories
+    //  4) clear negotiated players
 }
 
 // getters and setters
@@ -331,10 +336,9 @@ void Advance::setAdvanceArmies(int advanceArmies) {
 }
 
 // Bomb
-Bomb::Bomb():Order() {}
 Bomb::Bomb(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory):
-           player(player), targetTerritory(targetTerritory) {}
+           Order(), player(player), targetTerritory(targetTerritory) {}
 Bomb::Bomb(const Bomb& bomb):Order(bomb) {
     this->player = bomb.player;
     this->targetTerritory = bomb.targetTerritory;
@@ -419,11 +423,10 @@ void Bomb::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
 }
 
 // Blockade
-Blockade::Blockade():Order() {}
 Blockade::Blockade(const shared_ptr<Player>& player,
                    const shared_ptr<Player>& neutralPlayer,
                    const shared_ptr<Territory>& targetTerritory):
-                   player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
+                   Order(), player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
 Blockade::Blockade(const Blockade& blockade):Order(blockade) {
     this->player = blockade.player;
     this->neutralPlayer = blockade.neutralPlayer;
@@ -516,12 +519,11 @@ void Blockade::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) 
 }
 
 // Airlift
-Airlift::Airlift():Order() {}
 Airlift::Airlift(const shared_ptr<Player>& player,
                  const shared_ptr<Territory>& sourceTerritory,
                  const shared_ptr<Territory>& targetTerritory,
                  int airliftArmies):
-                 player(player), sourceTerritory(sourceTerritory),
+                 Order(), player(player), sourceTerritory(sourceTerritory),
                  targetTerritory(targetTerritory), airliftArmies(airliftArmies) {}
 Airlift::Airlift(const Airlift& airlift):Order(airlift) {
     this->player = airlift.player;
@@ -637,9 +639,8 @@ void Airlift::setAirliftArmies(int airliftArmies) {
 }
 
 // Negotiate
-Negotiate::Negotiate():Order() {}
 Negotiate::Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer):
-    issuer(issuer), targetPlayer(targetPlayer) {}
+    Order(), issuer(issuer), targetPlayer(targetPlayer) {}
 Negotiate::Negotiate(const Negotiate& negotiate):Order(negotiate) {
     this->issuer = negotiate.issuer;
     this->targetPlayer = negotiate.targetPlayer;

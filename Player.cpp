@@ -199,8 +199,8 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
  */
 void Player::issueOrder() {
     // TODO: not arbitrary anymore
-    auto testOrder = make_shared<Deploy>();
-    ordersList->add(testOrder);
+//    auto testOrder = make_shared<Deploy>();
+//    ordersList->add(testOrder);
 }
 
 void Player::addTerritory(const shared_ptr<Territory>& territory) {
