@@ -16,6 +16,7 @@
 Card::Card() {
 
 }
+Card::Card(string *cardType): aCardType(cardType) {}
 // Destructor
 Card::~Card() {
 
@@ -54,6 +55,11 @@ const string& Card::getCardType() const
 {
 	return *aCardType;
 }
+
+void Card::setCardType(string *cardType) {
+    Card::aCardType = cardType;
+}
+
 //---------------------------------------------------DECK---------------------------------------------------
 // Default constructor
 Deck::Deck()
@@ -228,8 +234,14 @@ void Hand::clearPlayedCards()
 	cout << "\n Play Cards are Cleaned." << endl;
 }
 
-void Hand::addCardtoHand(Card *card) {
+void Hand::addCardToHand(Card *card) {
     handCards.push_back(card);
+}
+
+void Hand::addCardToHand(string cardType) {
+    string* cardTypePtr = &cardType;
+    Card* newCard = new Card(cardTypePtr);
+    this->addCardToHand(newCard);
 }
 
 /**
