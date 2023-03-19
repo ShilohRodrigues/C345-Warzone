@@ -297,7 +297,7 @@ int Player::updateArmyCount() {
 void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
     if (hasConqueredTerritory) {
         Card* card = deck->draw();
-        this->cardHand->addCardtoHand(card);
+        this->cardHand->addCardToHand(card);
     }
 }
 
