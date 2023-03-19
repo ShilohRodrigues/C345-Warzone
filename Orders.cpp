@@ -176,7 +176,8 @@ ostream& operator<<(ostream& os, const Advance& advance) {
  * 1) the source territory belongs to the player issuing the order
  * 2) the target territory is adjacent to the source territory
  * 3) the player issuing the order has enough armies to advance
- * @return
+ * 4) the owner of the target territory is not in the issuing player's negotiatedPlayers
+ * @return whether the order is valid or not
  */
 bool Advance::validate()  {
     if (*sourceTerritory->getPlayerInPossession() != player->getName()) {
@@ -188,6 +189,12 @@ bool Advance::validate()  {
         // player doesn't have enough armies on the source territory
         return false;
     }
+
+    if (this->player->isInNegotiatedPlayers(*targetTerritory->getPlayerInPossession())) {
+        // can't attack a player in a negotiation agreement
+        return false;
+    }
+
     return true;
 }
 
@@ -365,6 +372,11 @@ bool Bomb::validate()  {
     }
 
     // TODO: check adjacency to any player-owned territory
+
+    if (this->player->isInNegotiatedPlayers(*targetTerritory->getPlayerInPossession())) {
+        // can't attack a player in a negotiation agreement
+        return false;
+    }
 
     return true;
 }
@@ -669,7 +681,6 @@ bool Negotiate::validate()  {
  * Prevents attacks between the two players.
  * This method specifically adds each player to their own negotiatedPlayers vector.
  * The attack orders will not attack players in players' negotiatedPlayers vector.
- * TODO: prevent attacks in other orders
  */
 void Negotiate::execute() {
     // status report
