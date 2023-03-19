@@ -201,7 +201,6 @@ void Hand::play(Card* a_card, Deck* a_Deck)
 	playCards.push_back(a_card);
 	returnPlayedCardToDeck(a_Deck);
 	deletePlayedCardsFromHand(a_card);
-	playCards.pop_back();
 }
 // Return the played card to the deck
 void Hand::returnPlayedCardToDeck(Deck* a_Deck)
