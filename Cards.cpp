@@ -254,8 +254,8 @@ void Hand::addCardToHand(Card *card) {
     handCards.push_back(card);
 }
 
-void Hand::addCardToHand(string cardType) {
-    string* cardTypePtr = &cardType;
+void Hand::addCardToHand(const string& cardType) {
+    auto* cardTypePtr = new string(cardType);
     Card* newCard = new Card(cardTypePtr);
     this->addCardToHand(newCard);
 }

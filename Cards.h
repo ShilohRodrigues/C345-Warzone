@@ -67,7 +67,7 @@ public:
 	void clearPlayedCards();
 
     void addCardToHand(Card* card);
-    void addCardToHand(string cardType);
+    void addCardToHand(const string& cardType);
     static int findFirstCard(vector<Card*>* handOrPlayCards, const string& cardType);
     Card* getCardFromHandCards(const string& cardType);
     Card* getCardFromPlayCards(string cardType);
