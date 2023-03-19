@@ -27,7 +27,6 @@ void gameEngineDemo1() {
   cout << "Welcome to Warzone" << endl;
 
   mainGameLoop(game);
-
   ////Main game loop
   //while(true) {
 
