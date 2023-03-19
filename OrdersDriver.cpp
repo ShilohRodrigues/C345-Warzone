@@ -166,7 +166,9 @@ void airliftDemo() {
     airliftToOwnTerritory->execute();
 
     // airlift to enemy territory
-    cout << "---- Airlift to enemy territory ----" << endl;
+    cout << "\n---- Airlift to enemy territory ----" << endl;
+    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
+    testPlayerAirlift->playCard(deck, "Airlift");
     auto airliftToEnemyTerritory = make_unique<Airlift>(testPlayerAirlift,
                                                       testSourceTerritoryAirlift,
                                                       testTargetEnemyAirlift,
@@ -176,6 +178,8 @@ void airliftDemo() {
 
     // airlift without enough armies
     cout << "\n---- Airlift without enough source armies ----" << endl;
+    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
+    testPlayerAirlift->playCard(deck, "Airlift");
     auto airliftShort = make_unique<Airlift>(testPlayerAirlift,
                                                         testSourceTerritoryAirlift,
                                                         testTargetOwnedAirlift,

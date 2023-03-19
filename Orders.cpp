@@ -578,7 +578,7 @@ bool Airlift::validate()  {
     }
 
     if (!this->player->hasPlayedCard("Airlift")) {
-        // players hasn't played Airlift card
+        // player hasn't played Airlift card
         return false;
     }
 
@@ -614,6 +614,9 @@ void Airlift::execute() {
     } else {
         cout << "Invalid airlift order. Could not complete." << endl;
     }
+
+    // remove the played card
+    this->player->getCardHand()->deletePlayedCardFromPlayCards("Airlift");
 }
 
 // getters and setters
