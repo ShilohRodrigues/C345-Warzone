@@ -44,6 +44,8 @@ public:
 
     int updateArmyCount();
 
+    void drawIfHasConquered(const shared_ptr<Deck>& deck);
+
     // getters and setters
     const string &getName() const;
 

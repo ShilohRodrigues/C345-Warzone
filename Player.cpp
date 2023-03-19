@@ -287,6 +287,20 @@ int Player::updateArmyCount() {
     return newArmyCount;
 }
 
+/**
+ * Checks if the player has conquered any territory this turn, and if so
+ * draws a card from the deck and adds it to the player's hand of cards.
+ *
+ * Meant to be called at the end of every turn.
+ * @param deck shared pointer to the deck of cards used during the game
+ */
+void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
+    if (hasConqueredTerritory) {
+        Card* card = deck->draw();
+        this->cardHand->addCardtoHand(card);
+    }
+}
+
 
 
 
