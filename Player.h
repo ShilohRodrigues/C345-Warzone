@@ -65,11 +65,15 @@ public:
     const unique_ptr<vector<shared_ptr<Player>>> &getNegotiatedPlayers() const;
     void setNegotiatedPlayers(const unique_ptr<vector<shared_ptr<Player>>> &negotiatedPlayers);
 
+    bool getHasConqueredTerritory() const;
+    void setHasConqueredTerritory(bool hasConqueredTerritory);
+
 private:
     static int nextID;
     const string name;
     int armyCount; // total army count available to the player
     int reinforcementPool; // armies the player can use every turn, decreases as the player uses them, replenishes later
+    bool hasConqueredTerritory; // true if the player has conquered a territory anytime during the current turn
     // player owns a hand of Warzone cards
     unique_ptr<Hand> cardHand;
     // player owns collection of territories
