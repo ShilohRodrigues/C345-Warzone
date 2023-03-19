@@ -104,7 +104,7 @@ public:
 class MapLoader {
 
 public:
-    static void loadMap(Map& ,const string& path);
+    static bool loadMap(Map& ,const string& path);
 
 };
 

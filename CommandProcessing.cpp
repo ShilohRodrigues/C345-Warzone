@@ -142,3 +142,23 @@ string FileLineReader::readLineFromFile() {
   if (file != nullptr && getline(*file, line)) return line;
   else return "All commands have been read.";
 }
+
+
+//Driver for Demonstration
+int CommandProcessingDriverDemo(string fileName = "") {
+
+    CommandProcessor* cp;
+    string cmd;
+
+    if (fileName != "") {
+        cp = new FileCommandProcessorAdapter(fileName);
+    } 
+    else {
+        cp = new CommandProcessor();
+        cout << "Enter a command: ";
+        //cmd = cp->readCommand();
+    }
+
+    delete cp;
+    return 0;
+}

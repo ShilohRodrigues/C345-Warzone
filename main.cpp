@@ -18,4 +18,10 @@ int main() {
 
   //ordersDemo2();
 
+  GameEngine *game = new GameEngine();
+  game->startupPhase();
+  delete game;
+
+   return 0;
+
 }

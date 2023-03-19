@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "Map.h"
+#include "Player.h"
 using namespace std;
 
 class State;
@@ -20,12 +22,22 @@ class GameEngine {
     GameEngine(GameEngine &game);
     friend ostream& operator<<(ostream& strm, const GameEngine& g);
 
+    void startupPhase();
     int nextState(string cmd);
     shared_ptr<State> getState();
     void setState(shared_ptr<State> newState);
+
+    void setMap(Map m);
+    shared_ptr<Map> getMap();
+
+    void addPlayer(Player &p);
+    int playerCount();
+    string getPlayerName(int i);
     
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
+    shared_ptr<Map> map;
+    vector<Player> players;
 };
 
 //State Interface, all states must inherit this class and implement all its methods
@@ -52,7 +64,7 @@ class StartState: public State {
     virtual vector<string> getCommands() override;
 
   private:
-    vector<string> commands{"loadmap"};
+    vector<string> commands{"loadmap <filename>"};
 };
 class MapLoadedState: public State {
   public:
@@ -67,7 +79,7 @@ class MapLoadedState: public State {
     virtual vector<string> getCommands() override;
 
   private:
-    vector<string> commands{"loadmap", "validatemap"};
+    vector<string> commands{"loadmap <filename>", "validatemap"};
 };
 class MapValidatedState: public State {
   public:
@@ -97,7 +109,7 @@ class PlayersAddedState: public State {
     virtual vector<string> getCommands() override;
 
   private:
-    vector<string> commands{"addplayer", "assigncountries"};
+    vector<string> commands{"addplayer", "gamestart"};
 };
 class AssignReinforcementState: public State {
   public:
