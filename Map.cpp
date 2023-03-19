@@ -69,9 +69,23 @@ bool Territory::operator==(const Territory& territory) const {
 }
 //Stream Insertion
 ostream& operator<<(ostream &os, const Territory &t) {
-    //If territoryInfo.playerInPossession == null run this
-    os << *t.id << ": " << *t.name;
+       //If territoryInfo.playerInPossession == null run this
+    if(t.playerInPossession == "") {
+        os << " Territory Name: " << *(t.name) <<
+           ", Continent ID: " << *(t.continentId)
+           << ", Armies: " << *(t.armyCnt) << endl;
+    }
+    else{
+        os << "Territory Name: " << *(t.name) <<
+           ", Continent: " << *(t.continentId)
+           << ", Player on territory: " << t.playerInPossession
+           << ", Armies: " << *t.armyCnt << endl;
+    }
     return os;
+}
+
+string Territory::getNameID() const {
+    return to_string(*(this->id)) + ": " + *(this->name);
 }
 
 int Territory::getId() const {
@@ -190,10 +204,10 @@ ostream& operator<<(ostream &strm, const Map &m) {
     //Loop through the map keys
     strm << "Territory ID: Name -> Adjacent Territories" << endl;
     for (auto & territorie : *m.territories) {
-        strm << territorie.first << " --> ";
+        strm << territorie.first.getNameID() << " --> ";
         //Loop through the adjacent territories
         for (auto const& j : territorie.second) {
-            strm << j << " | ";
+            strm << j.getNameID() << " | ";
         }
         strm << endl;
     }

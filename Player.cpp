@@ -253,7 +253,7 @@ void Player::removeTerritory(const shared_ptr<Territory> &territory, const share
  */
 void Player::updateTerritories() {
     for (const auto& territory : *this->territories) {
-        if (*territory->getPlayerInPossession() != this->name) {
+        if (territory->getPlayerInPossession() != this->name) {
             this->removeTerritory(territory);
         }
     }
