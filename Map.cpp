@@ -218,18 +218,11 @@ void Map::addBorder(const Territory& from, list<Territory> to) {
 void Map::addContinent(const Continent& c) {
     continents->push_back(c);
 }
-
+//part 3 add//
 //Get all continents
 vector<Continent>& Map::getContinents() {
     return *(continents);
 }
-
-//Get player in possession
-
-const unique_ptr<string>& Territory::getPlayerInPossession() const{
-    return playerInPossession;
-}
-
 //Add a border for a continent
 void Map::addBorderContinent(int cid, const Territory& from, list<Territory> to) {
     (*continents)[cid].addBorder(from, std::move(to));
