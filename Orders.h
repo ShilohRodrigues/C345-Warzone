@@ -187,12 +187,23 @@ private:
 class Negotiate : public Order {
 public:
     Negotiate();
+    Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer);
     Negotiate(const Negotiate& negotiate);
     Negotiate& operator=(const Negotiate& negotiate);
     friend ostream& operator<<(ostream& os, const Negotiate& negotiate);
 
     bool validate() override;
     void execute() override;
+
+    const shared_ptr<Player> &getIssuer() const;
+    void setIssuer(const shared_ptr<Player> &issuer);
+
+    const shared_ptr<Player> &getTargetPlayer() const;
+    void setTargetPlayer(const shared_ptr<Player> &targetPlayer);
+
+private:
+    shared_ptr<Player> issuer; // player issuing the order
+    shared_ptr<Player> targetPlayer;
 };
 
 class OrdersList {

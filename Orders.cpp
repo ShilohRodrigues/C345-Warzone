@@ -626,18 +626,26 @@ void Airlift::setAirliftArmies(int airliftArmies) {
 
 // Negotiate
 Negotiate::Negotiate():Order() {}
-Negotiate::Negotiate(const Negotiate& negotiate):Order() {} // no members to copy for now
+Negotiate::Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer):
+    issuer(issuer), targetPlayer(targetPlayer) {}
+Negotiate::Negotiate(const Negotiate& negotiate):Order(negotiate) {
+    this->issuer = negotiate.issuer;
+    this->targetPlayer = negotiate.targetPlayer;
+}
 Negotiate& Negotiate::operator=(const Negotiate& negotiate) {
     if (this == &negotiate) {
         return *this;
     } else {
-        // no members to copy for now
+        this->issuer = negotiate.issuer;
+        this->targetPlayer = negotiate.targetPlayer;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Negotiate& negotiate) {
     os << static_cast<const Order&>(negotiate);
-    // no specific member info to return for now
+    os << " - issuer: " << negotiate.getIssuer()->getName();
+    os << " - targetPlayer: " << negotiate.getTargetPlayer()->getName();
 
     return os;
 }
@@ -651,6 +659,22 @@ bool Negotiate::validate()  {
 void Negotiate::execute() {
     // logic to be implemented in later assignments
     cout << "negotiate order executed\n";
+}
+
+const shared_ptr<Player> &Negotiate::getIssuer() const {
+    return issuer;
+}
+
+void Negotiate::setIssuer(const shared_ptr<Player> &issuer) {
+    Negotiate::issuer = issuer;
+}
+
+const shared_ptr<Player> &Negotiate::getTargetPlayer() const {
+    return targetPlayer;
+}
+
+void Negotiate::setTargetPlayer(const shared_ptr<Player> &targetPlayer) {
+    Negotiate::targetPlayer = targetPlayer;
 }
 
 // OrdersList
