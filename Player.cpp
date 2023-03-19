@@ -12,7 +12,8 @@ Player::Player():
     reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>()),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()) {}
+    ordersList(make_unique<OrdersList>()),
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){}
 
 // parameterized constructors (for testing)
 Player::Player(const vector<shared_ptr<Territory>>& territories):
@@ -21,7 +22,8 @@ Player::Player(const vector<shared_ptr<Territory>>& territories):
     reinforcementPool(3),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()) {
+    ordersList(make_unique<OrdersList>()),
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){
     setTerritories(this->territories);
 }
 
@@ -31,7 +33,8 @@ Player::Player(int armyCount, int reinforcementPool, const vector<shared_ptr<Ter
     reinforcementPool(reinforcementPool),
     territories(make_unique<vector<shared_ptr<Territory>>>(territories)),
     cardHand(make_unique<Hand>()),
-    ordersList(make_unique<OrdersList>()) {
+    ordersList(make_unique<OrdersList>()),
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){
     setTerritories(this->territories);
 }
 
@@ -41,7 +44,8 @@ Player::Player(const Player& player):
     reinforcementPool(player.reinforcementPool),
     territories(make_unique<vector<shared_ptr<Territory>>>()),
     cardHand(make_unique<Hand>(*player.cardHand)),
-    ordersList(make_unique<OrdersList>(*player.ordersList)) {
+    ordersList(make_unique<OrdersList>(*player.ordersList)),
+    negotiatedPlayers(make_unique<vector<shared_ptr<Player>>>()){
     for (const auto& t: *player.territories) {
         this->territories->push_back(t);
     }
@@ -62,6 +66,7 @@ Player& Player::operator=(const Player& player) {
         }
         this->cardHand = make_unique<Hand>(*player.cardHand);
         this->ordersList = make_unique<OrdersList>(*player.ordersList);
+        this->setNegotiatedPlayers(player.negotiatedPlayers);
         return *this;
     }
 }
@@ -138,6 +143,16 @@ void Player::setOrdersList(unique_ptr<OrdersList> &ordersList) {
     Player::ordersList = std::move(ordersList);
 }
 
+const unique_ptr<vector<shared_ptr<Player>>> &Player::getNegotiatedPlayers() const {
+    return negotiatedPlayers;
+}
+
+void Player::setNegotiatedPlayers(const unique_ptr<vector<shared_ptr<Player>>> &negotiatedPlayers) {
+    for (const auto& player : *negotiatedPlayers) {
+        this->negotiatedPlayers->push_back(player);
+    }
+}
+
 // destructor
 Player::~Player() = default; // deletion of data members handled by smart pointers already
 
@@ -209,3 +224,5 @@ void Player::removeTerritory(const shared_ptr<Territory> &territory, const share
     auto newOwnerNamePtr = make_unique<string>(newOwner->getName());
     territory->setPlayerInPossession(newOwnerNamePtr);
 }
+
+
