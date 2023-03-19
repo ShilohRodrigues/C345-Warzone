@@ -665,9 +665,26 @@ bool Negotiate::validate()  {
     return true;
 }
 
+/**
+ * Prevents attacks between the two players.
+ * This method specifically adds each player to their own negotiatedPlayers vector.
+ * The attack orders will not attack players in players' negotiatedPlayers vector.
+ * TODO: prevent attacks in other orders
+ */
 void Negotiate::execute() {
-    // logic to be implemented in later assignments
-    cout << "negotiate order executed\n";
+    // status report
+    cout << "Trying to negotiate between " << issuer->getName()
+        << " and " << targetPlayer->getName() << endl;
+    if (validate()) {
+        // add each player to each other's negotiatedPlayers
+        this->issuer->addNegotiatedPlayer(targetPlayer);
+        this->targetPlayer->addNegotiatedPlayer(issuer);
+
+        // update report
+        cout << "Negotiation succeeded." << endl;
+    } else {
+        cout << "Invalid negotiate order. Could not execute.";
+    }
 }
 
 const shared_ptr<Player> &Negotiate::getIssuer() const {
