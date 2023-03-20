@@ -5,8 +5,11 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <random>
 #include "Map.h"
 #include "Player.h"
+#include "Cards.h"
 using namespace std;
 
 class State;
@@ -26,18 +29,20 @@ class GameEngine {
     int nextState(string cmd);
     shared_ptr<State> getState();
     void setState(shared_ptr<State> newState);
-
     void setMap(Map m);
     shared_ptr<Map> getMap();
-
     void addPlayer(Player &p);
     int playerCount();
-    string getPlayerName(int i);
+    Player getPlayer(int i);
+    vector<Player> getPlayers();
+    void shufflePlayers();
+    const shared_ptr<Deck> &getDeck() const;
     
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
     vector<Player> players;
+    shared_ptr<Deck> deck;
 };
 
 //State Interface, all states must inherit this class and implement all its methods

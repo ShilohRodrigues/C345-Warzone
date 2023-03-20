@@ -117,6 +117,7 @@ void advanceDemo() {
                                                         3);
     cout << *testPlayerAdvance << endl;
     advanceToEnemyTerritory->execute();
+    cout << *testPlayerAdvance << endl;
 
     cout << "Simulating end of turn . . ." << endl;
     shared_ptr<Deck> deck = make_shared<Deck>();
@@ -131,7 +132,7 @@ void airliftDemo() {
     // prepare territories
     auto testAirliftTerritories = make_unique<vector<shared_ptr<Territory>>>();
     auto testSourceTerritoryAirlift =
-            make_shared<Territory>(0, "sourceAirliftTerritory", 0, "test", 4);
+            make_shared<Territory>(0, "sourceAirliftTerritory", 0, "test", 10);
     auto testTargetOwnedAirlift =
             make_shared<Territory>(0, "targetAirliftOwned", 0, "test", 2);
     auto testTargetEnemyAirlift =
@@ -143,6 +144,15 @@ void airliftDemo() {
     auto testPlayerAirlift =
             make_shared<Player>(6, 3, *testAirliftTerritories);
 
+    // play airlift card
+    cout << "---- Playing Airlift Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
+    cout << *testPlayerAirlift << endl;
+    testPlayerAirlift->playCard(deck, "Airlift");
+    cout << *testPlayerAirlift << endl;
+
     // airlift to own territory
     cout << "---- Airlift to own territory ----" << endl;
     auto airliftToOwnTerritory = make_unique<Airlift>(testPlayerAirlift,
@@ -153,25 +163,28 @@ void airliftDemo() {
     airliftToOwnTerritory->execute();
     cout << *testPlayerAirlift << endl;
 
+    cout << "---- Airlift to own territory again ----" << endl;
+    airliftToOwnTerritory->execute();
+
     // airlift to enemy territory
-    cout << "---- Airlift to enemy territory ----" << endl;
+    cout << "\n---- Airlift to enemy territory ----" << endl;
+    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
+    testPlayerAirlift->playCard(deck, "Airlift");
     auto airliftToEnemyTerritory = make_unique<Airlift>(testPlayerAirlift,
                                                       testSourceTerritoryAirlift,
                                                       testTargetEnemyAirlift,
                                                       1);
     cout << *testPlayerAirlift << endl;
     airliftToEnemyTerritory->execute();
-    cout << *testPlayerAirlift << endl;
 
     // airlift without enough armies
-    cout << "---- Airlift without enough source armies ----" << endl;
+    cout << "\n---- Airlift without enough source armies ----" << endl;
     auto airliftShort = make_unique<Airlift>(testPlayerAirlift,
                                                         testSourceTerritoryAirlift,
                                                         testTargetOwnedAirlift,
                                                         3);
     cout << *testPlayerAirlift << endl;
     airliftToOwnTerritory->execute();
-    cout << *testPlayerAirlift << endl;
 }
 
 void bombDemo() {
@@ -189,20 +202,35 @@ void bombDemo() {
     auto testPlayerBomb =
             make_shared<Player>(2, 3, *testBombTerritories);
 
+    // play bomb card
+    cout << "---- Playing Bomb Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    cout << *testPlayerBomb << endl;
+    testPlayerBomb->playCard(deck, "Bomb");
+    cout << *testPlayerBomb << endl;
+
+    // bomb enemy territory
+    cout << "---- Bomb enemy territory (with card) ----" << endl;
+    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
+                                                testTargetBomb);
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
+
+    cout << "\n---- Bomb enemy territory (no card) ----" << endl;
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
+
     // bomb own territory
-    cout << "---- Bomb own territory ----" << endl;
+    cout << "\n---- Bomb own territory ----" << endl;
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    testPlayerBomb->playCard(deck, "Bomb");
     auto bombOwnTerritory = make_unique<Bomb>(testPlayerBomb,
                                                       testOwnBomb);
     cout << *testPlayerBomb << endl;
     bombOwnTerritory->execute();
     cout << *testPlayerBomb << endl;
-
-    // bomb enemy territory
-    cout << "---- Bomb enemy territory ----" << endl;
-    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
-                                              testTargetBomb);
-    cout << *testPlayerBomb << endl;
-    bombEnemyTerritory->execute();
 }
 
 void blockadeDemo() {
@@ -220,15 +248,31 @@ void blockadeDemo() {
     auto neutralPlayer = make_shared<Player>();
 
     // blockade own territory
-    cout << "---- Blockade own territory ----" << endl;
+    cout << "---- Blockade own territory (no card) ----" << endl;
     auto blockadeOrder = make_unique<Blockade>(testPlayerBlockade, neutralPlayer,
                                                testOwnBlockade);
     cout << *testPlayerBlockade << endl;
+    blockadeOrder->execute();
+
+    // play blockade card
+    cout << "\n---- Playing Blockade Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerBlockade->getCardHand()->addCardToHand("Blockade");
+    cout << *testPlayerBlockade << endl;
+    testPlayerBlockade->playCard(deck, "Blockade");
+    cout << *testPlayerBlockade << endl;
+
+    // blockade own territory
+    cout << "---- Blockade own territory (with card) ----" << endl;
     blockadeOrder->execute();
     cout << *testPlayerBlockade << endl;
 
     // blockade not owned territory
     cout << "---- Blockade not owned territory ----" << endl;
+    testPlayerBlockade->getCardHand()->addCardToHand("Blockade");
+    testPlayerBlockade->playCard(deck, "Blockade");
+    cout << *testPlayerBlockade << endl;
     blockadeOrder->execute(); // blockading again, but now it's owned by the neutral player
 }
 
@@ -247,6 +291,15 @@ void negotiateDemo() {
     testPlayerNegotiate1->addTerritory(testTerritory1);
     testPlayerNegotiate2->addTerritory(testTerritory2);
 
+    // play diplomacy card
+    cout << "---- Playing Diplomacy Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerNegotiate1->getCardHand()->addCardToHand("Diplomacy");
+    cout << *testPlayerNegotiate1 << endl;
+    testPlayerNegotiate1->playCard(deck, "Diplomacy");
+    cout << *testPlayerNegotiate1 << endl;
+
     // Negotiate with self
     cout << "---- Negotiate with self ----" << endl;
     auto negotiateSelf = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate1);
@@ -255,6 +308,7 @@ void negotiateDemo() {
 
     // Negotiate with other
     cout << "\n---- Negotiate with other ----" << endl;
+    testPlayerNegotiate1->playCard(deck, "Diplomacy");
     auto negotiateOther = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate2);
     cout << *testPlayerNegotiate1 << endl;
     cout << *testPlayerNegotiate2 << endl;

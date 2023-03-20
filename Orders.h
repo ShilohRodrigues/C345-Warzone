@@ -21,7 +21,7 @@ public:
     Order& operator=(const Order& order);
     // each subclass needs validate(), execute()
     virtual bool validate()=0;
-    virtual void execute()=0;
+    virtual int execute()=0;
     // stream insertion operator
     friend ostream& operator<<(ostream& os, const Order& order);
 
@@ -47,7 +47,7 @@ public:
     friend ostream& operator<<(ostream& os, const Deploy& deploy);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -87,7 +87,7 @@ public:
     void setAdvanceArmies(int advanceArmies);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     void attack();
 
@@ -107,7 +107,7 @@ public:
     friend ostream& operator<<(ostream& os, const Bomb& bomb);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -130,7 +130,7 @@ public:
     friend ostream& operator<<(ostream& os, const Blockade& blockade);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -158,7 +158,7 @@ public:
     friend ostream& operator<<(ostream& os, const Airlift& airlift);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(const shared_ptr<Player> &player);
@@ -187,7 +187,7 @@ public:
     friend ostream& operator<<(ostream& os, const Negotiate& negotiate);
 
     bool validate() override;
-    void execute() override;
+    int execute() override;
 
     const shared_ptr<Player> &getIssuer() const;
     void setIssuer(const shared_ptr<Player> &issuer);
