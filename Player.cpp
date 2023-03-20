@@ -226,12 +226,14 @@ void Player::issueOrder() {
     // The player decides which adjacent territories are to be attacked in priority (as a list return by the toAttack() method).
     auto territoriesToAttack = toAttack();
 
-    // The player issues deploy orders on its own territories that are in the list returned by toDefend().As long as the player has armies still to deploy, it will issue a deploy order and no other order. Once it has deployed all its  armies, it can proceed with other kinds of orders.
+    // The player issues deploy orders on its own territories that are in the list returned by toDefend().
+    // As long as the player has armies still to deploy, it will issue a deploy order and no other order.
+    // Once it has deployed all its  armies, it can proceed with other kinds of orders.
     for (const auto& territory : *territoriesToDefend) {
         // check if player has armies to deploy
         if (this->reinforcementPool > 0) {
             // create deploy order
-            auto deployOrder = make_shared<Deploy>(territory, this->reinforcementPool);
+            auto deployOrder = make_shared<Deploy>(make_shared<Player>(*this), territory, this->reinforcementPool);
             // add deploy order to orders list
             this->ordersList->add(deployOrder);
             // decrement reinforcement pool
@@ -245,7 +247,7 @@ void Player::issueOrder() {
         // check if player has armies to deploy
         if (this->reinforcementPool > 0) {
             // create deploy order
-            auto deployOrder = make_shared<Deploy>(territory, this->reinforcementPool);
+            auto deployOrder = make_shared<Deploy>(make_shared<Player>(*this), territory, this->reinforcementPool);
             // add deploy order to orders list
             this->ordersList->add(deployOrder);
             // decrement reinforcement pool
