@@ -93,6 +93,11 @@ int GameEngine::executeOrdersPhase() {
             }
         }
     }
+
+    for (auto& player : players) {
+        player->update(this->deck);
+    }
+
     return numExecuted;
   }
 
