@@ -256,23 +256,38 @@ void Player::issueOrder() {
         }
     }
 
-    
     // get a shared_ptr to the deck object
     auto sharedDeck = std::make_shared<Deck>();
     // check if the player has any cards
     auto handOfCards = this->getCardHand()->getHandOfCards();
-    //  if the player has any card in their hand of cards, randomly choose one of them and play it.
+    // if the player has any card in their hand of cards, let them choose one to play
     if (!handOfCards->empty()) {
-        // randomly choose a card
-        auto randomCard = handOfCards->at(rand() % handOfCards->size());
-        // play the card
-        //std::shared_ptr<Deck> sharedDeck = std::make_shared<Deck>(deck);
-        this->playCard(sharedDeck, randomCard->getCardType());
+        // display the player's hand of cards and prompt them to choose one
+        std::cout << "Your hand of cards: ";
+        for (size_t i = 0; i < handOfCards->size(); i++) {
+            std::cout << i << ": " << handOfCards->at(i)->getCardType() << " ";
+        }
+        std::cout << std::endl << "Choose a card to play (enter the index): ";
+        // get the player's choice
+        size_t choice;
+        std::cin >> choice;
+        // check if the choice is valid
+        if (choice < handOfCards->size()) {
+            // play the chosen card
+            auto chosenCard = handOfCards->at(choice);
+            this->playCard(sharedDeck, chosenCard->getCardType());
+        }
+        else {
+            std::cout << "Invalid choice." << std::endl;
+        }
     }
+    else {
+        std::cout << "You have no cards in your hand." << std::endl;
+    }
+
+    // card types
+
 }
-
-
-
 
 
 void Player::addTerritory(const shared_ptr<Territory>& territory) {
