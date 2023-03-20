@@ -286,6 +286,18 @@ unordered_map<Territory, list<Territory>, MyHash> Map::getTerritories() {
     return *territories;
 }
 
+/**
+ * Checks if two given territories are adjacent.
+ * @param territory1
+ * @param territory2
+ * @return true if they are adjacent
+ */
+bool Map::areAdjacent(const Territory &territory1, const Territory &territory2) {
+    const auto& adjTerritories = *territory1.getAdjacentTerritories();
+    return std::any_of(adjTerritories.begin(), adjTerritories.end(),
+                       [&](int territoryID) { return territoryID == territory2.getId(); });
+}
+
 //MapLoader Class
 //Helper function to split strings by the separator char.
 vector<string> split(string str, char separator) {

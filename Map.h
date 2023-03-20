@@ -59,7 +59,6 @@ public:
 
     const shared_ptr<vector<int>> &getAdjacentTerritories() const;
     void setAdjacentTerritories(const shared_ptr<vector<int>> &adjacentTerritories);
-
 };
 
 class Continent {
@@ -104,6 +103,8 @@ public:
     bool validate();
     bool isConnected(unordered_map<Territory, list<Territory>, MyHash> territories);
     unordered_map<Territory, list<Territory>, MyHash> getTerritories();
+
+    static bool areAdjacent(const Territory& territory1, const Territory& territory2);
 
 };
 
