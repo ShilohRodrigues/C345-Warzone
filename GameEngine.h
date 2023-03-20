@@ -9,6 +9,7 @@
 #include <random>
 #include "Map.h"
 #include "Player.h"
+#include "Cards.h"
 using namespace std;
 
 class State;
@@ -37,7 +38,8 @@ class GameEngine {
     shared_ptr<Player> getPlayer(int i);
     vector<shared_ptr<Player>> getPlayers();
     void shufflePlayers();
-    
+    const shared_ptr<Deck> &getDeck() const;
+
     // part 3 add//
     void reinforcementPhase();
     void issueOrdersPhase();
@@ -48,6 +50,7 @@ class GameEngine {
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
     vector<shared_ptr<Player>> players;
+    shared_ptr<Deck> deck;
     int currentPlayerIndex = 0;
 };
 
