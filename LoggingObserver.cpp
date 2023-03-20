@@ -1,42 +1,39 @@
 #include "LoggingObserver.h"
-#include <iostream>
-#include <sstream>
-#include <fstream>
 #include <algorithm>
 using namespace std;
 
-void Subject::attach(Observer* observer) {
+
+void Subject::attach(Observer *observer) {
     observers.push_back(observer);
 }
 
-void Subject::detach(Observer* observer) {
-    observers.erase(remove(observers.begin(), observers.end(), observer), observers.end());
+void Subject::detach(Observer *observer) {
+    observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
 }
 
-void Subject::notify() {
-    for (auto observer : observers) {
-        observer->update(this);
+void Subject::notify(const ILoggable *source) {
+    for (Observer *observer : observers) {
+        cout <<"\n\n\n\n\n ***************This section ran" << endl;
+        observer->update(source);
     }
 }
 
-void LogObserver::update(Subject* subject) {
-    auto* loggable = dynamic_cast<Iloggable*>(subject);
-    if (loggable) {
-        writeToLog(loggable->stringToLog());
-    }
+LogObserver::LogObserver() {
+    logFile.open("C:\\Users\\amrit\\CLionProjects\\Assignment2Trial3", std::ios::app);
+    cout << "LogObserver created and open log file " << endl;
 }
 
-void LogObserver::writeToLog(const string& entry) {
-    std::ofstream logFile("gamelog.txt", std::ios::app);
-    if (logFile.is_open()) {
-        logFile << entry << std::endl;
-        logFile.close();
-    }
+LogObserver::~LogObserver() {
+    cout << "LogObserver destrpyed and log file closed" << endl;
+    logFile.close();
 }
 
+void LogObserver::update(const ILoggable *source) {
+    std::cout << "LogObserver::update() called." << std::endl;
+    source->stringToLog(logFile);
+    logFile << std::endl;
+    logFile.flush();
+    std::cout << "Log entry written to gamelog.txt." << std::endl;
 
-//
-// Created by amrit on 2023-03-18.
-//
-
+}
 

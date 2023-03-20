@@ -4,46 +4,44 @@
 
 #ifndef LOGGINGOBSERVER_H
 #define LOGGINGOBSERVER_H
+#include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 using namespace std;
-
-class Iloggable{
-public:
-    //abstract class used for our polymorphed classes
-    [[nodiscard]] virtual string stringToLog() const = 0;
-};
-
-//Forward declaration of class subject so our class observer can use it
+class ILoggable;
+class Observer;
 class Subject;
+
+class ILoggable {
+public:
+    virtual void stringToLog(ostream& out) const = 0;
+};
 
 class Observer {
 public:
-    //abstract class used for our polymorphed classes
-    virtual void update(Subject* subject) = 0;
+    virtual void update(const ILoggable *source) = 0;
 };
 
-
 class Subject {
-protected:
-    std::vector<Observer*> observers;
+private:
+    std::vector<Observer *> observers;
+
 public:
-    //adding a virtual constructor makes subject polymorphic
-    virtual ~Subject() = default;
-    void attach(Observer* observer);
-    void detach(Observer* observer);
-    void notify();
+    void attach(Observer *observer);
+    void detach(Observer *observer);
+    void notify(const ILoggable *source);
 };
 
 class LogObserver : public Observer {
+private:
+    std::ofstream logFile;
+
 public:
-    void update(Subject* subject) override;
-    static void writeToLog(const std::string& entry);
+    LogObserver();
+    ~LogObserver();
+    void update(const ILoggable *source) override;
 };
-
-
-
-
 
 
 #endif //LOGGINGOBSERVER_H
