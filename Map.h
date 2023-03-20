@@ -34,6 +34,7 @@ private:
     string playerInPossession;
     unique_ptr<int> continentId;
     unique_ptr<int> armyCnt;
+    shared_ptr<vector<int>> adjacentTerritories;
 
 public:
     //Initial territory
@@ -56,6 +57,8 @@ public:
     const unique_ptr<int> &getArmyCnt() const;
     void setArmyCnt(unique_ptr<int> &armyCnt);
 
+    const shared_ptr<vector<int>> &getAdjacentTerritories() const;
+    void setAdjacentTerritories(const shared_ptr<vector<int>> &adjacentTerritories);
 };
 
 class Continent {
@@ -101,6 +104,8 @@ public:
     bool isConnected(unordered_map<Territory, list<Territory>, MyHash> territories);
     unordered_map<Territory, list<Territory>, MyHash> getTerritories();
     vector<Continent>& getContinents();
+
+    static bool areAdjacent(const Territory& territory1, const Territory& territory2);
 
 };
 

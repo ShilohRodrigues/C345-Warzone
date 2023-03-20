@@ -22,6 +22,5 @@ int main() {
 //  game->startupPhase();
 //  delete game;
 
-   return 0;
-
+    return 0;
 }

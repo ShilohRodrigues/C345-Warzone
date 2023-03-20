@@ -197,7 +197,15 @@ bool Advance::validate()  {
         // source territory doesn't belong to player issuing the order
         return false;
     }
-    // TODO: check adjacency
+
+    if (sourceTerritory->getPlayerInPossession() != targetTerritory->getPlayerInPossession()) {
+        // check for adjacency if not advancing to own territory
+        if (!Map::areAdjacent(*sourceTerritory, *targetTerritory)) {
+            // source and target territories are not adjacent
+            return false;
+        }
+    }
+
     if (*sourceTerritory->getArmyCnt() < advanceArmies) {
         // player doesn't have enough armies on the source territory
         return false;
@@ -391,7 +399,17 @@ bool Bomb::validate()  {
         return false;
     }
 
-    // TODO: check adjacency to any player-owned territory
+    // check adjacency to any player-owned territory
+    bool anyAdjacent = false;
+    for (const auto& t : *this->player->getTerritories()) {
+        if (Map::areAdjacent(*t, *targetTerritory)) {
+            anyAdjacent = true;
+        }
+    }
+    if (!anyAdjacent) {
+        // the target territory isn't adjacent to any player owned territory
+        return false;
+    }
 
     if (this->player->isInNegotiatedPlayers(targetTerritory->getPlayerInPossession())) {
         // can't attack a player in a negotiation agreement

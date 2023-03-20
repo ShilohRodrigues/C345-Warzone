@@ -45,12 +45,12 @@ void ordersDemo1() {
 }
 
 void ordersDemo2() {
-    deployDemo();
-    advanceDemo();
-    airliftDemo();
+//    deployDemo();
+//    advanceDemo();
+//    airliftDemo();
     bombDemo();
-    blockadeDemo();
-    negotiateDemo();
+//    blockadeDemo();
+//    negotiateDemo();
 }
 
 void deployDemo() {
@@ -87,20 +87,26 @@ void advanceDemo() {
     cout << "\n\n-- ADVANCE TESTS --" << endl;
     // prepare territories
     auto testAdvanceTerritories = make_unique<vector<shared_ptr<Territory>>>();
+    // one source territory
     auto testSourceTerritoryAdvance =
-            make_shared<Territory>(0, "sourceAdvanceTerritory", 0, "test", 4);
-    // one enemy territory
-    auto testTargetEnemyAdvance =
-            make_shared<Territory>(0, "targetAdvanceEnemyTerritory", 0, "EnemyPlayer", 2);
+            make_shared<Territory>(0, "sourceAdvanceTerritory", 0, "test", 5);
+    vector<int> adjacentTerritories = {1};
+    testSourceTerritoryAdvance->setAdjacentTerritories(make_shared<vector<int>>(adjacentTerritories));
+    // one adjacent enemy territory
+    auto testAdjacentEnemyAdvance =
+            make_shared<Territory>(1, "targetAdvanceAdjacentEnemyTerritory", 0, "EnemyPlayer", 1);
+    // one non-adjacent enemy territory
+    auto testNonAdjacentEnemyAdvance =
+            make_shared<Territory>(2, "targetAdvanceNonAdjacentEnemyTerritory", 0, "EnemyPlayer", 2);
     // one self-owned territory
     auto testTargetOwnedAdvance =
-            make_shared<Territory>(0, "targetAdvanceOwnedTerritory", 0, "test", 2);
+            make_shared<Territory>(3, "targetAdvanceOwnedTerritory", 0, "test", 2);
     testAdvanceTerritories->push_back(testSourceTerritoryAdvance);
     testAdvanceTerritories->push_back(testTargetOwnedAdvance);
 
     // prepare player
     auto testPlayerAdvance =
-            make_shared<Player>(6, 3, *testAdvanceTerritories);
+            make_shared<Player>(7, 3, *testAdvanceTerritories);
 
     // advance to own territory
     cout << "---- Advancing to own territory ----" << endl;
@@ -112,17 +118,25 @@ void advanceDemo() {
     advanceToOwnTerritory->execute();
     cout << *testPlayerAdvance << endl;
 
-    // advancing to enemy territory
-    cout << "---- Advancing to enemy territory ----" << endl;
-    auto advanceToEnemyTerritory = make_unique<Advance>(testPlayerAdvance,
-                                                        testSourceTerritoryAdvance,
-                                                        testTargetEnemyAdvance,
-                                                        3);
+    // advancing to adjacent enemy territory
+    cout << "---- Advancing to adjacent enemy territory ----" << endl;
+    auto advanceToAdjacentEnemyTerritory = make_unique<Advance>(testPlayerAdvance,
+                                                                testSourceTerritoryAdvance,
+                                                                testAdjacentEnemyAdvance,
+                                                                3);
     cout << *testPlayerAdvance << endl;
-    advanceToEnemyTerritory->execute();
+    advanceToAdjacentEnemyTerritory->execute();
     cout << *testPlayerAdvance << endl;
 
-    cout << "Simulating end of turn . . ." << endl;
+    // advancing to non-adjacent enemy territory
+    cout << "---- Advancing to non-adjacent enemy territory ----" << endl;
+    auto advanceToNonAdjacentEnemyTerritory = make_unique<Advance>(testPlayerAdvance,
+                                                        testSourceTerritoryAdvance,
+                                                        testNonAdjacentEnemyAdvance,
+                                                        3);
+    advanceToNonAdjacentEnemyTerritory->execute();
+
+    cout << "\nSimulating end of turn . . ." << endl;
     shared_ptr<Deck> deck = make_shared<Deck>();
     deck->MakeDeck();
     testPlayerAdvance->update(deck);
@@ -195,11 +209,18 @@ void bombDemo() {
     cout << "\n\n-- BOMB TESTS --" << endl;
     // prepare territories
     auto testBombTerritories = make_unique<vector<shared_ptr<Territory>>>();
+    // own territory
     auto testOwnBomb =
             make_shared<Territory>(0, "targetOwnBomb", 0, "test", 2);
-    auto testTargetBomb =
-            make_shared<Territory>(0, "targetEnemyBomb", 0, "Enemy", 6);
     testBombTerritories->push_back(testOwnBomb);
+    // adjacent territory
+    auto testTargetBombAdjacent =
+            make_shared<Territory>(1, "targetEnemyBombAdjacent", 0, "Enemy", 6);
+    vector<int> adjacentTerritories = {1};
+    testOwnBomb->setAdjacentTerritories(make_shared<vector<int>>(adjacentTerritories));
+    // non-adjacent territory
+    auto testTargetBombNonAdjacent =
+            make_shared<Territory>(2, "targetEnemyBombNonAdjacent", 0, "Enemy", 6);
 
     // prepare player
     auto testPlayerBomb =
@@ -214,20 +235,29 @@ void bombDemo() {
     testPlayerBomb->playCard(deck, "Bomb");
     cout << *testPlayerBomb << endl;
 
-    // bomb enemy territory
-    cout << "---- Bomb enemy territory (with card) ----" << endl;
-    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
-                                                testTargetBomb);
+    // bomb adjacent enemy territory
+    cout << "---- Bomb adjacent enemy territory (with card) ----" << endl;
+    auto bombAdjacentEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
+                                                        testTargetBombAdjacent);
     cout << *testPlayerBomb << endl;
-    bombEnemyTerritory->execute();
+    bombAdjacentEnemyTerritory->execute();
 
-    cout << "\n---- Bomb enemy territory (no card) ----" << endl;
+    cout << "\n---- Bomb adjacent enemy territory (no card) ----" << endl;
     cout << *testPlayerBomb << endl;
-    bombEnemyTerritory->execute();
+    bombAdjacentEnemyTerritory->execute();
+
+    // bomb non-adjacent enemy territory
+    cout << "\n---- Bomb non-adjacent enemy territory (with card) ----" << endl;
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    testPlayerBomb->playCard(deck, "Bomb");
+    auto bombNonAdjacentEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
+                                                        testTargetBombNonAdjacent);
+    cout << *testPlayerBomb << endl;
+    bombNonAdjacentEnemyTerritory->execute();
+    cout << *testPlayerBomb << endl;
 
     // bomb own territory
-    cout << "\n---- Bomb own territory ----" << endl;
-    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    cout << "---- Bomb own territory ----" << endl;
     testPlayerBomb->playCard(deck, "Bomb");
     auto bombOwnTerritory = make_unique<Bomb>(testPlayerBomb,
                                                       testOwnBomb);
