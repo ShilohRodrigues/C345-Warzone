@@ -1,7 +1,7 @@
 #include "Orders.h"
 #include "Player.h"
 #include "Map.h"
-
+#include "LoggingObserver.h"
 using namespace std;
 
 void ordersDemo1() {
@@ -54,6 +54,7 @@ void ordersDemo2() {
 }
 
 void deployDemo() {
+    LogObserver gameLogObserver;
     // -- DEPLOY TESTS --
     cout << "-- DEPLOY TESTS --" << endl;
     auto testTerritoriesDeploy = make_unique<vector<shared_ptr<Territory>>>();
@@ -69,6 +70,7 @@ void deployDemo() {
     cout << "Deploying 3 armies to the test territory:" << endl;
     auto testDeploy1 =
             make_unique<Deploy>(testPlayerDeploy, testDeployTerritory, 3);
+    testDeploy1->attach(&gameLogObserver);
     testDeploy1->execute();
     cout << *testDeployTerritory << endl << *testPlayerDeploy << endl;
 
@@ -76,6 +78,7 @@ void deployDemo() {
     cout << "Trying to deploy 1 army to the test territory:" << endl;
     auto testDeploy2 =
             make_unique<Deploy>(testPlayerDeploy, testDeployTerritory, 1);
+    testDeploy2->attach(&gameLogObserver);
     testDeploy2->execute();
 }
 

@@ -39,7 +39,10 @@ int Order::getNextId() {
 void Order::setNextId(int nextId) {
     nextID = nextId;
 }
-
+void Order::stringToLog(std::ostream &message) const {
+    std::ofstream logFile("gamelog.txt", std::ios_base::app);
+    logFile << "Order Works!";
+}
 // Order subclasses
 // validate() for every subclass
 // execute() for every subclass
@@ -95,6 +98,12 @@ bool Deploy::validate()  {
  * to the armies on the target territory.
  * @return 0 if successful, -1 otherwise
  */
+
+//Part 5
+void Deploy::stringToLog(std::ostream &out) const {
+    out << "Order Executed: Deploy";
+}
+
 int Deploy::execute() {
     if (validate()) {
         // add deployed armies to existing armies
@@ -104,6 +113,7 @@ int Deploy::execute() {
 
         // remove deployed armies from the player's reinforcement pool
         player->setReinforcementPool(player->getReinforcementPool() - deployedArmies);
+        notify(this);
 
         return 0;
     } else {
@@ -200,6 +210,9 @@ bool Advance::validate()  {
 
     return true;
 }
+void Advance::stringToLog(std::ostream &out) const {
+    out << "Order Executed: Advance";
+}
 
 int Advance::execute() {
     // status report
@@ -219,6 +232,7 @@ int Advance::execute() {
             auto newTargetArmyPtr = make_unique<int>(targetArmies);
             this->sourceTerritory->setArmyCnt(newSourceArmyPtr);
             this->targetTerritory->setArmyCnt(newTargetArmyPtr);
+            notify(this);
         } else {
             // the target territory is owned by another player
             attack();
@@ -396,6 +410,10 @@ bool Bomb::validate()  {
  * Removes half of the armies on the target territory.
  * @return 0 if successful, -1 otherwise
  */
+void Bomb::stringToLog(std::ostream &out) const {
+    out << "Order Executed: Bombed";
+}
+
 int Bomb::execute() {
     // status report
     cout << "Trying to bomb territory:" << endl;
@@ -409,6 +427,8 @@ int Bomb::execute() {
         // update report
         cout << "Successfully bombed territory:" << endl;
         cout << *this->targetTerritory;
+
+        notify(this);
 
         // remove the played card
         this->player->getCardHand()->deletePlayedCardFromPlayCards("Bomb");
@@ -476,7 +496,6 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
 /**
  * Checks that:
  * 1) the target territory belongs to the player issuing the order
- * 2) the blockade order can only be created by playing the blockade card
  * @return whether the order is valid or not
  */
 bool Blockade::validate()  {
@@ -498,6 +517,10 @@ bool Blockade::validate()  {
  * to the Neutral player.
  * @return 0 if successful, -1 otherwise
  */
+void Blockade::stringToLog(std::ostream &out) const {
+    out << "Order Executed: Blockade";
+}
+
 int Blockade::execute() {
     // status report
     cout << "Trying to blockade the territory:" << endl;
@@ -515,6 +538,8 @@ int Blockade::execute() {
         // update report
         cout << "Successfully blockaded the territory:" << endl;
         cout << *this->targetTerritory;
+
+        notify(this);
 
         // remove the played card
         this->player->getCardHand()->deletePlayedCardFromPlayCards("Blockade");
@@ -624,6 +649,10 @@ bool Airlift::validate()  {
  * Moves desired armies from a source to target territory without them needing to be adjacent.
  * @return 0 if successful, -1 otherwise
  */
+void Airlift::stringToLog(std::ostream &out) const {
+    out << "Order Executed: Airlift";
+}
+
 int Airlift::execute() {
     // status report
     cout << "Trying to advance " << airliftArmies << " armies from " << this->sourceTerritory->getName()
@@ -647,6 +676,8 @@ int Airlift::execute() {
 
         // report outcome
         cout << "Airlift order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+
+        notify(this);
 
         // remove the played card
         this->player->getCardHand()->deletePlayedCardFromPlayCards("Airlift");
@@ -749,6 +780,10 @@ bool Negotiate::validate()  {
  * The attack orders will not attack players in players' negotiatedPlayers vector.
  * @return 0 if successful, -1 otherwise
  */
+void Negotiate::stringToLog(std::ostream &out) const {
+    out << "Order Executed: Negotiate";
+}
+
 int Negotiate::execute() {
     // status report
     cout << "Trying to negotiate between " << issuer->getName()
@@ -760,6 +795,8 @@ int Negotiate::execute() {
 
         // update report
         cout << "Negotiation succeeded." << endl;
+
+        notify(this);
 
         // remove the played card
         this->issuer->getCardHand()->deletePlayedCardFromPlayCards("Diplomacy");
@@ -856,39 +893,50 @@ ostream& operator<<(ostream& os, const OrdersList& ordersList) {
     return os;
 }
 
+void OrdersList::stringToLog(std::ostream &out) const {
+    out << "Order Issued: added";
+}
+
 // utility function to add orders to the orders list
 template<typename T>
 void OrdersList::add(shared_ptr<T> order) {
     this->orderList->push_back(static_pointer_cast<Order>(order));
+    notify(this);
 }
 template<>
 void OrdersList::add<Deploy>(shared_ptr<Deploy> deploy) {
     this->orderList->push_back(static_pointer_cast<Order>(deploy));
+    notify(this);
 }
 
 template<>
 void OrdersList::add<Advance>(shared_ptr<Advance> advance) {
     this->orderList->push_back(static_pointer_cast<Order>(advance));
+    notify(this);
 }
 
 template<>
 void OrdersList::add<Bomb>(shared_ptr<Bomb> bomb) {
     this->orderList->push_back(static_pointer_cast<Order>(bomb));
+    notify(this);
 }
 
 template<>
 void OrdersList::add<Blockade>(shared_ptr<Blockade> blockade) {
     this->orderList->push_back(static_pointer_cast<Order>(blockade));
+    notify(this);
 }
 
 template<>
 void OrdersList::add<Airlift>(shared_ptr<Airlift> airlift) {
     this->orderList->push_back(static_pointer_cast<Order>(airlift));
+    notify(this);
 }
 
 template<>
 void OrdersList::add<Negotiate>(shared_ptr<Negotiate> negotiate) {
     this->orderList->push_back(static_pointer_cast<Order>(negotiate));
+    notify(this);
 }
 
 // move()
