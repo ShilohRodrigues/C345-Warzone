@@ -198,9 +198,12 @@ bool Advance::validate()  {
         return false;
     }
 
-    if (!Map::areAdjacent(*sourceTerritory, *targetTerritory)) {
-        // source and target territories are not adjacent
-        return false;
+    if (sourceTerritory->getPlayerInPossession() != targetTerritory->getPlayerInPossession()) {
+        // check for adjacency if not advancing to own territory
+        if (!Map::areAdjacent(*sourceTerritory, *targetTerritory)) {
+            // source and target territories are not adjacent
+            return false;
+        }
     }
 
     if (*sourceTerritory->getArmyCnt() < advanceArmies) {
