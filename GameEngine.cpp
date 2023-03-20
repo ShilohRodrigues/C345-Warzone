@@ -33,6 +33,8 @@ void GameEngine::startupPhase() {
 GameEngine::GameEngine() {
   state = shared_ptr<State>(new StartState()); //Shared pointed, no need to delete
   map = shared_ptr<Map>(new Map());
+  deck = shared_ptr<Deck>(new Deck());
+  deck->MakeDeck();
 }
 //Destructor 
 GameEngine::~GameEngine() { /*Using smart pointers*/ }
@@ -96,6 +98,10 @@ void GameEngine::shufflePlayers() {
   auto rng = default_random_engine {};
   shuffle(players.begin(), players.end(), rng);
 }
+const shared_ptr<Deck> &GameEngine::getDeck() const {
+  return deck;
+}
+
 
 ///////////////// State Class Implementations //////////////////////////
 //State class insertion stream
@@ -328,6 +334,12 @@ int PlayersAddedState::next(GameEngine *game, string cmd) {
     cout << endl << endl;
 
     cout << "Drawing 2 cards for every player.." << endl;
+    for (auto& p : game->getPlayers()) {
+      p.getCardHand()->addCardToHand(game->getDeck()->draw());
+      p.getCardHand()->addCardToHand(game->getDeck()->draw());
+      cout << p.getName() << " Has the following cards: " << endl << *p.getCardHand() << endl;   
+    }
+    cout << endl << endl;
 
     game->setState(shared_ptr<State>(new AssignReinforcementState()));
     return 0;
