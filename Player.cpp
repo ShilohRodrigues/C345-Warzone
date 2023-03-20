@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <algorithm>
+#include "Cards.h"
 
 using namespace std;
 
@@ -255,9 +256,19 @@ void Player::issueOrder() {
         }
     }
 
-    // The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
-
-
+    
+    // get a shared_ptr to the deck object
+    auto sharedDeck = std::make_shared<Deck>();
+    // check if the player has any cards
+    auto handOfCards = this->getCardHand()->getHandOfCards();
+    //  if the player has any card in their hand of cards, randomly choose one of them and play it.
+    if (!handOfCards->empty()) {
+        // randomly choose a card
+        auto randomCard = handOfCards->at(rand() % handOfCards->size());
+        // play the card
+        //std::shared_ptr<Deck> sharedDeck = std::make_shared<Deck>(deck);
+        this->playCard(sharedDeck, randomCard->getCardType());
+    }
 }
 
 
