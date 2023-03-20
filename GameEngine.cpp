@@ -31,15 +31,15 @@ void GameEngine::startupPhase() {
 void GameEngine::reinforcementPhase() {
   cout << "\n********** Reinforcement Phase **********\n" << endl;
     // Iterate through all players and calculate their reinforcement armies
-    for (auto player : players) {
-        int armies = player->getTerritories().get()->size() / 3;
+    for (const auto& player : players) {
+        int armies = player->getTerritories()->size() / 3;
         if (armies < 3) {
             armies = 3;
         }
         for (auto continent : map->getContinents()) {
             bool ownsContinent = true;
-            for (auto territory : continent.getTerritories()) {
-                if (*territory.first.getPlayerInPossession() != player->getName()) {
+            for (const auto& territory : continent.getTerritories()) {
+                if (territory.first.getPlayerInPossession() != player->getName()) {
                     ownsContinent = false;
                     break;
                 }
@@ -56,7 +56,7 @@ void GameEngine::issueOrdersPhase() {
   cout << "\n********** Issuing Orders Phase **********\n" << endl;
     // Iterate through all players in round robin fashion
     for (int i = 0; i < players.size(); i++) {
-        Player* currentPlayer = players[currentPlayerIndex];
+        auto currentPlayer = players[currentPlayerIndex];
         currentPlayer->issueOrder();
 
         // Move to the next player
@@ -311,9 +311,9 @@ void MapValidatedState::action() {
 int MapValidatedState::next(GameEngine *game, string cmd) {
   if (cmd == "addplayer") {
     game->setState(shared_ptr<State>(new PlayersAddedState()));
-    Player *p = new Player();
+    auto p = make_shared<Player>();
     string name = p->getName();
-    game->addPlayer(*p);
+    game->addPlayer(p);
     cout << name << " was added. Total Players: " << game->playerCount() << endl << endl;
     return 0;
   }
@@ -359,9 +359,9 @@ int PlayersAddedState::next(GameEngine *game, string cmd) {
       cout << "Maximum number of players was reached." << endl << endl;
       return 1;
     }
-    Player *p = new Player();
+    auto p = make_shared<Player>();
     string name = p->getName();
-    game->addPlayer(*p);
+    game->addPlayer(p);
     cout << name << " was added. Total Players: " << game->playerCount() << endl << endl;
     return 0;
   }
@@ -376,9 +376,9 @@ int PlayersAddedState::next(GameEngine *game, string cmd) {
     int playerIndex = 0;
     vector<vector<Territory>> playersTerritories(game->playerCount());
     for (auto& [territory, neighbors] : game->getMap()->getTerritories()) {
-      Player player = game->getPlayer(playerIndex);
+      auto player = game->getPlayer(playerIndex);
       playersTerritories[playerIndex].push_back(territory);
-      cout << player.getName() << " gets territory: " << territory.getName() << endl;
+      cout << player->getName() << " gets territory: " << territory.getName() << endl;
       ++playerIndex;
       if (playerIndex >= game->playerCount()) playerIndex = 0; //Reset to first player
     }
@@ -390,22 +390,22 @@ int PlayersAddedState::next(GameEngine *game, string cmd) {
     cout << "Shuffling player order to determine the order of play..." << endl;
     cout << "Order of play: ";
     for (auto& p : game->getPlayers()) {
-      cout << p.getName() << " | ";
+      cout << p->getName() << " | ";
     }
     cout << endl << endl;
 
     cout << "Giving every player starting army count of 50." << endl;
     for (auto& p : game->getPlayers()) {
-      p.setArmyCount(50);
-      cout << p.getName() << " army count: " << p.getArmyCount() << " | ";
+      p->setArmyCount(50);
+      cout << p->getName() << " army count: " << p->getArmyCount() << " | ";
     }
     cout << endl << endl;
 
     cout << "Drawing 2 cards for every player.." << endl;
     for (auto& p : game->getPlayers()) {
-      p.getCardHand()->addCardToHand(game->getDeck()->draw());
-      p.getCardHand()->addCardToHand(game->getDeck()->draw());
-      cout << p.getName() << " Has the following cards: " << endl << *p.getCardHand() << endl;   
+      p->getCardHand()->addCardToHand(game->getDeck()->draw());
+      p->getCardHand()->addCardToHand(game->getDeck()->draw());
+      cout << p->getName() << " Has the following cards: " << endl << *p->getCardHand() << endl;
     }
     cout << endl << endl;
 

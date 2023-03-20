@@ -19,7 +19,7 @@ Card::Card() {
 Card::Card(string *cardType): aCardType(cardType) {}
 // Destructor
 Card::~Card() {
-	delete aCardType;
+
 }
 // Copy constructor
 Card::Card(const Card& c)
