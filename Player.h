@@ -45,11 +45,14 @@ public:
     int updateArmyCount();
 
     void drawIfHasConquered(const shared_ptr<Deck>& deck);
+    bool hasPlayedCard(const string& cardType);
+    bool hasCardInHand(const string& cardType);
+    void playCard(const shared_ptr<Deck>& deck, const string& cardType);
 
     void update(const shared_ptr<Deck>& deck);
 
     // getters and setters
-    const string &getName() const;
+    string getName();
 
     int getArmyCount() const;
     void setArmyCount(int armyCount);
@@ -74,7 +77,7 @@ public:
 
 private:
     static int nextID;
-    const string name;
+    string name;
     int armyCount; // total army count available to the player
     int reinforcementPool; // armies the player can use every turn, decreases as the player uses them, replenishes later
     bool hasConqueredTerritory; // true if the player has conquered a territory anytime during the current turn
