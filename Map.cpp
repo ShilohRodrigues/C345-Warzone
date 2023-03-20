@@ -296,6 +296,8 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
 
     ifstream mapFile(path);
     int count = 0;
+    // Create an unordered map to store the adjacency list for each territory
+    unordered_map<int, vector<int>> adjacencyList;
 
     vector<Territory> territoriesMapLoader;
 
@@ -363,6 +365,11 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
                         if (c_id == territoriesMapLoader[stoi(sLine[i])-1].getContId()) {
                             toC.push_back(territoriesMapLoader[stoi(sLine[i])-1]);
                         }
+                        // adjacency list stuff
+                        int toTerritoryId = stoi(sLine[i]) - 1;
+                        int fromTerritoryId = stoi(sLine[0]) - 1;
+                        // Add the 'to' territory to the adjacency list of the 'from' territory
+                        adjacencyList[fromTerritoryId].push_back(toTerritoryId);
                     }
                     catch (const std::invalid_argument& e) {
                         //Skip invalid integer
@@ -371,6 +378,14 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
                 //Adds the territory to the map territories unordered_map
                 mp.addBorder(from, to);
                 mp.addBorderContinent(c_id-1, from, toC);
+
+                // Set the adjacency list for each territory in the map
+                for (auto& territory : mp.getTerritories()) {
+                    int territoryId = territory->getId();
+                    if (adjacencyList.count(territoryId) > 0) {
+                        territory.setAdjacentTerritories(adjacencyList[territoryId]);
+                    }
+                }
             }
         }
     }
