@@ -5,43 +5,43 @@
 using namespace std;
 
 void ordersDemo1() {
-    // create order of every kind
-    auto testDeploy = make_shared<Deploy>();
-    auto testAdvance = make_shared<Advance>();
-    auto testBomb = make_shared<Bomb>();
-    auto testBlockade = make_shared<Blockade>();
-    auto testAirlift = make_shared<Airlift>();
-    auto testNegotiate = make_shared<Negotiate>();
-
-    // create a list of orders
-    auto testOrdersList = make_unique<OrdersList>();
-    testOrdersList->add(testDeploy);
-    testOrdersList->add(testAdvance);
-    testOrdersList->add(testBomb);
-    testOrdersList->add(testBlockade);
-    testOrdersList->add(testAirlift);
-    testOrdersList->add(testNegotiate);
-
-    cout << "\n== OrdersList Stream Insertion Operator ==\n" << *testOrdersList << endl;
-
-    for (const auto& order : *testOrdersList->getOrderList()) {
-        // every order subclass has validate()
-        order->validate();
-        // every order subclass has execute()
-        order->execute();
-    }
-
-    // OrdersList has remove()
-    testOrdersList->remove(3); // remove bomb
-    cout << "\n== OrdersLost::remove() ==\n[removing order with orderID 3 (bomb)]\n" << *testOrdersList << endl;
-
-    //OrdersList has move()
-    cout << "\n== OrdersLost::move() ==\n[move(\"up\", 2) - swapping advance (2) and deploy (1)]\n";
-    testOrdersList->move("up", 2); // swap advance and deploy
-    cout << *testOrdersList << endl;
-    cout << "[move(\"down\", 5) - swapping airlift (5) and negotiate (6)]\n";
-    testOrdersList->move("down", 5);
-    cout << *testOrdersList << endl;
+//    // create order of every kind
+//    auto testDeploy = make_shared<Deploy>();
+//    auto testAdvance = make_shared<Advance>();
+//    auto testBomb = make_shared<Bomb>();
+//    auto testBlockade = make_shared<Blockade>();
+//    auto testAirlift = make_shared<Airlift>();
+//    auto testNegotiate = make_shared<Negotiate>();
+//
+//    // create a list of orders
+//    auto testOrdersList = make_unique<OrdersList>();
+//    testOrdersList->add(testDeploy);
+//    testOrdersList->add(testAdvance);
+//    testOrdersList->add(testBomb);
+//    testOrdersList->add(testBlockade);
+//    testOrdersList->add(testAirlift);
+//    testOrdersList->add(testNegotiate);
+//
+//    cout << "\n== OrdersList Stream Insertion Operator ==\n" << *testOrdersList << endl;
+//
+//    for (const auto& order : *testOrdersList->getOrderList()) {
+//        // every order subclass has validate()
+//        order->validate();
+//        // every order subclass has execute()
+//        order->execute();
+//    }
+//
+//    // OrdersList has remove()
+//    testOrdersList->remove(3); // remove bomb
+//    cout << "\n== OrdersLost::remove() ==\n[removing order with orderID 3 (bomb)]\n" << *testOrdersList << endl;
+//
+//    //OrdersList has move()
+//    cout << "\n== OrdersLost::move() ==\n[move(\"up\", 2) - swapping advance (2) and deploy (1)]\n";
+//    testOrdersList->move("up", 2); // swap advance and deploy
+//    cout << *testOrdersList << endl;
+//    cout << "[move(\"down\", 5) - swapping airlift (5) and negotiate (6)]\n";
+//    testOrdersList->move("down", 5);
+//    cout << *testOrdersList << endl;
 }
 
 void ordersDemo2() {
@@ -50,6 +50,7 @@ void ordersDemo2() {
     airliftDemo();
     bombDemo();
     blockadeDemo();
+    negotiateDemo();
 }
 
 void deployDemo() {
@@ -117,6 +118,12 @@ void advanceDemo() {
     cout << *testPlayerAdvance << endl;
     advanceToEnemyTerritory->execute();
     cout << *testPlayerAdvance << endl;
+
+    cout << "Simulating end of turn . . ." << endl;
+    shared_ptr<Deck> deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerAdvance->update(deck);
+    cout << "Player status: " << endl << *testPlayerAdvance << endl;
 }
 
 void airliftDemo() {
@@ -125,7 +132,7 @@ void airliftDemo() {
     // prepare territories
     auto testAirliftTerritories = make_unique<vector<shared_ptr<Territory>>>();
     auto testSourceTerritoryAirlift =
-            make_shared<Territory>(0, "sourceAirliftTerritory", 0, "test", 4);
+            make_shared<Territory>(0, "sourceAirliftTerritory", 0, "test", 10);
     auto testTargetOwnedAirlift =
             make_shared<Territory>(0, "targetAirliftOwned", 0, "test", 2);
     auto testTargetEnemyAirlift =
@@ -137,6 +144,15 @@ void airliftDemo() {
     auto testPlayerAirlift =
             make_shared<Player>(6, 3, *testAirliftTerritories);
 
+    // play airlift card
+    cout << "---- Playing Airlift Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
+    cout << *testPlayerAirlift << endl;
+    testPlayerAirlift->playCard(deck, "Airlift");
+    cout << *testPlayerAirlift << endl;
+
     // airlift to own territory
     cout << "---- Airlift to own territory ----" << endl;
     auto airliftToOwnTerritory = make_unique<Airlift>(testPlayerAirlift,
@@ -147,25 +163,28 @@ void airliftDemo() {
     airliftToOwnTerritory->execute();
     cout << *testPlayerAirlift << endl;
 
+    cout << "---- Airlift to own territory again ----" << endl;
+    airliftToOwnTerritory->execute();
+
     // airlift to enemy territory
-    cout << "---- Airlift to enemy territory ----" << endl;
+    cout << "\n---- Airlift to enemy territory ----" << endl;
+    testPlayerAirlift->getCardHand()->addCardToHand("Airlift");
+    testPlayerAirlift->playCard(deck, "Airlift");
     auto airliftToEnemyTerritory = make_unique<Airlift>(testPlayerAirlift,
                                                       testSourceTerritoryAirlift,
                                                       testTargetEnemyAirlift,
                                                       1);
     cout << *testPlayerAirlift << endl;
     airliftToEnemyTerritory->execute();
-    cout << *testPlayerAirlift << endl;
 
     // airlift without enough armies
-    cout << "---- Airlift without enough source armies ----" << endl;
+    cout << "\n---- Airlift without enough source armies ----" << endl;
     auto airliftShort = make_unique<Airlift>(testPlayerAirlift,
                                                         testSourceTerritoryAirlift,
                                                         testTargetOwnedAirlift,
                                                         3);
     cout << *testPlayerAirlift << endl;
     airliftToOwnTerritory->execute();
-    cout << *testPlayerAirlift << endl;
 }
 
 void bombDemo() {
@@ -183,20 +202,35 @@ void bombDemo() {
     auto testPlayerBomb =
             make_shared<Player>(2, 3, *testBombTerritories);
 
+    // play bomb card
+    cout << "---- Playing Bomb Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    cout << *testPlayerBomb << endl;
+    testPlayerBomb->playCard(deck, "Bomb");
+    cout << *testPlayerBomb << endl;
+
+    // bomb enemy territory
+    cout << "---- Bomb enemy territory (with card) ----" << endl;
+    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
+                                                testTargetBomb);
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
+
+    cout << "\n---- Bomb enemy territory (no card) ----" << endl;
+    cout << *testPlayerBomb << endl;
+    bombEnemyTerritory->execute();
+
     // bomb own territory
-    cout << "---- Bomb own territory ----" << endl;
+    cout << "\n---- Bomb own territory ----" << endl;
+    testPlayerBomb->getCardHand()->addCardToHand("Bomb");
+    testPlayerBomb->playCard(deck, "Bomb");
     auto bombOwnTerritory = make_unique<Bomb>(testPlayerBomb,
                                                       testOwnBomb);
     cout << *testPlayerBomb << endl;
     bombOwnTerritory->execute();
     cout << *testPlayerBomb << endl;
-
-    // bomb enemy territory
-    cout << "---- Bomb enemy territory ----" << endl;
-    auto bombEnemyTerritory = make_unique<Bomb>(testPlayerBomb,
-                                              testTargetBomb);
-    cout << *testPlayerBomb << endl;
-    bombEnemyTerritory->execute();
 }
 
 void blockadeDemo() {
@@ -214,14 +248,76 @@ void blockadeDemo() {
     auto neutralPlayer = make_shared<Player>();
 
     // blockade own territory
-    cout << "---- Blockade own territory ----" << endl;
+    cout << "---- Blockade own territory (no card) ----" << endl;
     auto blockadeOrder = make_unique<Blockade>(testPlayerBlockade, neutralPlayer,
                                                testOwnBlockade);
     cout << *testPlayerBlockade << endl;
+    blockadeOrder->execute();
+
+    // play blockade card
+    cout << "\n---- Playing Blockade Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerBlockade->getCardHand()->addCardToHand("Blockade");
+    cout << *testPlayerBlockade << endl;
+    testPlayerBlockade->playCard(deck, "Blockade");
+    cout << *testPlayerBlockade << endl;
+
+    // blockade own territory
+    cout << "---- Blockade own territory (with card) ----" << endl;
     blockadeOrder->execute();
     cout << *testPlayerBlockade << endl;
 
     // blockade not owned territory
     cout << "---- Blockade not owned territory ----" << endl;
+    testPlayerBlockade->getCardHand()->addCardToHand("Blockade");
+    testPlayerBlockade->playCard(deck, "Blockade");
+    cout << *testPlayerBlockade << endl;
     blockadeOrder->execute(); // blockading again, but now it's owned by the neutral player
+}
+
+void negotiateDemo() {
+    // -- NEGOTIATE TESTS --
+    cout << "\n\n-- NEGOTIATE TESTS --" << endl;
+
+    // prepare territories
+    auto testTerritory1 = make_shared<Territory>(0, "testTerritory1", 0, "test", 3);
+    auto testTerritory2 = make_shared<Territory>(0, "testTerritory2", 0, "test", 2);
+
+    // prepare player
+    auto testPlayerNegotiate1 = make_shared<Player>();
+    auto testPlayerNegotiate2 = make_shared<Player>();
+
+    testPlayerNegotiate1->addTerritory(testTerritory1);
+    testPlayerNegotiate2->addTerritory(testTerritory2);
+
+    // play diplomacy card
+    cout << "---- Playing Diplomacy Card ----" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testPlayerNegotiate1->getCardHand()->addCardToHand("Diplomacy");
+    cout << *testPlayerNegotiate1 << endl;
+    testPlayerNegotiate1->playCard(deck, "Diplomacy");
+    cout << *testPlayerNegotiate1 << endl;
+
+    // Negotiate with self
+    cout << "---- Negotiate with self ----" << endl;
+    auto negotiateSelf = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate1);
+    cout << *testPlayerNegotiate1 << endl;
+    negotiateSelf->execute();
+
+    // Negotiate with other
+    cout << "\n---- Negotiate with other ----" << endl;
+    testPlayerNegotiate1->playCard(deck, "Diplomacy");
+    auto negotiateOther = make_unique<Negotiate>(testPlayerNegotiate1, testPlayerNegotiate2);
+    cout << *testPlayerNegotiate1 << endl;
+    cout << *testPlayerNegotiate2 << endl;
+    negotiateOther->execute();
+    cout << *testPlayerNegotiate1 << endl << endl;
+    cout << *testPlayerNegotiate2 << endl;
+
+    // Try to attack negotiated player
+    cout << "\n---- Attacking negotiated player ----" << endl;
+    auto advance = make_unique<Advance>(testPlayerNegotiate1, testTerritory1, testTerritory2, 2);
+    advance->execute();
 }

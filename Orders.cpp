@@ -45,11 +45,10 @@ void Order::setNextId(int nextId) {
 // execute() for every subclass
 
 // Deploy
-Deploy::Deploy():Order() {}
 Deploy::Deploy(const shared_ptr<Player>& player,
                const shared_ptr<Territory>& targetTerritory,
                const int deployedArmies):
-    player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
+    Order(), player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
 Deploy::Deploy(const Deploy& deploy):Order(deploy) {
     this->player = deploy.player;
     this->targetTerritory = deploy.targetTerritory;
@@ -82,7 +81,7 @@ ostream& operator<<(ostream& os, const Deploy& deploy) {
  */
 bool Deploy::validate()  {
     if (player && targetTerritory) {
-        if ((player->getName() == *targetTerritory->getPlayerInPossession())
+        if ((player->getName() == targetTerritory->getPlayerInPossession())
             && (player->getReinforcementPool() >= this->deployedArmies)) {
             return true;
         }
@@ -94,8 +93,9 @@ bool Deploy::validate()  {
 /**
  * Adds the selected number of player armies for deployment (deployedArmies)
  * to the armies on the target territory.
+ * @return 0 if successful, -1 otherwise
  */
-void Deploy::execute() {
+int Deploy::execute() {
     if (validate()) {
         // add deployed armies to existing armies
         int updatedArmies = *targetTerritory->getArmyCnt() + deployedArmies;
@@ -104,8 +104,11 @@ void Deploy::execute() {
 
         // remove deployed armies from the player's reinforcement pool
         player->setReinforcementPool(player->getReinforcementPool() - deployedArmies);
+
+        return 0;
     } else {
         cout << "Invalid deploy order. Could not execute.";
+        return -1;
     }
 }
 
@@ -135,11 +138,11 @@ void Deploy::setDeployedArmies(int deployedArmies) {
 }
 
 // Advance
-Advance::Advance():Order() {}
 Advance::Advance(const shared_ptr<Player>& player,
                  const shared_ptr<Territory>& sourceTerritory,
                  const shared_ptr<Territory>& targetTerritory,
                  int advanceArmies):
+                 Order(),
                  player(player),
                  sourceTerritory(sourceTerritory), targetTerritory(targetTerritory),
                  advanceArmies(advanceArmies) {}
@@ -176,10 +179,11 @@ ostream& operator<<(ostream& os, const Advance& advance) {
  * 1) the source territory belongs to the player issuing the order
  * 2) the target territory is adjacent to the source territory
  * 3) the player issuing the order has enough armies to advance
- * @return
+ * 4) the owner of the target territory is not in the issuing player's negotiatedPlayers
+ * @return whether the order is valid or not
  */
 bool Advance::validate()  {
-    if (*sourceTerritory->getPlayerInPossession() != player->getName()) {
+    if (sourceTerritory->getPlayerInPossession() != player->getName()) {
         // source territory doesn't belong to player issuing the order
         return false;
     }
@@ -188,18 +192,24 @@ bool Advance::validate()  {
         // player doesn't have enough armies on the source territory
         return false;
     }
+
+    if (this->player->isInNegotiatedPlayers(targetTerritory->getPlayerInPossession())) {
+        // can't attack a player in a negotiation agreement
+        return false;
+    }
+
     return true;
 }
 
-void Advance::execute() {
+int Advance::execute() {
     // status report
     cout << "Trying to advance " << advanceArmies << " armies from " << this->sourceTerritory->getName()
-        << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+        << " belonging to " << this->sourceTerritory->getPlayerInPossession()
         << " to " << this->targetTerritory->getName()
-        << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
+        << " belonging to " << this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // check if the target territory is owned by the player issuing the order
-        if (*this->sourceTerritory->getPlayerInPossession() == *this->targetTerritory->getPlayerInPossession()) {
+        if (this->sourceTerritory->getPlayerInPossession() == this->targetTerritory->getPlayerInPossession()) {
             int sourceArmies = *this->sourceTerritory->getArmyCnt();
             int targetArmies = *this->targetTerritory->getArmyCnt();
             // just move the armies from source to target
@@ -216,8 +226,10 @@ void Advance::execute() {
 
         // report outcome
         cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+        return 0;
     } else {
         cout << "Invalid advance order. Could not complete." << endl;
+        return -1;
     }
 }
 
@@ -228,7 +240,7 @@ void Advance::execute() {
  * 3) if all defending armies are eliminated, the attacker captures the territory
  * the surviving attacking units occupy the territory and ownership changes
  * 4) a player receives a card at the end of his turn if they successfully conquered at least one territory
- * during their turn TODO: discuss how to implement this (4)
+ * during their turn TODO: get game engine to call Player::update() for all players after every turn
  */
 void Advance::attack() {
     int sourceArmies = *this->sourceTerritory->getArmyCnt();
@@ -283,6 +295,8 @@ void Advance::attack() {
         // new army count is now the surviving attackers
         auto newArmyCountPtr = make_unique<int>(attackingArmies);
         targetTerritory->setArmyCnt(newArmyCountPtr);
+        // note that the player has successfully conquered at least one territory this turn
+        this->player->setHasConqueredTerritory(true);
     } else {
         // defenders won, no ownership change, update surviving defending armies
         auto newArmyCountPtr = make_unique<int>(defendingArmies);
@@ -324,10 +338,9 @@ void Advance::setAdvanceArmies(int advanceArmies) {
 }
 
 // Bomb
-Bomb::Bomb():Order() {}
 Bomb::Bomb(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory):
-           player(player), targetTerritory(targetTerritory) {}
+           Order(), player(player), targetTerritory(targetTerritory) {}
 Bomb::Bomb(const Bomb& bomb):Order(bomb) {
     this->player = bomb.player;
     this->targetTerritory = bomb.targetTerritory;
@@ -355,24 +368,35 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
  * 1) the target does not belong to the player issuing the order
  * 2) the target territory is adjacent to one of the territories owned
  * by the player issuing the order
- * TODO: ensure that the bomb order can only be created by playing the bomb card
+ * 3) the bomb order can only be created by playing the bomb card
  * @return whether or not the order is valid
  */
 bool Bomb::validate()  {
-    if (*this->targetTerritory->getPlayerInPossession() == this->player->getName()) {
+    if (this->targetTerritory->getPlayerInPossession() == this->player->getName()) {
         // can't bomb own territory
         return false;
     }
 
     // TODO: check adjacency to any player-owned territory
 
+    if (this->player->isInNegotiatedPlayers(targetTerritory->getPlayerInPossession())) {
+        // can't attack a player in a negotiation agreement
+        return false;
+    }
+
+    if (!this->player->hasPlayedCard("Bomb")) {
+        // player hasn't played the bomb card
+        return false;
+    }
+
     return true;
 }
 
 /**
  * Removes half of the armies on the target territory.
+ * @return 0 if successful, -1 otherwise
  */
-void Bomb::execute() {
+int Bomb::execute() {
     // status report
     cout << "Trying to bomb territory:" << endl;
     cout << *this->targetTerritory;
@@ -385,8 +409,21 @@ void Bomb::execute() {
         // update report
         cout << "Successfully bombed territory:" << endl;
         cout << *this->targetTerritory;
+
+        // remove the played card
+        this->player->getCardHand()->deletePlayedCardFromPlayCards("Bomb");
+
+        return 0;
     } else {
         cout << "Invalid bomb order. Could not execute." << endl;
+
+        // put the card back in the player hand
+        if (this->player->hasPlayedCard("Bomb")) {
+            this->player->getCardHand()->deletePlayedCardFromPlayCards("Bomb");
+            this->player->getCardHand()->addCardToHand("Bomb");
+        }
+
+        return -1;
     }
 }
 
@@ -407,11 +444,10 @@ void Bomb::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) {
 }
 
 // Blockade
-Blockade::Blockade():Order() {}
 Blockade::Blockade(const shared_ptr<Player>& player,
                    const shared_ptr<Player>& neutralPlayer,
                    const shared_ptr<Territory>& targetTerritory):
-                   player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
+                   Order(), player(player), neutralPlayer(neutralPlayer), targetTerritory(targetTerritory) {}
 Blockade::Blockade(const Blockade& blockade):Order(blockade) {
     this->player = blockade.player;
     this->neutralPlayer = blockade.neutralPlayer;
@@ -440,11 +476,17 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
 /**
  * Checks that:
  * 1) the target territory belongs to the player issuing the order
+ * 2) the blockade order can only be created by playing the blockade card
  * @return whether the order is valid or not
  */
 bool Blockade::validate()  {
-    if (*this->targetTerritory->getPlayerInPossession() != this->player->getName()) {
+    if (this->targetTerritory->getPlayerInPossession() != this->player->getName()) {
         // target territory doesn't belong to player
+        return false;
+    }
+
+    if (!this->player->hasPlayedCard("Blockade")) {
+        // players hasn't played Blockade card
         return false;
     }
 
@@ -454,27 +496,41 @@ bool Blockade::validate()  {
 /**
  * Doubles the number number of armies on the territory and transfer the ownership
  * to the Neutral player.
- * TODO: ensure the blockade order can only be created by playing the blockade card
+ * @return 0 if successful, -1 otherwise
  */
-void Blockade::execute() {
+int Blockade::execute() {
     // status report
     cout << "Trying to blockade the territory:" << endl;
     cout << *this->targetTerritory;
     if (validate()) {
+        // transfer ownership to the Neutral player
+        this->player->removeTerritory(targetTerritory, neutralPlayer);
+
         // double the number of armies on the territory
         int targetArmies = *this->targetTerritory->getArmyCnt();
         targetArmies = targetArmies * 2;
         auto newTargetArmiesPtr = make_unique<int>(targetArmies);
         this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
 
-        // transfer ownership to the Neutral player
-        this->player->removeTerritory(targetTerritory, neutralPlayer);
-
         // update report
         cout << "Successfully blockaded the territory:" << endl;
         cout << *this->targetTerritory;
+
+        // remove the played card
+        this->player->getCardHand()->deletePlayedCardFromPlayCards("Blockade");
+
+        return 0;
     } else {
         cout << "Invalid blockade order. Could not execute." << endl;
+
+        // put the card back in the player hand
+        // put the card back in the player hand
+        if (this->player->hasPlayedCard("Blockade")) {
+            this->player->getCardHand()->deletePlayedCardFromPlayCards("Blockade");
+            this->player->getCardHand()->addCardToHand("Blockade");
+        }
+
+        return -1;
     }
 }
 
@@ -504,12 +560,11 @@ void Blockade::setTargetTerritory(const shared_ptr<Territory> &targetTerritory) 
 }
 
 // Airlift
-Airlift::Airlift():Order() {}
 Airlift::Airlift(const shared_ptr<Player>& player,
                  const shared_ptr<Territory>& sourceTerritory,
                  const shared_ptr<Territory>& targetTerritory,
                  int airliftArmies):
-                 player(player), sourceTerritory(sourceTerritory),
+                 Order(), player(player), sourceTerritory(sourceTerritory),
                  targetTerritory(targetTerritory), airliftArmies(airliftArmies) {}
 Airlift::Airlift(const Airlift& airlift):Order(airlift) {
     this->player = airlift.player;
@@ -540,14 +595,14 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
 }
 
 /**
- * Check if:
+ * Check that:
  * 1) the source and target territories belong to the player issuing the order
  * 2) the source territory has the required armies
- * TODO: ensure airlift order can only be created by playing the airlift card
+ * 3) the airlift order can only be created by playing the airlift card
  * @return whether the order is valid or not
  */
 bool Airlift::validate()  {
-    if (*this->sourceTerritory->getPlayerInPossession() != *this->targetTerritory->getPlayerInPossession()) {
+    if (this->sourceTerritory->getPlayerInPossession() != this->targetTerritory->getPlayerInPossession()) {
         // source and target territories belong to different players
         return false;
     }
@@ -557,18 +612,24 @@ bool Airlift::validate()  {
         return false;
     }
 
+    if (!this->player->hasPlayedCard("Airlift")) {
+        // player hasn't played Airlift card
+        return false;
+    }
+
     return true;
 }
 
 /**
  * Moves desired armies from a source to target territory without them needing to be adjacent.
+ * @return 0 if successful, -1 otherwise
  */
-void Airlift::execute() {
+int Airlift::execute() {
     // status report
     cout << "Trying to advance " << airliftArmies << " armies from " << this->sourceTerritory->getName()
-         << " belonging to " << *this->sourceTerritory->getPlayerInPossession()
+         << " belonging to " << this->sourceTerritory->getPlayerInPossession()
          << " to " << this->targetTerritory->getName()
-         << " belonging to " << *this->targetTerritory->getPlayerInPossession() << endl;
+         << " belonging to " << this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // update source and target army counts
         int sourceArmies = *this->sourceTerritory->getArmyCnt();
@@ -585,9 +646,22 @@ void Airlift::execute() {
         this->targetTerritory->setArmyCnt(newTargetArmiesPtr);
 
         // report outcome
-        cout << "Advance order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+        cout << "Airlift order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
+
+        // remove the played card
+        this->player->getCardHand()->deletePlayedCardFromPlayCards("Airlift");
+
+        return 0;
     } else {
         cout << "Invalid airlift order. Could not complete." << endl;
+
+        // put the card back in the player hand
+        if (this->player->hasPlayedCard("Airlift")) {
+            this->player->getCardHand()->deletePlayedCardFromPlayCards("Airlift");
+            this->player->getCardHand()->addCardToHand("Airlift");
+        }
+
+        return -1;
     }
 }
 
@@ -625,42 +699,131 @@ void Airlift::setAirliftArmies(int airliftArmies) {
 }
 
 // Negotiate
-Negotiate::Negotiate():Order() {}
-Negotiate::Negotiate(const Negotiate& negotiate):Order() {} // no members to copy for now
+Negotiate::Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer):
+    Order(), issuer(issuer), targetPlayer(targetPlayer) {}
+Negotiate::Negotiate(const Negotiate& negotiate):Order(negotiate) {
+    this->issuer = negotiate.issuer;
+    this->targetPlayer = negotiate.targetPlayer;
+}
 Negotiate& Negotiate::operator=(const Negotiate& negotiate) {
     if (this == &negotiate) {
         return *this;
     } else {
-        // no members to copy for now
+        this->issuer = negotiate.issuer;
+        this->targetPlayer = negotiate.targetPlayer;
+
         return *this;
     }
 }
 ostream& operator<<(ostream& os, const Negotiate& negotiate) {
     os << static_cast<const Order&>(negotiate);
-    // no specific member info to return for now
+    os << " - issuer: " << negotiate.getIssuer()->getName();
+    os << " - targetPlayer: " << negotiate.getTargetPlayer()->getName();
 
     return os;
 }
 
+/**
+ * Checks that:
+ * 1) the target is not the player issuing the order
+ * 2) ensure that the negotiate order can only be created by playing the diplomacy card
+ * @return whether the order is valid or not
+ */
 bool Negotiate::validate()  {
-    cout << "negotiate order validated\n";
+    if (this->targetPlayer->getName() == this->issuer->getName()) {
+        // player can't negotiate with itself
+        return false;
+    }
 
-    return true; // logic to be implemented in later assignments
+    if (!this->issuer->hasPlayedCard("Diplomacy")) {
+        // players hasn't played Blockade card
+        return false;
+    }
+
+    return true;
 }
 
-void Negotiate::execute() {
-    // logic to be implemented in later assignments
-    cout << "negotiate order executed\n";
+/**
+ * Prevents attacks between the two players.
+ * This method specifically adds each player to their own negotiatedPlayers vector.
+ * The attack orders will not attack players in players' negotiatedPlayers vector.
+ * @return 0 if successful, -1 otherwise
+ */
+int Negotiate::execute() {
+    // status report
+    cout << "Trying to negotiate between " << issuer->getName()
+        << " and " << targetPlayer->getName() << endl;
+    if (validate()) {
+        // add each player to each other's negotiatedPlayers
+        this->issuer->addNegotiatedPlayer(targetPlayer);
+        this->targetPlayer->addNegotiatedPlayer(issuer);
+
+        // update report
+        cout << "Negotiation succeeded." << endl;
+
+        // remove the played card
+        this->issuer->getCardHand()->deletePlayedCardFromPlayCards("Diplomacy");
+
+        return 0;
+    } else {
+        cout << "Invalid negotiate order. Could not execute." << endl;
+
+        // put the card back in the player hand
+        if (this->issuer->hasPlayedCard("Diplomacy")) {
+            this->issuer->getCardHand()->deletePlayedCardFromPlayCards("Diplomacy");
+            this->issuer->getCardHand()->addCardToHand("Diplomacy");
+        }
+
+        return -1;
+    }
+}
+
+const shared_ptr<Player> &Negotiate::getIssuer() const {
+    return issuer;
+}
+
+void Negotiate::setIssuer(const shared_ptr<Player> &issuer) {
+    Negotiate::issuer = issuer;
+}
+
+const shared_ptr<Player> &Negotiate::getTargetPlayer() const {
+    return targetPlayer;
+}
+
+void Negotiate::setTargetPlayer(const shared_ptr<Player> &targetPlayer) {
+    Negotiate::targetPlayer = targetPlayer;
 }
 
 // OrdersList
 // default constructor
 OrdersList::OrdersList():orderList(make_unique<list<shared_ptr<Order>>>()) {}
-// copy constructor
+// deep copy constructor
 OrdersList::OrdersList(const OrdersList& ordersList) {
+    this->orderList = make_unique<list<shared_ptr<Order>>>();
     for (const auto& order : *ordersList.orderList) {
-        // shallow copy
-        this->orderList->push_back(order);
+        // create a new shared_ptr for each order and add it to the new list
+        if (dynamic_cast<Deploy*>(order.get())) {
+            shared_ptr<Deploy> deploy = make_shared<Deploy>(*dynamic_cast<Deploy*>(order.get()));
+            this->orderList->push_back(deploy);
+        } else if (dynamic_cast<Advance*>(order.get())) {
+            shared_ptr<Advance> advance = make_shared<Advance>(*dynamic_cast<Advance*>(order.get()));
+            this->orderList->push_back(advance);
+        } else if (dynamic_cast<Bomb*>(order.get())) {
+            shared_ptr<Bomb> bomb = make_shared<Bomb>(*dynamic_cast<Bomb*>(order.get()));
+            this->orderList->push_back(bomb);
+        } else if (dynamic_cast<Blockade*>(order.get())) {
+            shared_ptr<Blockade> blockade = make_shared<Blockade>(*dynamic_cast<Blockade*>(order.get()));
+            this->orderList->push_back(blockade);
+        } else if (dynamic_cast<Airlift*>(order.get())) {
+            shared_ptr<Airlift> airlift = make_shared<Airlift>(*dynamic_cast<Airlift*>(order.get()));
+            this->orderList->push_back(airlift);
+        } else if (dynamic_cast<Negotiate*>(order.get())) {
+            shared_ptr<Negotiate> negotiate = make_shared<Negotiate>(*dynamic_cast<Negotiate*>(order.get()));
+            this->orderList->push_back(negotiate);
+        } else {
+            // this should never happen since Order is an abstract base class
+            throw runtime_error("Unknown order type");
+        }
     }
 }
 // assignment operator

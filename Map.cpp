@@ -23,14 +23,14 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     name = std::make_unique<string>(territoryName);
     continentId = std::make_unique<int>(territoryContinent);
     armyCnt = std::make_unique<int>(0);
-    playerInPossession = std::make_unique<string>("");
+    playerInPossession = "";
 }
 //Parameterized
 Territory::Territory(int idTerritory, const string& territoryName, int territoryContinent, const string& player,int armies) {
     id = std::make_unique<int>(idTerritory);
     name = std::make_unique<string>(territoryName);
     continentId = std::make_unique<int>(territoryContinent);
-    playerInPossession = std::make_unique<string>(player);
+    playerInPossession = player;
     armyCnt = std::make_unique<int>(armies);
 }
 
@@ -39,7 +39,7 @@ Territory::Territory(const Territory &territory) {
     id = std::make_unique<int>(*territory.id);
     name = std::make_unique<string>(*territory.name);
     continentId = std::make_unique<int>(*territory.continentId);
-    playerInPossession = std::make_unique<string>(*territory.playerInPossession);
+    playerInPossession = territory.playerInPossession;
     armyCnt = std::make_unique<int>(*territory.armyCnt);
 }
 //Destructor
@@ -58,7 +58,7 @@ Territory& Territory::operator=(const Territory& territory) {
     name = std::make_unique<string>(*territory.name);
     continentId = std::make_unique<int>(*territory.continentId);
     armyCnt = std::make_unique<int>(*territory.armyCnt);
-    playerInPossession = std::make_unique<string>(*territory.playerInPossession);
+    playerInPossession = territory.playerInPossession;
     // This is a pointer that deals with our current object, by returning this, we are returning the
     //current object
     return *this;
@@ -70,19 +70,23 @@ bool Territory::operator==(const Territory& territory) const {
 }
 //Stream Insertion
 ostream& operator<<(ostream &os, const Territory &t) {
-    //If territoryInfo.playerInPossession == null run this
-    if(t.playerInPossession == nullptr) {
-        os << " Territory Name: " << *t.name <<
-           ", Continent ID: " << *t.continentId
-           << ", Armies: " << *t.armyCnt << endl;
+       //If territoryInfo.playerInPossession == null run this
+    if(t.playerInPossession == "") {
+        os << " Territory Name: " << *(t.name) <<
+           ", Continent ID: " << *(t.continentId)
+           << ", Armies: " << *(t.armyCnt) << endl;
     }
     else{
-        os << "Territory Name: " << *t.name <<
-           ", Continent: " << *t.continentId
-           << ", Player on territory: " << *t.playerInPossession
+        os << "Territory Name: " << *(t.name) <<
+           ", Continent: " << *(t.continentId)
+           << ", Player on territory: " << t.playerInPossession
            << ", Armies: " << *t.armyCnt << endl;
     }
     return os;
+}
+
+string Territory::getNameID() const {
+    return to_string(*(this->id)) + ": " + *(this->name);
 }
 
 int Territory::getId() const {
@@ -95,12 +99,12 @@ int Territory::getContId() const {
     return *continentId;
 }
 
-const unique_ptr<string> &Territory::getPlayerInPossession() const {
+const string &Territory::getPlayerInPossession() const {
     return playerInPossession;
 }
 
-void Territory::setPlayerInPossession(unique_ptr<string> &playerInPossession) {
-    Territory::playerInPossession = std::move(playerInPossession);
+void Territory::setPlayerInPossession(string playerInPossession) {
+    this->playerInPossession = playerInPossession;
 }
 
 const unique_ptr<int> &Territory::getArmyCnt() const {
@@ -150,7 +154,7 @@ ostream& operator<<(ostream &strm, const Continent &c) {
         strm << territorie.first << " --> ";
         //Loop through the adjacent territories
         for (auto const& j : territorie.second) {
-            strm << j << ", ";
+            strm << j << " | ";
         }
         strm << endl;
     }
@@ -201,10 +205,10 @@ ostream& operator<<(ostream &strm, const Map &m) {
     //Loop through the map keys
     strm << "Territory ID: Name -> Adjacent Territories" << endl;
     for (auto & territorie : *m.territories) {
-        strm << territorie.first << " --> ";
+        strm << territorie.first.getNameID() << " --> ";
         //Loop through the adjacent territories
         for (auto const& j : territorie.second) {
-            strm << j << ", ";
+            strm << j.getNameID() << " | ";
         }
         strm << endl;
     }
@@ -218,11 +222,18 @@ void Map::addBorder(const Territory& from, list<Territory> to) {
 void Map::addContinent(const Continent& c) {
     continents->push_back(c);
 }
-//part 3 add//
+
 //Get all continents
 vector<Continent>& Map::getContinents() {
     return *(continents);
 }
+
+//Get player in possession
+
+const unique_ptr<string>& Territory::getPlayerInPossession() const{
+    return playerInPossession;
+}
+
 //Add a border for a continent
 void Map::addBorderContinent(int cid, const Territory& from, list<Territory> to) {
     (*continents)[cid].addBorder(from, std::move(to));
@@ -256,7 +267,7 @@ bool Map::isConnected(unordered_map<Territory, list<Territory>, MyHash> t) {
     unordered_set<Territory, MyHash> visited;
     queue<Territory> q;
 
-    q.push(territories->begin()->first);
+    q.push(t.begin()->first);
     visited.insert(q.front());
     while (!q.empty()) {
         Territory current = q.front();
@@ -269,7 +280,11 @@ bool Map::isConnected(unordered_map<Territory, list<Territory>, MyHash> t) {
         }
     }
     //Check if all territories were visited
-    return visited.size() == territories->size();
+    return visited.size() == t.size() && t.size() > 1;
+}
+//Get territories
+unordered_map<Territory, list<Territory>, MyHash> Map::getTerritories() {
+    return *territories;
 }
 
 //MapLoader Class
@@ -290,7 +305,7 @@ vector<string> split(string str, char separator) {
 }
 
 //Static function that loads parses a map file and returns a map object
-void MapLoader::loadMap(Map& mp, const string& path) {
+bool MapLoader::loadMap(Map& mp, const string& path) {
 
     ifstream mapFile(path);
     int count = 0;
@@ -299,7 +314,7 @@ void MapLoader::loadMap(Map& mp, const string& path) {
 
     if (!mapFile.is_open()) {
         cout << "Error: Unable to open file" << endl;
-        throw std::runtime_error("Error: Unable to open file");
+        return false;
     }
 
     string line = " ";
@@ -373,4 +388,5 @@ void MapLoader::loadMap(Map& mp, const string& path) {
         }
     }
     mapFile.close();
+    return true;
 }

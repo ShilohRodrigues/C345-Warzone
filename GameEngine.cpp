@@ -4,6 +4,28 @@
 
 using namespace std;
 
+void GameEngine::startupPhase() {
+
+    cout << "Entering the startup phase of the game." << endl;
+
+    while (true) {
+
+        cout << *this << endl << endl; //Print current game state
+        cout << "Enter a command to continue: ";
+
+        //Get entered command, check return status, 1 for error, 2 for game ended
+        string input = "";
+        getline(cin, input);
+
+        if (input == "quit") break;
+        int status = this->nextState(input);
+        if (status == 0 && input == "gamestart") {
+            cout << endl << "End of startup phase. Game will start." << endl;
+            break;
+        }
+    }
+}
+
 ////////////////// 3 Phases ///////////////////////////////////////
 
 void GameEngine::reinforcementPhase() {
@@ -71,12 +93,14 @@ int GameEngine::executeOrdersPhase() {
         }
     }
     return numExecuted;
-}
+  }
+
 
 ///////////////// Game Class Implementations //////////////////////////
 //Game constructor, initializes the state to the starting state
 GameEngine::GameEngine() {
   state = shared_ptr<State>(new StartState()); //Shared pointed, no need to delete
+  map = shared_ptr<Map>(new Map());
 }
 //Destructor 
 GameEngine::~GameEngine() { /*Using smart pointers*/ }
@@ -116,6 +140,30 @@ shared_ptr<State> GameEngine::getState() {
 void GameEngine::setState(shared_ptr<State> newState) { 
   this->state = newState; 
 }
+//Map Setter
+void GameEngine::setMap(Map map) {
+  this->map = make_shared<Map>(map);
+}
+//Map getter
+shared_ptr<Map> GameEngine::getMap() {
+  return map;
+}
+void GameEngine::addPlayer(Player &p) {
+  players.push_back(p);
+}
+int GameEngine::playerCount() {
+  return players.size();
+}
+Player GameEngine::getPlayer(int i) {
+  return players[i];
+}
+vector<Player> GameEngine::getPlayers() {
+  return players;
+}
+void GameEngine::shufflePlayers() {
+  auto rng = default_random_engine {};
+  shuffle(players.begin(), players.end(), rng);
+}
 
 ///////////////// State Class Implementations //////////////////////////
 //State class insertion stream
@@ -147,11 +195,21 @@ void StartState::action() { }
 
 //Next state, checks if command is valid...
 int StartState::next(GameEngine *game, string cmd) {
-  if (cmd == "loadmap") {
+  if (cmd.substr(0, 7) == "loadmap" && cmd.length() > 9) {
     game->setState(shared_ptr<State>(new MapLoadedState()));
+
+    //Load the map from the file name
+    bool success = MapLoader::loadMap(*(game->getMap()), cmd.substr(8, cmd.length()-8));
+    if (!success) {
+      cout << "Invalid file path entered " << endl << endl;
+      return 1;
+    }
+
+    cout << "Map Loaded:" << endl << *(game->getMap()) << endl;
     return 0; //Return 0 for success
   }
   else {
+    cout << "Invalid command entered: " << cmd << endl << endl;
     return 1; //Return 1 for error
   }
 }
@@ -187,14 +245,29 @@ void MapLoadedState::action() {
 
 //Next state and check command
 int MapLoadedState::next(GameEngine *game, string cmd) {
-  if (cmd == "loadmap") {
-    return 0;
+  if (cmd.substr(0, 7) == "loadmap") {
+    //Load the map from the file name
+    bool success = MapLoader::loadMap(*(game->getMap()), cmd.substr(8, cmd.length()-8));
+    if (!success) {
+      cout << "Invalid file path entered " << endl << endl;
+      return 1;
+    }
+
+    cout << "Map Loaded:" << endl << *(game->getMap()) << endl;
+    return 0; //Return 0 for success
   }
   else if (cmd == "validatemap") {
-    game->setState(shared_ptr<State>(new MapValidatedState()));
+    if (!game->getMap()->validate())
+      game->setState(shared_ptr<State>(new MapValidatedState()));
+    else {
+      cout << "Map is not valid." << endl << endl;
+      return 1;
+    }
+    cout << "Map is valid!" << endl << endl;
     return 0;
   }
   else {
+    cout << "Invalid command entered: " << cmd << endl << endl;
     return 1;
   }
 }
@@ -232,9 +305,14 @@ void MapValidatedState::action() {
 int MapValidatedState::next(GameEngine *game, string cmd) {
   if (cmd == "addplayer") {
     game->setState(shared_ptr<State>(new PlayersAddedState()));
+    Player *p = new Player();
+    string name = p->getName();
+    game->addPlayer(*p);
+    cout << name << " was added. Total Players: " << game->playerCount() << endl << endl;
     return 0;
   }
   else {
+    cout << "Invalid command entered: " << cmd << endl << endl;
     return 1;
   }
 }
@@ -271,13 +349,59 @@ void PlayersAddedState::action() {
 //Next state and check command
 int PlayersAddedState::next(GameEngine *game, string cmd) {
   if (cmd == "addplayer") {
+    if (game->playerCount() >= 6) {
+      cout << "Maximum number of players was reached." << endl << endl;
+      return 1;
+    }
+    Player *p = new Player();
+    string name = p->getName();
+    game->addPlayer(*p);
+    cout << name << " was added. Total Players: " << game->playerCount() << endl << endl;
     return 0;
   }
-  else if (cmd == "assigncountries") {
+  else if (cmd == "gamestart") {
+    if (game->playerCount() < 2) {
+      cout << "2 players are needed to start the game, please add more players." << endl << endl;
+      return 1;
+    }
+
+    //Loop through the territories and assign to a player
+    cout << "Assigning territories evenly among players..." << endl << endl;
+    int playerIndex = 0;
+    vector<vector<Territory>> playersTerritories(game->playerCount());
+    for (auto& [territory, neighbors] : game->getMap()->getTerritories()) {
+      Player player = game->getPlayer(playerIndex);
+      playersTerritories[playerIndex].push_back(territory);
+      cout << player.getName() << " gets territory: " << territory.getName() << endl;
+      ++playerIndex;
+      if (playerIndex >= game->playerCount()) playerIndex = 0; //Reset to first player
+    }
+    cout << endl;
+
+    //Shuffle the players randomly to track turns
+    game->shufflePlayers();
+    //Print new player order
+    cout << "Shuffling player order to determine the order of play..." << endl;
+    cout << "Order of play: ";
+    for (auto& p : game->getPlayers()) {
+      cout << p.getName() << " | ";
+    }
+    cout << endl << endl;
+
+    cout << "Giving every player starting army count of 50." << endl;
+    for (auto& p : game->getPlayers()) {
+      p.setArmyCount(50);
+      cout << p.getName() << " army count: " << p.getArmyCount() << " | ";
+    }
+    cout << endl << endl;
+
+    cout << "Drawing 2 cards for every player.." << endl;
+
     game->setState(shared_ptr<State>(new AssignReinforcementState()));
     return 0;
   }
   else {
+    cout << "Invalid command entered: " << cmd << endl << endl;
     return 1;
   }
 }

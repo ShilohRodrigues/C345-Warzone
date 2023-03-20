@@ -15,9 +15,11 @@ class Card
 public:
 Card();
 virtual ~Card();
+explicit Card(string *cardType);
 Card(const Card& c);
 Card& operator = (const Card& c);
 void setCardType(int num);
+void setCardType(string *cardType);
 const string& getCardType() const;
 // stream insertion operator
 friend ostream& operator<<(ostream& os, const Card& card);
@@ -60,8 +62,16 @@ public:
 	void returnPlayedCardToDeck(Deck* a_Deck);
 	vector<Card*>* getHandOfCards();
 	vector<Card*>* getPlayCards();
-	void deletePlayedCardsFromHand(Card* r_card);
+	void deletePlayedCardFromHand(Card* r_card);
+    void deletePlayedCardFromPlayCards(const string& cardType);
 	void clearPlayedCards();
+
+    void addCardToHand(Card* card);
+    void addCardToHand(const string& cardType);
+    static int findFirstCard(vector<Card*>* handOrPlayCards, const string& cardType);
+    Card* getCardFromHandCards(const string& cardType);
+    Card* getCardFromPlayCards(string cardType);
+
 	// stream insertion operator
 	friend ostream& operator<<(ostream& os, const Hand& hand);
 
