@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <list>
+#include <fstream>
 #include "Player.h"
 #include "Map.h"
+#include "LoggingObserver.h"
 
 using namespace std;
 
@@ -12,7 +14,7 @@ class Player;
 class Territory;
 
 // superclass order
-class Order {
+class Order: public virtual Subject, public virtual ILoggable {
 public:
     Order();
     // copy constructor
@@ -29,6 +31,7 @@ public:
     const int getOrderId() const;
     static int getNextId();
     static void setNextId(int nextId);
+    void stringToLog(std::ostream &out) const override;
 
 private:
     const int orderID; // to keep track of individual orders since they have the same name
@@ -37,7 +40,7 @@ private:
 
 // subclasses
 // deploy(), advance(), bomb(), blockade(), airlift(), negotiate()
-class Deploy : public Order {
+class Deploy : public Order,public virtual Subject, public virtual ILoggable{
 public:
     Deploy(const shared_ptr<Player>& player,
            const shared_ptr<Territory>& targetTerritory,
@@ -58,13 +61,15 @@ public:
     int getDeployedArmies() const;
     void setDeployedArmies(int deployedArmies);
 
+    void stringToLog(std::ostream &out) const override;
+
 private:
     shared_ptr<Player> player;
     shared_ptr<Territory> targetTerritory;
     int deployedArmies;
 };
 
-class Advance : public Order {
+class Advance : public Order,public virtual Subject, public virtual ILoggable {
 public:
     Advance(const shared_ptr<Player>& player,
             const shared_ptr<Territory>& sourceTerritory,
@@ -86,10 +91,13 @@ public:
     int getAdvanceArmies() const;
     void setAdvanceArmies(int advanceArmies);
 
+
     bool validate() override;
     int execute() override;
 
     void attack();
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
 
 private:
     shared_ptr<Player> player;
@@ -98,7 +106,7 @@ private:
     int advanceArmies;
 };
 
-class Bomb : public Order {
+class Bomb : public Order,public virtual Subject, public virtual ILoggable {
 public:
     Bomb(const shared_ptr<Player>& player,
          const shared_ptr<Territory>& targetTerritory);
@@ -115,12 +123,15 @@ public:
     const shared_ptr<Territory> &getTargetTerritory() const;
     void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
 
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
+
 private:
     shared_ptr<Player> player;
     shared_ptr<Territory> targetTerritory;
 };
 
-class Blockade : public Order {
+class Blockade : public Order,public virtual Subject, public virtual ILoggable {
 public:
     Blockade(const shared_ptr<Player>& player,
              const shared_ptr<Player>& neutralPlayer,
@@ -141,13 +152,16 @@ public:
     const shared_ptr<Territory> &getTargetTerritory() const;
     void setTargetTerritory(const shared_ptr<Territory> &targetTerritory);
 
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
+
 private:
     shared_ptr<Player> player;
     shared_ptr<Player> neutralPlayer;
     shared_ptr<Territory> targetTerritory;
 };
 
-class Airlift : public Order {
+class Airlift : public Order,public virtual Subject, public virtual ILoggable {
 public:
     Airlift(const shared_ptr<Player>& player,
             const shared_ptr<Territory>& sourceTerritory,
@@ -171,6 +185,8 @@ public:
 
     int getAirliftArmies() const;
     void setAirliftArmies(int airliftArmies);
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
 
 private:
     shared_ptr<Player> player;
@@ -179,7 +195,7 @@ private:
     int airliftArmies;
 };
 
-class Negotiate : public Order {
+class Negotiate : public Order,public virtual Subject, public virtual ILoggable{
 public:
     Negotiate(shared_ptr<Player> &issuer, shared_ptr<Player> &targetPlayer);
     Negotiate(const Negotiate& negotiate);
@@ -195,12 +211,14 @@ public:
     const shared_ptr<Player> &getTargetPlayer() const;
     void setTargetPlayer(const shared_ptr<Player> &targetPlayer);
 
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
 private:
     shared_ptr<Player> issuer; // player issuing the order
     shared_ptr<Player> targetPlayer;
 };
 
-class OrdersList {
+class OrdersList: public virtual Subject, public virtual ILoggable {
 public:
     OrdersList();
     // copy constructor
@@ -219,6 +237,10 @@ public:
     // getters and setters
     const unique_ptr<list<shared_ptr<Order>>> &getOrderList() const;
     void setOrderList(unique_ptr<list<shared_ptr<Order>>> &orderList);
+
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
+
 
 private:
     unique_ptr<list<shared_ptr<Order>>> orderList;
