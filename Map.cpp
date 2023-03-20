@@ -24,6 +24,7 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     continentId = std::make_unique<int>(territoryContinent);
     armyCnt = std::make_unique<int>(0);
     playerInPossession = "";
+    adjacentTerritories = std::make_shared<vector<int>>();
 }
 //Parameterized
 Territory::Territory(int idTerritory, const string& territoryName, int territoryContinent, const string& player,int armies) {
@@ -32,6 +33,7 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     continentId = std::make_unique<int>(territoryContinent);
     playerInPossession = player;
     armyCnt = std::make_unique<int>(armies);
+    adjacentTerritories = std::make_shared<vector<int>>();
 }
 
 //Copy
@@ -41,6 +43,7 @@ Territory::Territory(const Territory &territory) {
     continentId = std::make_unique<int>(*territory.continentId);
     playerInPossession = territory.playerInPossession;
     armyCnt = std::make_unique<int>(*territory.armyCnt);
+    adjacentTerritories = std::make_shared<vector<int>>(*territory.adjacentTerritories);
 }
 //Destructor
 Territory::~Territory() = default;
@@ -58,6 +61,7 @@ Territory& Territory::operator=(const Territory& territory) {
     continentId = std::make_unique<int>(*territory.continentId);
     armyCnt = std::make_unique<int>(*territory.armyCnt);
     playerInPossession = territory.playerInPossession;
+    adjacentTerritories = std::make_shared<vector<int>>(*territory.adjacentTerritories);
     // This is a pointer that deals with our current object, by returning this, we are returning the
     //current object
     return *this;
@@ -386,20 +390,20 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
                 //Adds the territory to the map territories unordered_map
                 mp.addBorder(from, to);
                 mp.addBorderContinent(c_id-1, from, toC);
-
-                // Set the adjacency list for each territory in the map
-                auto territories = mp.getTerritories();
-                for (auto& territoryPair : territories) {
-                    auto& territory = const_cast<Territory &>(territoryPair.first);
-                    int territoryId = territory.getId();
-                    if (adjacencyList.count(territoryId) > 0) {
-                        shared_ptr<vector<int>> adjacentTerritories = make_shared<vector<int>>(adjacencyList[territoryId]);
-                        territory.setAdjacentTerritories(adjacentTerritories);
-                    }
-                }
             }
         }
     }
+    // Set the adjacency list for each territory in the map
+    auto territories = mp.getTerritories();
+    for (auto& territoryPair : territories) {
+        auto& territory = const_cast<Territory &>(territoryPair.first);
+        int territoryId = territory.getId();
+        if (adjacencyList.count(territoryId) > 0) {
+            shared_ptr<vector<int>> adjacentTerritories = make_shared<vector<int>>(adjacencyList[territoryId]);
+            territory.setAdjacentTerritories(adjacentTerritories);
+        }
+    }
+
     mapFile.close();
     return true;
 }
