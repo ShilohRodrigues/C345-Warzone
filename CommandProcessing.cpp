@@ -34,12 +34,13 @@ void Command::saveEffect(string e) {
   effect = e;
   notify(this);
 }
+string Command::getName() {
+  return command;
+}
 
 ///////////// CommandProcessor class implementations /////////////////////
 //Constructor
-CommandProcessor::CommandProcessor() {
-  
-}
+CommandProcessor::CommandProcessor() {  }
 //Destructor
 CommandProcessor::~CommandProcessor() {
 
@@ -63,28 +64,36 @@ ostream& operator<<(ostream &strm, const CommandProcessor &cp) {
   return strm;
 }
 //Return specific command 
-Command CommandProcessor::getCommand(int index) {
-  if (index < 0 || index >= commands.size()) return Command("");
-  return commands[index];
+Command CommandProcessor::getCommand(GameEngine &game) {
+  
+  Command cmd = this->readCommand();
+  if (!(cmd.getName() == "End of file")) {
+    saveCommand(cmd);
+    if (!validate(cmd, game)) cmd.saveEffect("Invalid Command");
+  }
+  return cmd.getName();
+
 }
 //Read command from the console
-string CommandProcessor::readCommand() {
+Command CommandProcessor::readCommand() {
   string cmd;
   getline(cin, cmd);
-  return cmd;
+  return  *(new Command(cmd));
 }
 void CommandProcessor::stringToLog(std::ostream &out) const {
     out << "Commands Effect: Save Command";
 }
 //Save a command in the vector of commands
-void CommandProcessor::saveCommand(string cmd) {
-  commands.push_back(*(new Command(cmd)));
+void CommandProcessor::saveCommand(Command cmd) {
+  commands.push_back(cmd);
   notify(this);
 }
 //Check if the command is valid
-bool CommandProcessor::validate(Command cmd) {
-  //// TO DO
-  return true;
+bool CommandProcessor::validate(Command cmd, GameEngine &game) {
+  
+  if (game.getState()->checkCommand(cmd.getName())) return true;
+  else return false;
+
 }
 
 ///////////// FileCommandProcessorAdapter class implementations /////////////////////
@@ -111,8 +120,8 @@ ostream& operator<<(ostream &strm, const FileCommandProcessorAdapter &fp) {
   return strm << "";
 }
 //Reads the next command in the file
-string FileCommandProcessorAdapter::readCommand() {
-  return flr->readLineFromFile();
+Command FileCommandProcessorAdapter::readCommand() {
+  return *(new Command(flr->readLineFromFile()));
 }
  
 ///////////// FileLineReader class implementations /////////////////////
@@ -129,15 +138,11 @@ FileLineReader::~FileLineReader() {
 }
 //Copy constructor
 FileLineReader::FileLineReader(const FileLineReader &f) {
-  
-  //Need to do copy constructor !!!!!!!!!!!!!
-
+  file = nullptr;
 }
 //Assignment Operator
 FileLineReader& FileLineReader::operator=(const FileLineReader& f) {
-
-  //Need to do assignment operator !!!!!!!!!!!!!
-
+  file = f.file;
   return *this;
 }
 //Insertion stream
@@ -148,25 +153,55 @@ ostream& operator<<(ostream &strm, const FileLineReader &cp) {
 string FileLineReader::readLineFromFile() {
   string line = "";
   if (file != nullptr && getline(*file, line)) return line;
-  else return "All commands have been read.";
+  else return "End of file";
 }
 
+int CommandProcessingDriverDemo(GameEngine &game, string fileName) {
 
-//Driver for Demonstration
-int CommandProcessingDriverDemo(string fileName = "") {
+  CommandProcessor* cp;
+  string cmd;
+  bool file;
 
-    CommandProcessor* cp;
-    string cmd;
+  if (fileName != "") {
+    file = true;
+    cp = new FileCommandProcessorAdapter(fileName);
+  } 
+  else {
+    file = false;
+    cp = new CommandProcessor();
+  }
 
-    if (fileName != "") {
-        cp = new FileCommandProcessorAdapter(fileName);
-    } 
-    else {
-        cp = new CommandProcessor();
-        cout << "Enter a command: ";
-        //cmd = cp->readCommand();
+  while(true) {
+
+    //print current state of the game 
+    cout << game << endl << endl;
+
+    if (!file) cout << "Enter a command to continue: ";
+    else cout << "Reading next command from file.." << endl;
+
+    //Get entered command
+    Command c = cp->getCommand(game);
+
+    if (c.getName() == "quit" || c.getName() == "End of file") break;
+
+    cout << "Command entered: " << c.getName() << endl;
+    
+    cout << "Validating command.." << endl;
+    if (!cp->validate(c, game)) {
+      cout << "You entered an invalid command." << endl << endl;
+      continue;
     }
 
-    delete cp;
-    return 0;
+    cout << "Command is valid!" << endl;
+    int status = game.nextState(c.getName());
+    if (status == 0 && c.getName() == "gamestart") {
+      cout << endl << "Entering assign reinforcement phase." << endl << endl;
+      break;
+    } 
+
+  }
+
+  if (file) cout << "All commands have been read from the file." << endl;
+
+  return 0;
 }

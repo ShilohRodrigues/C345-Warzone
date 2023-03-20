@@ -162,6 +162,13 @@ vector<string> StartState::getCommands(){
   return commands; 
 }
 
+bool StartState::checkCommand(string cmd) {
+
+  if (cmd.find("loadmap")!= std::string::npos) return true;
+  return false;
+
+}
+
 ////////////////// Map Loaded State class implementations //////////////////
 //Default Constructor
 MapLoadedState::MapLoadedState() { }
@@ -219,6 +226,13 @@ int MapLoadedState::next(GameEngine *game, string cmd) {
 vector<string> MapLoadedState::getCommands(){ 
   return commands; 
 }
+bool MapLoadedState::checkCommand(string cmd) {
+
+  if (cmd.find("loadmap")!= std::string::npos) return true;
+  if (cmd == "validatemap") return true;
+  return false;
+
+}
 
 ////////////// Map Validated State class implementations ///////////////////////
 //Default Constructor
@@ -263,6 +277,12 @@ int MapValidatedState::next(GameEngine *game, string cmd) {
 //Command Getter
 vector<string> MapValidatedState::getCommands(){ 
   return commands; 
+}
+bool MapValidatedState::checkCommand(string cmd) {
+
+  if (cmd == "addplayer") return true;
+  return false;
+
 }
 
 ///////////// Players added State class implementations ///////////////////////////
@@ -359,6 +379,13 @@ int PlayersAddedState::next(GameEngine *game, string cmd) {
 vector<string> PlayersAddedState::getCommands(){ 
   return commands; 
 }
+bool PlayersAddedState::checkCommand(string cmd) {
+
+  if (cmd == "addplayer") return true;
+  if (cmd == "gamestart") return true;
+  return false;
+
+}
 
 ////////////// Assign Reinforcements State class implementations //////////////////////
 //Default Constructor
@@ -399,6 +426,9 @@ int AssignReinforcementState::next(GameEngine *game, string cmd) {
 vector<string> AssignReinforcementState::getCommands(){ 
   return commands; 
 }
+bool AssignReinforcementState::checkCommand(string cmd) {
+  return true;
+}
 
 //////////////// Issue Orders State class implementations //////////////////////////
 //Default Constructor
@@ -436,6 +466,9 @@ int IssueOrdersState::next(GameEngine *game, string cmd) {
   else {
     return 1;
   }
+}
+bool IssueOrdersState::checkCommand(string cmd) {
+  return true;
 }
 
 //Command Getter
@@ -489,6 +522,9 @@ int ExecuteOrdersState::next(GameEngine *game, string cmd) {
 vector<string> ExecuteOrdersState::getCommands(){ 
   return commands; 
 }
+bool ExecuteOrdersState::checkCommand(string cmd) {
+  return true;
+}
 
 //////////////////////// Win State class implementations ///////////////////////////
 //Default Constructor
@@ -531,4 +567,7 @@ int WinState::next(GameEngine *game, string cmd) {
 //Command Getter
 vector<string> WinState::getCommands(){ 
   return commands; 
+}
+bool WinState::checkCommand(string cmd) {
+  return true;
 }

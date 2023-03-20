@@ -15,6 +15,7 @@ using namespace std;
 
 class State;
 class GameEngine;
+class CommandProcessor;
 
 //Game class, tracks the state of the game and controls going to the next and previous states
 class GameEngine:public virtual Subject, public virtual ILoggable {
@@ -46,6 +47,7 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     shared_ptr<Map> map;
     vector<Player> players;
     shared_ptr<Deck> deck;
+
 };
 
 //State Interface, all states must inherit this class and implement all its methods
@@ -56,6 +58,7 @@ class State {
     virtual void action() = 0;
     virtual int next(GameEngine *game, string cmd) = 0;
     virtual vector<string> getCommands() = 0;
+    virtual bool checkCommand(string cmd) = 0;
 };
 
 //Different states that implement the abstract state class
@@ -70,6 +73,7 @@ class StartState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"loadmap <filename>"};
@@ -85,6 +89,7 @@ class MapLoadedState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"loadmap <filename>", "validatemap"};
@@ -100,6 +105,7 @@ class MapValidatedState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"addplayer"};
@@ -115,6 +121,7 @@ class PlayersAddedState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"addplayer", "gamestart"};
@@ -130,6 +137,7 @@ class AssignReinforcementState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"issueorder"};
@@ -145,6 +153,7 @@ class IssueOrdersState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"issueorder", "endissueorders"};
@@ -160,6 +169,7 @@ class ExecuteOrdersState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"execorder", "endexecorder", "win"};
@@ -175,6 +185,7 @@ class WinState: public State {
     virtual void action() override;
     virtual int next(GameEngine *game, string cmd) override;
     virtual vector<string> getCommands() override;
+    virtual bool checkCommand(string cmd) override;
 
   private:
     vector<string> commands{"end", "play"};
