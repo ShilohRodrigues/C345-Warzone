@@ -390,7 +390,7 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
                 // Set the adjacency list for each territory in the map
                 auto territories = mp.getTerritories();
                 for (auto& territoryPair : territories) {
-                    const Territory& territory = territoryPair.first;
+                    auto& territory = const_cast<Territory &>(territoryPair.first);
                     int territoryId = territory.getId();
                     if (adjacencyList.count(territoryId) > 0) {
                         shared_ptr<vector<int>> adjacentTerritories = make_shared<vector<int>>(adjacencyList[territoryId]);
