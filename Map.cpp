@@ -114,6 +114,14 @@ void Territory::setArmyCnt(unique_ptr<int> &armyCnt) {
     Territory::armyCnt = std::move(armyCnt);
 }
 
+const shared_ptr<vector<int>> &Territory::getAdjacentTerritories() const {
+    return adjacentTerritories;
+}
+
+void Territory::setAdjacentTerritories(const shared_ptr<vector<int>> &adjacentTerritories) {
+    Territory::adjacentTerritories = adjacentTerritories;
+}
+
 ////////////// Continent Class /////////////////////
 //Parameterized
 Continent::Continent(int cid, const string& cname) {
@@ -380,10 +388,13 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
                 mp.addBorderContinent(c_id-1, from, toC);
 
                 // Set the adjacency list for each territory in the map
-                for (auto& territory : mp.getTerritories()) {
-                    int territoryId = territory->getId();
+                auto territories = mp.getTerritories();
+                for (auto& territoryPair : territories) {
+                    const Territory& territory = territoryPair.first;
+                    int territoryId = territory.getId();
                     if (adjacencyList.count(territoryId) > 0) {
-                        territory.setAdjacentTerritories(adjacencyList[territoryId]);
+                        shared_ptr<vector<int>> adjacentTerritories = make_shared<vector<int>>(adjacencyList[territoryId]);
+                        territory.setAdjacentTerritories(adjacentTerritories);
                     }
                 }
             }
