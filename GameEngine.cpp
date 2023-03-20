@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include "GameEngine.h"
+#include "LoggingObserver.h"
 
 using namespace std;
 
@@ -62,8 +63,12 @@ ostream& operator<<(ostream &strm, const GameEngine &g) {
   cmds = cmds.substr(0, cmds.size()-2); //Remove trailing comma
   return strm << "Current state: " << *g.state << endl << "Available commands: " << cmds;
 }
+void GameEngine::stringToLog(std::ostream &out) const {
+    out << "Game Engine New State";
+}
 //Attempt to go to the next state with the entered command
 int GameEngine::nextState(string cmd) {
+    notify(this);
   return state->next(this, cmd);
 }
 //State Getter

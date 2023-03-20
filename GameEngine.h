@@ -10,13 +10,14 @@
 #include "Map.h"
 #include "Player.h"
 #include "Cards.h"
+#include "LoggingObserver.h"
 using namespace std;
 
 class State;
 class GameEngine;
 
 //Game class, tracks the state of the game and controls going to the next and previous states
-class GameEngine {
+class GameEngine:public virtual Subject, public virtual ILoggable {
   public:
     GameEngine();
     ~GameEngine();
@@ -37,7 +38,9 @@ class GameEngine {
     vector<Player> getPlayers();
     void shufflePlayers();
     const shared_ptr<Deck> &getDeck() const;
-    
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
+
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
