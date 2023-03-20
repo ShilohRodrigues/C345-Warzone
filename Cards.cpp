@@ -24,7 +24,8 @@ Card::~Card() {
 // Copy constructor
 Card::Card(const Card& c)
 {
-	
+	this->cardsTypes = c.cardsTypes;
+	this->aCardType = c.aCardType;
 }
 // Assignment operator
 Card& Card::operator=(const Card& c)

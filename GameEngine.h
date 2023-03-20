@@ -32,10 +32,10 @@ class GameEngine {
     void setMap(Map m);
     shared_ptr<Map> getMap();
 
-    void addPlayer(Player &p);
+    void addPlayer(shared_ptr<Player>& player);
     int playerCount();
-    Player getPlayer(int i);
-    vector<Player> getPlayers();
+    shared_ptr<Player> getPlayer(int i);
+    vector<shared_ptr<Player>> getPlayers();
     void shufflePlayers();
     
     // part 3 add//
@@ -47,7 +47,7 @@ class GameEngine {
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
-    vector<Player> players;
+    vector<shared_ptr<Player>> players;
     int currentPlayerIndex = 0;
 };
 

@@ -148,16 +148,16 @@ void GameEngine::setMap(Map map) {
 shared_ptr<Map> GameEngine::getMap() {
   return map;
 }
-void GameEngine::addPlayer(Player &p) {
-  players.push_back(p);
+void GameEngine::addPlayer(shared_ptr<Player>& player) {
+  players.push_back(player);
 }
 int GameEngine::playerCount() {
   return players.size();
 }
-Player GameEngine::getPlayer(int i) {
+shared_ptr<Player> GameEngine::getPlayer(int i) {
   return players[i];
 }
-vector<Player> GameEngine::getPlayers() {
+vector<shared_ptr<Player>> GameEngine::getPlayers() {
   return players;
 }
 void GameEngine::shufflePlayers() {

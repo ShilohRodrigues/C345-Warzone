@@ -51,7 +51,6 @@ Territory& Territory::operator=(const Territory& territory) {
        delete pointers*/
     name.reset();
     id.reset();
-    playerInPossession.reset();
     armyCnt.reset();
     continentId.reset();
     // Allocate new memory and copy over the data from the other object
@@ -226,12 +225,6 @@ void Map::addContinent(const Continent& c) {
 //Get all continents
 vector<Continent>& Map::getContinents() {
     return *(continents);
-}
-
-//Get player in possession
-
-const unique_ptr<string>& Territory::getPlayerInPossession() const{
-    return playerInPossession;
 }
 
 //Add a border for a continent
