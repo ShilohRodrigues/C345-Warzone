@@ -7,6 +7,7 @@
 #include <memory>
 #include <filesystem>
 #include <string>
+#include "LoggingObserver.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ class FileCommandProcessorAdapter;
 class Command;
 class FileLineReader;
 
-class Command {
+class Command : public virtual Subject, public virtual ILoggable {
   
   public:
     Command(string c);
@@ -25,6 +26,8 @@ class Command {
     friend ostream& operator<<(ostream& strm, const Command& c);
     void saveEffect(string e);
 
+    //Part 5
+    void stringToLog(std::ostream &out) const override;
   private:
     string command;
     string effect;
@@ -32,7 +35,7 @@ class Command {
 };
 
 //Target Class
-class CommandProcessor {
+class CommandProcessor: public virtual Subject, public virtual ILoggable {
 
   public:
     CommandProcessor();
@@ -43,6 +46,7 @@ class CommandProcessor {
 
     Command getCommand(int index);
 	  bool validate(Command cmd);
+    void stringToLog(std::ostream &out) const override;
 
   protected:
     virtual string readCommand();

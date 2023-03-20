@@ -13,7 +13,7 @@ class State;
 class GameEngine;
 
 //Game class, tracks the state of the game and controls going to the next and previous states
-class GameEngine {
+class GameEngine{
   public:
     GameEngine();
     ~GameEngine();
@@ -33,6 +33,10 @@ class GameEngine {
     void addPlayer(Player &p);
     int playerCount();
     string getPlayerName(int i);
+
+
+    //part 5
+
     
   private:
     shared_ptr<State> state;  //Tracks the state of the game  

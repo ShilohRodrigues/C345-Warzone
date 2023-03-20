@@ -27,8 +27,12 @@ ostream& operator<<(ostream &strm, const Command &c) {
   return strm << "Command: " << c.command << ", Effect: " << c.effect << endl;
 }
 //Save effect method
+void Command::stringToLog(std::ostream &out) const {
+    out << "Command: Saved Effect";
+}
 void Command::saveEffect(string e) {
   effect = e;
+  notify(this);
 }
 
 ///////////// CommandProcessor class implementations /////////////////////
@@ -69,9 +73,13 @@ string CommandProcessor::readCommand() {
   getline(cin, cmd);
   return cmd;
 }
+void CommandProcessor::stringToLog(std::ostream &out) const {
+    out << "Commands Effect: Save Command";
+}
 //Save a command in the vector of commands
 void CommandProcessor::saveCommand(string cmd) {
   commands.push_back(*(new Command(cmd)));
+  notify(this);
 }
 //Check if the command is valid
 bool CommandProcessor::validate(Command cmd) {
