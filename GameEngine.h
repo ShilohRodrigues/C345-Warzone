@@ -31,19 +31,16 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     int nextState(string cmd);
     shared_ptr<State> getState();
     void setState(shared_ptr<State> newState);
-
     void setMap(Map m);
     shared_ptr<Map> getMap();
-
-    void addPlayer(shared_ptr<Player>& player);
+    void addPlayer(Player &p);
     int playerCount();
-    shared_ptr<Player> getPlayer(int i);
-    vector<shared_ptr<Player>> getPlayers();
+    Player getPlayer(int i);
+    vector<Player> getPlayers();
     void shufflePlayers();
     const shared_ptr<Deck> &getDeck() const;
     //Part 5
     void stringToLog(std::ostream &out) const override;
-
 
     // part 3 add//
     void reinforcementPhase();
@@ -54,9 +51,10 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
-    vector<shared_ptr<Player>> players;
+    vector<Player> players;
     shared_ptr<Deck> deck;
     int currentPlayerIndex = 0;
+
 };
 
 //State Interface, all states must inherit this class and implement all its methods

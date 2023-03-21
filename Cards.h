@@ -26,7 +26,6 @@ friend ostream& operator<<(ostream& os, const Card& card);
 
 private:
 vector<string> cardsTypes = {"Bomb", "Blockade", "Airlift", "Diplomacy" };
-// delete  "Reinforcement" for A2, it does not mentioned in A2 cards
 string* aCardType = nullptr;
 };
 //---------------------------------------------------DECK---------------------------------------------------

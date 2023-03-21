@@ -103,6 +103,7 @@ public:
     bool validate();
     bool isConnected(unordered_map<Territory, list<Territory>, MyHash> territories);
     unordered_map<Territory, list<Territory>, MyHash> getTerritories();
+    // part 3 add//
     vector<Continent>& getContinents();
 
     static bool areAdjacent(const Territory& territory1, const Territory& territory2);

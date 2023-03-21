@@ -1,10 +1,18 @@
 #include "Player.h"
 #include <algorithm>
-#include "Cards.h"
+#include "GameEngine.h"
 
 using namespace std;
 
 int Player::nextID = 0;
+
+Player::Player(std::string& playerName, GameEngine* gameEngine)
+    : name(playerName), gameEngine(gameEngine) {
+}
+
+GameEngine* Player::getGameEngine(){
+    return gameEngine;
+}
 
 // default constructor
 Player::Player():
@@ -94,7 +102,7 @@ ostream& operator<<(ostream& os, const Player& player) {
         os << "null\n";
     }
 
-    os << "Hand: " << *player.cardHand << endl;
+    os << *player.cardHand << endl;
     os << "Orders: " << *player.ordersList << endl;
     os << "negotiatedPlayers: ";
     if (player.negotiatedPlayers) {
@@ -176,6 +184,10 @@ void Player::setHasConqueredTerritory(bool hasConqueredTerritory) {
     Player::hasConqueredTerritory = hasConqueredTerritory;
 }
 
+bool Player::hasOrders() const {
+    return !ordersList->getOrderList()->empty();
+}
+
 // destructor
 Player::~Player() = default; // deletion of data members handled by smart pointers already
 
@@ -214,12 +226,6 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
  * Creates an order and adds it to the list of orders.
  * @param order
  */
-// void Player::issueOrder() {
-//     // TODO: not arbitrary anymore
-//     auto testOrder = make_shared<Deploy>();
-//     ordersList->add(testOrder);
-// }
-
 void Player::issueOrder() {
     Map* map = new Map();
     // The player decides which territories are to be defended in priority (as a list return by the toDefend() method).
@@ -232,7 +238,7 @@ void Player::issueOrder() {
     // Once it has deployed all its  armies, it can proceed with other kinds of orders.
     for (const auto& territory : *territoriesToDefend) {
         // check if player has armies to deploy
-        if (this->reinforcementPool > 0) {
+        while (this->reinforcementPool > 0) {
             // create deploy order
             auto deployOrder = make_shared<Deploy>(make_shared<Player>(*this), territory, this->reinforcementPool);
             // add deploy order to orders list
@@ -245,7 +251,7 @@ void Player::issueOrder() {
     // The player issues advance orders to either:(1) move armies from one of its own territory to the other in order to defend them (using toDefend() to make the decision), and/or (2) move armies from one of its territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
     for (const auto& territory : *territoriesToAttack) {
         // check if player has armies to deploy
-        if (this->reinforcementPool > 0) {
+        while (this->reinforcementPool > 0) {
             // create deploy order
             auto deployOrder = make_shared<Deploy>(make_shared<Player>(*this), territory, this->reinforcementPool);
             // add deploy order to orders list
@@ -266,7 +272,7 @@ void Player::issueOrder() {
         for (size_t i = 0; i < handOfCards->size(); i++) {
             cout << i << ": " << handOfCards->at(i)->getCardType() << " " << endl;
         }
-        cout <<  "Choose a card to play (enter the index): " << endl;
+        cout << "Choose a card to play (enter the index): " << endl;
         // get the player's choice
         size_t choice;
         cin >> choice;
@@ -286,31 +292,82 @@ void Player::issueOrder() {
                 auto playerPtr = make_shared<Player>(*this);
                 auto bombOrder = make_shared<Bomb>(playerPtr, targetTerritory);
                 // execute the bomb order
-                    bombOrder->execute();
-            }
-            else if (cardType == "Reinforcement") {
-                Reinforcement();
+                bombOrder->execute();
             }
             else if (cardType == "Blockade") {
-                Blockade();
+                cout << "Choose a territory to blockade: " << endl;
+                auto targetTerritory = map->getTerritories();
+                // Create a neutral player
+                auto neutralPlayer = make_shared<Player>("Neutral");
+                // Create the blockade order
+                auto playerPtr = make_shared<Player>(*this);
+                auto blockadeOrder = make_shared<Blockade>(playerPtr, neutralPlayer, targetTerritory);
+                // Execute the blockade order
+                blockadeOrder->execute();
             }
             else if (cardType == "Airlift") {
-                Airlift();
+                cout << "Choose the source territory: " << endl;
+                auto allTerritories = map->getTerritories();
+                int sourceTerritoryIndex;
+                cin >> sourceTerritoryIndex;
+
+                auto sourceTerritoryIt = allTerritories.begin();
+                std::advance(sourceTerritoryIt, sourceTerritoryIndex - 1);
+                auto sourceTerritory = sourceTerritoryIt->second;
+
+                cout << "Choose the target territory: " << endl;
+                auto targetTerritories = map->getTerritories();
+                int targetTerritoryIndex;
+                cin >> targetTerritoryIndex;
+
+                auto targetTerritoryIt = allTerritories.begin();
+                std::advance(targetTerritoryIt, targetTerritoryIndex - 1);
+                auto targetTerritory = targetTerritoryIt->second;
+
+                cout << "Enter the number of armies to airlift: " << endl;
+                auto numArmies = getArmyCount();
+                cin >> numArmies;
+                // create the airlift order
+                auto playerPtr = make_shared<Player>(*this);
+                auto airliftOrder = make_shared<Airlift>(playerPtr, sourceTerritory, targetTerritory, numArmies);
+                // execute the airlift order
+                airliftOrder->execute();
             }
             else if (cardType == "Diplomacy") {
-                Negotiate();
+                // Get the list of all players in the game
+                auto players = getGameEngine()->getPlayers();
+
+                cout << "Choose a player to negotiate with: " << endl;
+                for (size_t i = 0; i < players.size(); ++i) {
+                    cout << i + 1 << ": " << players[i].getName() << endl;
+                }
+
+                size_t targetPlayerIndex;
+                cin >> targetPlayerIndex;
+
+                if (targetPlayerIndex >= 1 && targetPlayerIndex <= players.size()) {
+                    auto targetPlayer = players[targetPlayerIndex - 1];
+
+                    // Check if the target player is not the same as the issuer
+                    if (targetPlayer.getName() != this->getName()) {
+                        
+                        auto NegotiateOrder = make_shared<Negotiate>(this->getName(), targetPlayer);
+                        NegotiateOrder->execute();
+                    }
+                }
+                else {
+                    cout << "Invalid choice. Please choose a valid player index." << endl;
+                }
+            }
+            else {
+                cout << "Invalid choice." << endl;
             }
         }
         else {
-            cout << "Invalid choice." << endl;
+            cout << "You have no cards in your hand." << endl;
         }
-        }
-
-    else {
-        cout << "You have no cards in your hand." << endl;
     }
 }
-
 
 void Player::addTerritory(const shared_ptr<Territory>& territory) {
     // add territory to territories vector

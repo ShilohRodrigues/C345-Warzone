@@ -238,7 +238,6 @@ void Map::addContinent(const Continent& c) {
 vector<Continent>& Map::getContinents() {
     return *(continents);
 }
-
 //Add a border for a continent
 void Map::addBorderContinent(int cid, const Territory& from, list<Territory> to) {
     (*continents)[cid].addBorder(from, std::move(to));

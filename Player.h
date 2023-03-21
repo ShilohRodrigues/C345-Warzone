@@ -7,9 +7,10 @@
 #include "Map.h"
 #include "Cards.h"
 #include "Orders.h"
+#include "GameEngine.h"
 
 using namespace std;
-
+class GameEngine;
 class OrdersList;
 
 class Player {
@@ -75,6 +76,10 @@ public:
     bool getHasConqueredTerritory() const;
     void setHasConqueredTerritory(bool hasConqueredTerritory);
 
+    bool hasOrders() const;
+    //part 3
+    Player(std::string& playerName, GameEngine* gameEngine);
+
 private:
     static int nextID;
     string name;
@@ -89,6 +94,10 @@ private:
     unique_ptr<OrdersList> ordersList;
     // for the negotiation order
     unique_ptr<vector<shared_ptr<Player>>> negotiatedPlayers;
+
+    //part 3
+    GameEngine* gameEngine;
+    GameEngine* getGameEngine();
 };
 
 void playerDemo1();

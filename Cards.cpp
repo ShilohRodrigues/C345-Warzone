@@ -69,9 +69,7 @@ Deck::Deck()
 // Destructor
 Deck::~Deck()
 {
-	for (auto card : deck) {
-		delete card;
-	}
+
 }
 // Copy constructor
 Deck::Deck(const Deck& d)
@@ -98,9 +96,9 @@ Deck& Deck::operator=(const Deck& d)
 void Deck::MakeDeck()
 {
 	srand(time(0));
-	int i = rand() % 6 + 5;
+	int i = rand() % 4 + 5;
 	for (int n = 0; n < i; n++) {
-		for (int j = 0; j < 6; j++)
+		for (int j = 0; j < 4; j++)
 		{
 			card = new Card;
 			card->setCardType(j);
@@ -137,12 +135,7 @@ Hand::Hand()
 // Destructor
 Hand::~Hand()
 {
-	for (auto card : handCards) {
-		delete card;
-	}
-	for (auto card : playCards) {
-		delete card;
-	}
+
 }
 // Copy constructor
 Hand::Hand(const Hand& h)
