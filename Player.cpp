@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <algorithm>
 #include "Cards.h"
+#include "Orders.h"
 
 using namespace std;
 
@@ -238,7 +239,6 @@ void Player::issueOrder() {
             // add deploy order to orders list
             this->ordersList->add(deployOrder);
             // decrement reinforcement pool
-            // note: this is not the same as decrementing the army count of the territory
             this->reinforcementPool--;
         }
     }
@@ -275,18 +275,34 @@ void Player::issueOrder() {
         if (choice < handOfCards->size()) {
             // play the chosen card
             auto chosenCard = handOfCards->at(choice);
-            this->playCard(sharedDeck, chosenCard->getCardType());
+            ////this->playCard(sharedDeck, chosenCard->getCardType());
+            auto cardType = chosenCard->getCardType();
+
+            // execute the corresponding method for the card type
+            if (cardType == "Bomb") {
+                Bomb();
+            }
+            else if (cardType == "Reinforcement") {
+                Reinforcement();
+            }
+            else if (cardType == "Blockade") {
+                Blockade();
+            }
+            else if (cardType == "Airlift") {
+                Airlift();
+            }
+            else if (cardType == "Diplomacy") {
+                Negotiate();
+            }
         }
         else {
             std::cout << "Invalid choice." << std::endl;
         }
-    }
+        }
+
     else {
         std::cout << "You have no cards in your hand." << std::endl;
     }
-
-    // card types
-
 }
 
 
