@@ -33,13 +33,23 @@ void GameEngine::reinforcementPhase() {
 void GameEngine::issueOrdersPhase() {
     cout << "\n********** Issuing Orders Phase **********\n" << endl;
     int currentPlayerIndex = 0;
-    // Iterate through all players in round robin fashion
-    for (int i = 0; i < players.size(); i++) {
-        auto currentPlayer = players[currentPlayerIndex];
-        currentPlayer.issueOrder();
 
-        // Move to the next player
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    // Continue issuing orders until all players have no more orders to issue
+    bool ordersRemaining = true;
+    while (ordersRemaining) {
+        ordersRemaining = false;
+        // Iterate through all players in round robin fashion
+        for (int i = 0; i < players.size(); i++) {
+            auto currentPlayer = players[currentPlayerIndex];
+
+            if (currentPlayer.hasOrders()) {
+                currentPlayer.issueOrder();
+                ordersRemaining = true;
+            }
+
+            // Move to the next player
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        }
     }
 }
 
@@ -50,30 +60,40 @@ void GameEngine::sortOrders(OrdersList* orderList) {
 }
 
 
-int GameEngine::executeOrdersPhase() {
+void GameEngine::executeOrdersPhase() {
     cout << "\n********** Executing Orders **********\n" << endl;
 
-    int numExecuted = 0;
+    bool ordersRemaining = true;
 
-    // Loop through all players in turn order
-    for (auto& player : players) {
+    // Loop until all orders have been executed
+    while (ordersRemaining) {
+        ordersRemaining = false;
 
-        // Sort player's orders by priority
-        sortOrders(player.getOrdersList().get());
-
-        // Loop through all orders for the player
-        for (auto& order : *(player.getOrdersList()->getOrderList())) {
-
-            // Try to execute the order
-            // each of the execute() implementations call the validate() methods beforehand
-            order->execute();
-            numExecuted++;
-        }
+        // Loop through all players in turn order
         for (auto& player : players) {
-            player.update(this->deck);
+
+            // Sort player's orders by priority
+            sortOrders(player.getOrdersList().get());
+
+            auto& ordersList = *(player.getOrdersList()->getOrderList());
+
+            if (!ordersList.empty()) {
+                // Get the top order 
+                auto& topOrder = ordersList.front();
+
+                // Execute the order
+                // each of the execute() implementations call the validate() methods beforehand
+                topOrder->execute();
+                // Remove the executed order from the list
+                ordersList.pop_front();
+                // Indicate that there are still orders remaining to be executed
+                ordersRemaining = true;
+            }
         }
     }
-    return numExecuted;
+    for (auto& player : players) {
+        player.update(this->deck);
+    }
 }
 
 
@@ -96,9 +116,7 @@ void GameEngine::startupPhase() {
       cout << endl << "End of startup phase. Game will start." << endl;
       break;
     } 
-
   }
-
 }
 
 ///////////////// Game Class Implementations //////////////////////////
@@ -178,6 +196,7 @@ void GameEngine::shufflePlayers() {
 const shared_ptr<Deck> &GameEngine::getDeck() const {
   return deck;
 }
+
 
 
 ///////////////// State Class Implementations //////////////////////////

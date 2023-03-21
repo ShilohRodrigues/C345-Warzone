@@ -45,7 +45,7 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     // part 3 add//
     void reinforcementPhase();
     void issueOrdersPhase();
-    int executeOrdersPhase();
+    void executeOrdersPhase();
     void sortOrders(OrdersList* orderList);
 
   private:
@@ -54,6 +54,7 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     vector<Player> players;
     shared_ptr<Deck> deck;
     int currentPlayerIndex = 0;
+
 
 };
 
