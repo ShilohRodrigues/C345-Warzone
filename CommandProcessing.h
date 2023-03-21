@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <string>
 #include "LoggingObserver.h"
+#include "GameEngine.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ class Command : public virtual Subject, public virtual ILoggable {
     Command(const Command &c);
     friend ostream& operator<<(ostream& strm, const Command& c);
     void saveEffect(string e);
+    string getName();
 
     //Part 5
     void stringToLog(std::ostream &out) const override;
@@ -44,13 +46,13 @@ class CommandProcessor: public virtual Subject, public virtual ILoggable {
     CommandProcessor(const CommandProcessor &cp);
     friend ostream& operator<<(ostream& strm, const CommandProcessor& cp);
 
-    Command getCommand(int index);
-	  bool validate(Command cmd);
+    Command getCommand(GameEngine &game);
+	  bool validate(Command cmd, GameEngine &game);
     void stringToLog(std::ostream &out) const override;
 
   protected:
-    virtual string readCommand();
-    void saveCommand(string cmd);
+    virtual Command readCommand();
+    void saveCommand(Command cmd);
 
   private: 
     vector<Command> commands;
@@ -68,7 +70,7 @@ class FileCommandProcessorAdapter : public CommandProcessor {
     friend ostream& operator<<(ostream& strm, const FileCommandProcessorAdapter& fp);
   
   protected:
-    string readCommand() override;
+    Command readCommand() override;
 
   private:
     shared_ptr<FileLineReader> flr;
@@ -91,5 +93,7 @@ class FileLineReader {
     shared_ptr<ifstream> file;
 
 };
+
+int CommandProcessingDriverDemo(GameEngine &game, string fileName);
 
 #endif //COMMAND_PROCESSING

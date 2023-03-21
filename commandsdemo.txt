@@ -1,0 +1,9 @@
+invalid command test
+loadmap sw_baltic.map
+validatemap
+addplayer
+validatemap
+addplayer
+addplayer
+gamestart
+quit
