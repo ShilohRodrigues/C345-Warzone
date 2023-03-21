@@ -45,12 +45,12 @@ void ordersDemo1() {
 }
 
 void ordersDemo2() {
-//    deployDemo();
-//    advanceDemo();
-//    airliftDemo();
+    deployDemo();
+    advanceDemo();
+    airliftDemo();
     bombDemo();
-//    blockadeDemo();
-//    negotiateDemo();
+    blockadeDemo();
+    negotiateDemo();
 }
 
 void deployDemo() {
