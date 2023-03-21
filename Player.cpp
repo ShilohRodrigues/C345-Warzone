@@ -1,7 +1,6 @@
 #include "Player.h"
 #include <algorithm>
 #include "Cards.h"
-#include "Orders.h"
 
 using namespace std;
 
@@ -222,7 +221,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
 // }
 
 void Player::issueOrder() {
-
+    Map* map = new Map();
     // The player decides which territories are to be defended in priority (as a list return by the toDefend() method).
     auto territoriesToDefend = toDefend();
     // The player decides which adjacent territories are to be attacked in priority (as a list return by the toAttack() method).
@@ -263,14 +262,14 @@ void Player::issueOrder() {
     // if the player has any card in their hand of cards, let them choose one to play
     if (!handOfCards->empty()) {
         // display the player's hand of cards and prompt them to choose one
-        std::cout << "Your hand of cards: ";
+        cout << "Your hand of cards: " << endl;
         for (size_t i = 0; i < handOfCards->size(); i++) {
-            std::cout << i << ": " << handOfCards->at(i)->getCardType() << " ";
+            cout << i << ": " << handOfCards->at(i)->getCardType() << " " << endl;
         }
-        std::cout << std::endl << "Choose a card to play (enter the index): ";
+        cout <<  "Choose a card to play (enter the index): " << endl;
         // get the player's choice
         size_t choice;
-        std::cin >> choice;
+        cin >> choice;
         // check if the choice is valid
         if (choice < handOfCards->size()) {
             // play the chosen card
@@ -280,7 +279,14 @@ void Player::issueOrder() {
 
             // execute the corresponding method for the card type
             if (cardType == "Bomb") {
-                Bomb();
+                // prompt the player to choose a target territory
+                cout << "Choose a territory to bomb: " << endl;
+                auto targetTerritory = map->getTerritories();
+                // create the bomb order
+                auto playerPtr = make_shared<Player>(*this);
+                auto bombOrder = make_shared<Bomb>(playerPtr, targetTerritory);
+                // execute the bomb order
+                    bombOrder->execute();
             }
             else if (cardType == "Reinforcement") {
                 Reinforcement();
@@ -296,12 +302,12 @@ void Player::issueOrder() {
             }
         }
         else {
-            std::cout << "Invalid choice." << std::endl;
+            cout << "Invalid choice." << endl;
         }
         }
 
     else {
-        std::cout << "You have no cards in your hand." << std::endl;
+        cout << "You have no cards in your hand." << endl;
     }
 }
 
