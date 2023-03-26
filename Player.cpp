@@ -196,29 +196,33 @@ Player::~Player() = default; // deletion of data members handled by smart pointe
  * Returns a list of territories to defend.
  * @return list of territories to defend
  */
-unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
-    // TODO: not arbitrary anymore
-    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back(this->territories->at(0));
-    arbitraryList->push_back(this->territories->at(1));
-
-    return arbitraryList;
+list<Territory*> Player::toAttack() {
+    list<Territory*> attackList;
+    cout << "The list of territories to attack" << endl;
+    for (const auto& territory : *territories) {
+        if (territory->getPlayerInPossession() != getName()) {
+            attackList.push_back(territory.get());
+        }
+    }
+    return attackList;
 }
-
 // toAttack()
 /**
  * Returns a list of territories to attack.
  * @return list of territories to attack
  */
-unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
-    // TODO: not arbitrary anymore
-    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back(this->territories->at(2));
-    arbitraryList->push_back(this->territories->at(3));
-
-    return arbitraryList;
+list<Territory*> Player::toDefend() {
+    list<Territory*> defendList;
+    cout << "The list of territories to defend" << endl;
+    // Iterate through the territories owned by the player
+    for (const auto& territory : *territories) {
+        // Add the territory to the defendList since the player owns it
+        if (territory->getPlayerInPossession() = getName()) {
+            defendList.push_back(territory.get());
+        }
+    }
+    return defendList;
 }
-
 
 // issueOrder()
 /**
@@ -229,8 +233,9 @@ void Player::issueOrder() {
     // TODO: not arbitrary anymore
 //    auto testOrder = make_shared<Deploy>();
 //    ordersList->add(testOrder);
+//     아마도 방어를 고르면 이걸 실행하도록 바꿔야 할지도
     // Deploy orders
-    for (auto territory : *toDefend()) {
+    for (auto territory : toDefend()) {
         // Issue deploy orders until all available armies have been deployed
         if (armyCount > 0) {
             auto deployOrder = make_shared<Deploy>(this, territory.get(), getReinforcementPool());
@@ -243,7 +248,7 @@ void Player::issueOrder() {
     }
 
     // Advance orders
-    for (auto sourceTerritory : *toDefend()) {
+    for (auto sourceTerritory : toDefend()) {
         // Move armies to neighboring territories to defend them
         for (auto targetTerritory : sourceTerritory->getAdjacentTerritories()) {
             if (targetTerritory->getId() == sourceTerritory->getId()) {
