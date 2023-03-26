@@ -2,102 +2,10 @@
 #include <memory>
 #include "GameEngine.h"
 #include "LoggingObserver.h"
+#include "Map.h"
+#include "Player.h"
 
 using namespace std;
-
-////////////////// 3 Phases ///////////////////////////////////////
-void GameEngine::reinforcementPhase() {
-    cout << "\n********** Reinforcement Phase **********\n" << endl;
-    // Iterate through all players and calculate their reinforcement armies
-    for (auto& player : players) {
-        int armies = player.getTerritories()->size() /3;
-        if (armies < 3) {
-            armies = 3;
-        }
-        for (auto continent : map->getContinents()) {
-            bool ownsContinent = true;
-            for (const auto& territory : continent.getTerritories()) {
-                if (territory.first.getPlayerInPossession() != player.getName()) {
-                    ownsContinent = false;
-                    break;
-                }
-            }
-            if (ownsContinent) {
-                armies += 1;
-            }
-        }
-        player.setReinforcementPool(armies);
-    }
-}
-
-void GameEngine::issueOrdersPhase() {
-    cout << "\n********** Issuing Orders Phase **********\n" << endl;
-    int currentPlayerIndex = 0;
-
-    // Continue issuing orders until all players have no more orders to issue
-    bool ordersRemaining = true;
-    while (ordersRemaining) {
-        ordersRemaining = false;
-        // Iterate through all players in round robin fashion
-        for (int i = 0; i < players.size(); i++) {
-            auto currentPlayer = players[currentPlayerIndex];
-
-            if (currentPlayer.hasOrders()) {
-                currentPlayer.issueOrder();
-                ordersRemaining = true;
-            }
-            // Move to the next player (round-robin)
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        }
-    }
-}
-
-void GameEngine::sortOrders(OrdersList* orderList) {
-    // Sort orders in descending order of priority
-    orderList->getOrderList()->sort([](const shared_ptr<Order>& a, const shared_ptr<Order>& b) {
-        return a->getOrderId() > b->getOrderId(); });
-}
-
-
-void GameEngine::executeOrdersPhase() {
-    cout << "\n********** Executing Orders **********\n" << endl;
-
-    bool ordersRemaining = true;
-    int currentPlayerIndex = 0;
-
-    // Loop until all orders have been executed
-    while (ordersRemaining) {
-        ordersRemaining = false;
-
-        // Loop through all players in round-robin fashion
-        for (int i = 0; i < players.size(); i++) {
-            auto& player = players[currentPlayerIndex];
-
-            // Sort player's orders by priority
-            sortOrders(player.getOrdersList().get());
-
-            auto& ordersList = *(player.getOrdersList()->getOrderList());
-
-            if (!ordersList.empty()) {
-                // Get the top order
-                auto& topOrder = ordersList.front();
-                // Execute the order
-                topOrder->execute();
-                // Remove the executed order from the list
-                ordersList.pop_front();
-                // Indicate that there are still orders remaining to be executed
-                ordersRemaining = true;
-            }
-
-            // Move to the next player
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        }
-    }
-    for (auto& player : players) {
-        player.update(this->deck);
-    }
-}
-
 
 void GameEngine::startupPhase() {
 
@@ -118,7 +26,9 @@ void GameEngine::startupPhase() {
       cout << endl << "End of startup phase. Game will start." << endl;
       break;
     } 
+
   }
+
 }
 
 ///////////////// Game Class Implementations //////////////////////////
@@ -198,7 +108,6 @@ void GameEngine::shufflePlayers() {
 const shared_ptr<Deck> &GameEngine::getDeck() const {
   return deck;
 }
-
 
 
 ///////////////// State Class Implementations //////////////////////////
@@ -663,4 +572,105 @@ vector<string> WinState::getCommands(){
 }
 bool WinState::checkCommand(string cmd) {
   return true;
+}
+
+/// part 3
+void mainGameLoop(GameEngine* game) {
+
+    //bool gameEnded = false;
+
+    //while (!gameEnded) {
+
+    //    game->reinforcementPhase();
+    //    game->issueOrdersPhase();
+    //    game->executeOrdersPhase();
+
+
+    //    if (gameEnded) {
+    //        cout << "Game ended, Thank you for playing!" << endl;
+    //    }
+    //}
+}
+void GameEngine::reinforcementPhase() {
+    cout << "\n********** Reinforcement Phase **********\n" << endl;
+    // Iterate through all players and calculate their reinforcement armies
+    for (auto& player : players) {
+        int armies = player.getTerritories()->size() / 3;
+        if (armies < 3) {
+            armies = 3;
+        }
+        /*for (auto continent : map->getContinents()) {
+            bool ownsContinent = true;
+            for (const auto& territory : continent.getTerritories()) {
+                if (territory.first.getPlayerInPossession() != player.getName()) {
+                    ownsContinent = false;
+                    break;
+                }
+            }
+            if (ownsContinent) {
+                armies += 1;
+            }
+        }*/
+        player.setReinforcementPool(armies);
+    }
+}
+void GameEngine::issueOrdersPhase() {
+    cout << "\n********** Issuing Orders Phase **********\n" << endl;
+    int currentPlayerIndex = 0;
+
+    // Continue issuing orders until all players have no more orders to issue
+    bool ordersRemaining = true;
+    while (ordersRemaining) {
+        ordersRemaining = false;
+        // Iterate through all players in round robin fashion
+        for (int i = 0; i < players.size(); i++) {
+            auto currentPlayer = players[currentPlayerIndex];
+
+            if (currentPlayer.hasOrders()) {
+                currentPlayer.issueOrder();
+                ordersRemaining = true;
+            }
+            // Move to the next player (round-robin)
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        }
+    }
+}
+
+void GameEngine::sortOrders(OrdersList* orderList) {
+    // Sort orders in descending order of priority
+    orderList->getOrderList()->sort([](const shared_ptr<Order>& a, const shared_ptr<Order>& b) {
+        return a->getOrderId() > b->getOrderId(); });
+}
+
+
+void GameEngine::executeOrdersPhase() {
+    cout << "\n********** Executing Orders **********\n" << endl;
+    bool ordersRemaining = true;
+    int currentPlayerIndex = 0;
+    // Loop until all orders have been executed
+    while (ordersRemaining) {
+        ordersRemaining = false;
+        // Loop through all players in round-robin fashion
+        for (int i = 0; i < players.size(); i++) {
+            auto& player = players[currentPlayerIndex];
+            // Sort player's orders by priority
+            sortOrders(player.getOrdersList().get());
+            auto& ordersList = *(player.getOrdersList()->getOrderList());
+            if (!ordersList.empty()) {
+                // Get the top order
+                auto& topOrder = ordersList.front();
+                // Execute the order
+                topOrder->execute();
+                // Remove the executed order from the list
+                ordersList.pop_front();
+                // Indicate that there are still orders remaining to be executed
+                ordersRemaining = true;
+            }
+            // Move to the next player
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        }
+    }
+    for (auto& player : players) {
+        player.update(this->deck);
+    }
 }

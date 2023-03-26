@@ -41,20 +41,19 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     const shared_ptr<Deck> &getDeck() const;
     //Part 5
     void stringToLog(std::ostream &out) const override;
-
-    // part 3 add//
+    // part 3
+    void mainGameLoop();
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
     void sortOrders(OrdersList* orderList);
+    /*map* map;*/
 
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
     vector<Player> players;
     shared_ptr<Deck> deck;
-    int currentPlayerIndex = 0;
-
 
 };
 
