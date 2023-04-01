@@ -248,45 +248,94 @@ list<shared_ptr<Territory>> Player::toDefend() {
  * @param order
  */
 void Player::issueOrder() {
+    list<shared_ptr<Territory>> territoriesToAttack = toAttack();
+    list<shared_ptr<Territory>> territoriesToDefend = toDefend();
+
     // Deploy orders
-    for (auto territory : toDefend()) {
-        // Issue deploy orders until all available armies have been deployed
-        if (armyCount > 0) {
-            auto deployOrder = make_shared<Deploy>(this, territory.get(), getReinforcementPool());
-            ordersList->add(deployOrder);
-            armyCount--;
+    while (armyCount > 0) {
+        for (const auto& territory : territoriesToDefend) {
+            if (armyCount > 0) {
+                auto deployOrder = make_shared<Deploy>(this, territory.get(), getReinforcementPool());
+                    deployOrder->execute();
+                    armyCount--;
+            }
         }
-        else {
-            break;  // No more armies to deploy
+    }
+    //for (auto territory : toDefend()) {
+    //    if (armyCount > 0) {
+    //        auto deployOrder = make_shared<Deploy>(this, territory.get(), getReinforcementPool());
+    //        ordersList->add(deployOrder);
+    //        armyCount--;
+    //    }
+    //    else {
+    //        break;  
+    //    }
+    //}
+    /*if (armyCount = 0) {
+        
+    }*/
+    // Advance orders for defense
+    for (const auto& CurrentTerritory : territoriesToDefend) {
+        const unique_ptr<int>& armyCnt = CurrentTerritory->getArmyCnt();
+        if (*armyCnt > 1) {
+            cout << "You have " << *armyCnt << " armies in " << CurrentTerritory->getName() << ". How many armies would you like to move to defend your territories? ";
+            int armiesToMove;
+            cin >> armiesToMove;
+            for (const auto& target : territoriesToDefend) {
+                if (target != CurrentTerritory) {
+                    auto advanceOrder = make_shared<Advance>(this, CurrentTerritory, target, armiesToMove);
+                        advanceOrder->execute();
+                    break;
+                }
+            }
         }
     }
 
-    // Advance orders
-    for (auto sourceTerritory : toDefend()) {
-        // Move armies to neighboring territories to defend them
-        for (auto targetTerritory : sourceTerritory->getAdjacentTerritories()) {
-            if (targetTerritory->getId() == sourceTerritory->getId()) {
-                continue; // Don't move armies to territories owned by this player
-            }
-            if (toAttack().get()->empty()) {
-                // No enemy territories to attack, defend all neighboring territories with more armies
-                if (sourceTerritory->getArmyCnt() > targetTerritory->getArmyCnt()) {
-                    auto advanceOrder = make_shared<Advance>(this, sourceTerritory, targetTerritory, targetTerritory->getArmyCnt());
-                    ordersList->add(advanceOrder);
-                }
-            }
-            else {
-                // Attack neighboring enemy territories with more armies
-                for (auto enemyTerritory : *(toAttack())) {
-                    if (targetTerritory->getId() == enemyTerritory->getId()) {
-                        auto advanceOrder = make_shared<Advance>(this, sourceTerritory, targetTerritory, targetTerritory->getArmyCnt());
-                        ordersList->add(advanceOrder);
-                        break;
-                    }
+    // Advance orders for attack
+    for (const auto& CurrentTerritory : territoriesToDefend) {
+        const unique_ptr<int>& armyCnt = CurrentTerritory->getArmyCnt();
+        if (*armyCnt > 1) {
+            cout << "You have " << *armyCnt << " armies in " << CurrentTerritory->getName() << ". How many armies would you like to move to attack your enemy territories? ";
+            int armiesToMove;
+            cin >> armiesToMove;
+            for (const auto& target : territoriesToAttack) {
+                if (find(CurrentTerritory->getAdjacentTerritories()->begin(), CurrentTerritory->getAdjacentTerritories()->end(), target->getId()) != CurrentTerritory->getAdjacentTerritories()->end()) {
+                    auto advanceOrder = make_shared<Advance>(this, CurrentTerritory, target, armiesToMove);
+                        advanceOrder->execute();
+                    break;
                 }
             }
         }
     }
+
+
+
+
+    //for (auto sourceTerritory : toDefend()) {
+    //    // Move armies to neighboring territories to defend them
+    //    for (auto targetTerritory : sourceTerritory->getAdjacentTerritories()) {
+    //        if (targetTerritory->getId() == sourceTerritory->getId()) {
+    //            continue; // Don't move armies to territories owned by this player
+    //        }
+    //        if (toAttack().get()->empty()) {
+    //            // No enemy territories to attack, defend all neighboring territories with more armies
+    //            if (sourceTerritory->getArmyCnt() > targetTerritory->getArmyCnt()) {
+    //                auto advanceOrder = make_shared<Advance>(this, sourceTerritory, targetTerritory, targetTerritory->getArmyCnt());
+    //                ordersList->add(advanceOrder);
+    //            }
+    //        }
+    //        else {
+    //            // Attack neighboring enemy territories with more armies
+    //            for (auto enemyTerritory : *(toAttack())) {
+    //                if (targetTerritory->getId() == enemyTerritory->getId()) {
+    //                    auto advanceOrder = make_shared<Advance>(this, sourceTerritory, targetTerritory, targetTerritory->getArmyCnt());
+    //                    ordersList->add(advanceOrder);
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
     // need card part
 }
