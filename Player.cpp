@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <algorithm>
+#include "Map.h"
 
 using namespace std;
 
@@ -190,39 +191,56 @@ bool Player::hasOrders() const {
 // destructor
 Player::~Player() = default; // deletion of data members handled by smart pointers already
 
+shared_ptr<Territory> Player::getTerritoryByID(int territoryID) const {
+    for (const auto& territory : *territories) {
+        if (territory->getId() == territoryID) {
+            return territory;
+        }
+    }
+    // Return nullptr if the territory is not found
+    return nullptr;
+}
+
+ // toAttack()
+ /**
+  * Returns a list of territories to attack.
+  * @return list of territories to attack
+  */
+list<shared_ptr<Territory>> Player::toAttack() {
+    list<shared_ptr<Territory>> attackList;
+    cout << "The list of territories to attack:" << endl;
+    for (const auto& territory : *territories) {
+        if (territory->getPlayerInPossession() != getName()) {
+            // Iterate over adjacent territories and check if they are not owned by the player
+            for (int adjacentTerritoryID : *territory->getAdjacentTerritories()) {
+                shared_ptr<Territory> adjacentTerritory = getTerritoryByID(adjacentTerritoryID);
+                if (adjacentTerritory->getPlayerInPossession() != getName()) {
+                    attackList.push_back(adjacentTerritory);
+                }
+            }
+        }
+    }
+    return attackList;
+}
 
 // toDefend()
 /**
  * Returns a list of territories to defend.
  * @return list of territories to defend
  */
-list<Territory*> Player::toAttack() {
-    list<Territory*> attackList;
-    cout << "The list of territories to attack" << endl;
-    for (const auto& territory : *territories) {
-        if (territory->getPlayerInPossession() != getName()) {
-            attackList.push_back(territory.get());
-        }
-    }
-    return attackList;
-}
-// toAttack()
-/**
- * Returns a list of territories to attack.
- * @return list of territories to attack
- */
-list<Territory*> Player::toDefend() {
-    list<Territory*> defendList;
-    cout << "The list of territories to defend" << endl;
+list<shared_ptr<Territory>> Player::toDefend() {
+    list<shared_ptr<Territory>> defendList;
+    cout << "The list of territories to defend:" << endl;
     // Iterate through the territories owned by the player
     for (const auto& territory : *territories) {
         // Add the territory to the defendList since the player owns it
-        if (territory->getPlayerInPossession() = getName()) {
-            defendList.push_back(territory.get());
+        if (territory->getPlayerInPossession() == getName()) {
+            defendList.push_back(territory);
         }
     }
     return defendList;
 }
+
 
 // issueOrder()
 /**
@@ -230,10 +248,6 @@ list<Territory*> Player::toDefend() {
  * @param order
  */
 void Player::issueOrder() {
-    // TODO: not arbitrary anymore
-//    auto testOrder = make_shared<Deploy>();
-//    ordersList->add(testOrder);
-//     아마도 방어를 고르면 이걸 실행하도록 바꿔야 할지도
     // Deploy orders
     for (auto territory : toDefend()) {
         // Issue deploy orders until all available armies have been deployed

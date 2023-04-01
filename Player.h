@@ -27,10 +27,10 @@ public:
     // destructor
     ~Player();
 
-    // required methods
-    unique_ptr<vector<shared_ptr<Territory>>> toDefend();
-    unique_ptr<vector<shared_ptr<Territory>>> toAttack();
-    void issueOrder();
+    //// required methods
+    //unique_ptr<vector<shared_ptr<Territory>>> toDefend();
+    //unique_ptr<vector<shared_ptr<Territory>>> toAttack();
+    //void issueOrder();
 
     // extra methods
     void addTerritory(const shared_ptr<Territory>& territory);
@@ -78,7 +78,16 @@ public:
     // part 3 add
     //int getNumTerritoriesOwned() const;
     //void setNumTerritoriesOwned(int numTerritoriesOwn);
+    shared_ptr<Territory> getTerritoryByID(int territoryID) const;
+    void issueOrder();
     bool hasOrders() const;
+    list<shared_ptr<Territory>> toAttack();
+    list<shared_ptr<Territory>> toDefend();
+    //Create pointer to a list ofpointers to territories
+    list<Territory>* playerTerritories;
+    vector<Territory*> territoriesOwn;
+    //targetTerritories contains a list of pointers to territories. Each territory is unique,
+    list<Territory>* targetTerritories;
 
 private:
     static int nextID;
