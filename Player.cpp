@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "Orders.h"
 #include "Cards.h"
+#include "GameEngine.h"
 
 using namespace std;
 
@@ -476,10 +477,9 @@ void Player::issueOrder() {
                     // Find the chosen player
                     string chosenPlayerName = *next(playerNames.begin(), choice);
                     shared_ptr<Player> targetPlayer;
-                    for (const auto& territory : *territories) {
-                        if (territory->getPlayerInPossession() == chosenPlayerName) {
-                            // may need to implement or change otehr ways
-                            //targetPlayer = territory->getPlayer();
+                    for (const auto& player : *players) {
+                        if (player->getName() == chosenPlayerName) {
+                            targetPlayer = player;
                             break;
                         }
                     }
