@@ -11,7 +11,8 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
 
-    ordersDemo2();
+//    ordersDemo2();
+    playerStrategyDemo();
 
     //Part 1 Demo
 //    GameEngine *game = new GameEngine();
