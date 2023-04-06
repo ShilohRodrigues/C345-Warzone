@@ -13,6 +13,9 @@
 #include "LoggingObserver.h"
 using namespace std;
 
+class Player;
+class OrdersList;
+
 class State;
 class GameEngine;
 class CommandProcessor;

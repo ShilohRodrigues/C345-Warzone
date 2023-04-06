@@ -290,20 +290,20 @@ void Player::issueOrder() {
                 auto targetTerritory = map->getTerritories();
                 // create the bomb order
                 auto playerPtr = make_shared<Player>(*this);
-                auto bombOrder = make_shared<Bomb>(playerPtr, targetTerritory);
+//                auto bombOrder = make_shared<Bomb>(playerPtr, targetTerritory);
                 // execute the bomb order
-                bombOrder->execute();
+//                bombOrder->execute();
             }
             else if (cardType == "Blockade") {
                 cout << "Choose a territory to blockade: " << endl;
                 auto targetTerritory = map->getTerritories();
                 // Create a neutral player
-                auto neutralPlayer = make_shared<Player>("Neutral");
+//                auto neutralPlayer = make_shared<Player>("Neutral");
                 // Create the blockade order
                 auto playerPtr = make_shared<Player>(*this);
-                auto blockadeOrder = make_shared<Blockade>(playerPtr, neutralPlayer, targetTerritory);
+//                auto blockadeOrder = make_shared<Blockade>(playerPtr, neutralPlayer, targetTerritory);
                 // Execute the blockade order
-                blockadeOrder->execute();
+//                blockadeOrder->execute();
             }
             else if (cardType == "Airlift") {
                 cout << "Choose the source territory: " << endl;
@@ -329,9 +329,9 @@ void Player::issueOrder() {
                 cin >> numArmies;
                 // create the airlift order
                 auto playerPtr = make_shared<Player>(*this);
-                auto airliftOrder = make_shared<Airlift>(playerPtr, sourceTerritory, targetTerritory, numArmies);
+//                auto airliftOrder = make_shared<Airlift>(playerPtr, sourceTerritory, targetTerritory, numArmies);
                 // execute the airlift order
-                airliftOrder->execute();
+//                airliftOrder->execute();
             }
             else if (cardType == "Diplomacy") {
                 // Get the list of all players in the game
@@ -351,8 +351,8 @@ void Player::issueOrder() {
                     // Check if the target player is not the same as the issuer
                     if (targetPlayer.getName() != this->getName()) {
                         
-                        auto NegotiateOrder = make_shared<Negotiate>(this->getName(), targetPlayer);
-                        NegotiateOrder->execute();
+//                        auto NegotiateOrder = make_shared<Negotiate>(this->getName(), targetPlayer);
+//                        NegotiateOrder->execute();
                     }
                 }
                 else {
