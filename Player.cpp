@@ -206,12 +206,7 @@ Player::~Player() = default; // deletion of data members handled by smart pointe
  * @return list of territories to defend
  */
 unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
-    // TODO: not arbitrary anymore
-    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back(this->territories->at(0));
-    arbitraryList->push_back(this->territories->at(1));
-
-    return arbitraryList;
+    return playerStrategy->toDefend();
 }
 
 // toAttack()
@@ -220,12 +215,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
  * @return list of territories to attack
  */
 unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
-    // TODO: not arbitrary anymore
-    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back(this->territories->at(2));
-    arbitraryList->push_back(this->territories->at(3));
-
-    return arbitraryList;
+    return playerStrategy->toAttack();
 }
 
 
@@ -234,7 +224,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
  * @param order
  */
 void Player::issueOrder() {
-
+    playerStrategy->issueOrder();
 }
 
 void Player::addTerritory(const shared_ptr<Territory>& territory) {
