@@ -16,7 +16,7 @@ public:
     virtual unique_ptr<vector<shared_ptr<Territory>>> toAttack() = 0;
     virtual unique_ptr<vector<shared_ptr<Territory>>> toDefend() = 0;
 
-private:
+protected:
     unique_ptr<Player> player;
 };
 

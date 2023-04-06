@@ -182,15 +182,15 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 
 // -- NEUTRAL player strategy --
 void Neutral::issueOrder() {
-
+    cout << "Neutral issueOrder()";
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() {
-
+    return make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
-
+    return make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
 }
 
 // -- CHEATER player strategy --
