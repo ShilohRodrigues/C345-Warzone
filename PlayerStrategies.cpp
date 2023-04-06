@@ -2,6 +2,15 @@
 
 using namespace std;
 
+// getters and setters
+const shared_ptr<Player> &PlayerStrategy::getPlayer() const {
+    return player;
+}
+
+void PlayerStrategy::setPlayer(shared_ptr<Player> &player) {
+    PlayerStrategy::player = std::move(player);
+}
+
 // -- HUMAN player strategy --
 void Human::issueOrder() {
 //    Map* map = new Map();
@@ -181,16 +190,30 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 }
 
 // -- NEUTRAL player strategy --
+Neutral::Neutral(shared_ptr<Player> player) {
+    this->setPlayer(player);
+}
+
 void Neutral::issueOrder() {
-    cout << "Neutral issueOrder()";
+    cout << "Neutral issueOrder()" << endl;
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() {
-    return make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
+    auto territories = make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
+    cout << "toAttack() Territories: " << endl;
+    for (const auto& t : *territories) {
+        cout << "\t" << *t << endl;
+    }
+    return territories;
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
-    return make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
+    auto territories = make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
+    cout << "toDefend() Territories: " << endl;
+    for (const auto& t : *territories) {
+        cout << "\t" << *t << endl;
+    }
+    return territories;
 }
 
 // -- CHEATER player strategy --
@@ -205,3 +228,5 @@ unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {
 unique_ptr<vector<shared_ptr<Territory>>> Cheater::toDefend() {
 
 }
+
+

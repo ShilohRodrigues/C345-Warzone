@@ -184,13 +184,20 @@ void Player::setHasConqueredTerritory(bool hasConqueredTerritory) {
     Player::hasConqueredTerritory = hasConqueredTerritory;
 }
 
-const unique_ptr<PlayerStrategy> &Player::getPlayerStrategy() const {
+const shared_ptr<PlayerStrategy> &Player::getPlayerStrategy() {
     return playerStrategy;
 }
 
-void Player::setPlayerStrategy(unique_ptr<PlayerStrategy> &playerStrategy) {
+template <typename T>
+void Player::setPlayerStrategy(shared_ptr<T> &playerStrategy) {
     Player::playerStrategy = std::move(playerStrategy);
 }
+
+template void Player::setPlayerStrategy<Human>(shared_ptr<Human>& playerStrategy);
+template void Player::setPlayerStrategy<Aggressive>(shared_ptr<Aggressive>& playerStrategy);
+template void Player::setPlayerStrategy<Benevolent>(shared_ptr<Benevolent>& playerStrategy);
+template void Player::setPlayerStrategy<Neutral>(shared_ptr<Neutral>& playerStrategy);
+template void Player::setPlayerStrategy<Cheater>(shared_ptr<Cheater>& playerStrategy);
 
 bool Player::hasOrders() const {
     return !ordersList->getOrderList()->empty();

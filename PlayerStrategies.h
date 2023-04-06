@@ -16,8 +16,11 @@ public:
     virtual unique_ptr<vector<shared_ptr<Territory>>> toAttack() = 0;
     virtual unique_ptr<vector<shared_ptr<Territory>>> toDefend() = 0;
 
+    const shared_ptr<Player> &getPlayer() const;
+    void setPlayer(shared_ptr<Player> &player);
+
 protected:
-    unique_ptr<Player> player;
+    shared_ptr<Player> player;
 };
 
 class Human: public PlayerStrategy {
@@ -43,6 +46,8 @@ public:
 
 class Neutral: public PlayerStrategy {
 public:
+    Neutral(shared_ptr<Player> player);
+
     void issueOrder();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
@@ -54,5 +59,7 @@ public:
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
 };
+
+void playerStrategyDemo();
 
 #endif // PLAYERSTRATEGIES_H

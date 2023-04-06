@@ -78,9 +78,10 @@ public:
     bool getHasConqueredTerritory() const;
     void setHasConqueredTerritory(bool hasConqueredTerritory);
 
-    const unique_ptr<PlayerStrategy> &getPlayerStrategy() const;
+    const shared_ptr<PlayerStrategy> &getPlayerStrategy();
 
-    void setPlayerStrategy(unique_ptr<PlayerStrategy> &playerStrategy);
+    template <typename T>
+    void setPlayerStrategy(shared_ptr<T> &playerStrategy);
 
     bool hasOrders() const;
     //part 3
@@ -105,7 +106,7 @@ private:
     GameEngine* gameEngine;
     GameEngine* getGameEngine();
 
-    unique_ptr<PlayerStrategy> playerStrategy;
+    shared_ptr<PlayerStrategy> playerStrategy;
 };
 
 void playerDemo1();
