@@ -13,6 +13,7 @@
 using namespace std;
 class GameEngine;
 class OrdersList;
+class PlayerStrategy;
 
 class Player {
 public:
