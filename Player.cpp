@@ -184,6 +184,14 @@ void Player::setHasConqueredTerritory(bool hasConqueredTerritory) {
     Player::hasConqueredTerritory = hasConqueredTerritory;
 }
 
+const unique_ptr<PlayerStrategy> &Player::getPlayerStrategy() const {
+    return playerStrategy;
+}
+
+void Player::setPlayerStrategy(unique_ptr<PlayerStrategy> &playerStrategy) {
+    Player::playerStrategy = std::move(playerStrategy);
+}
+
 bool Player::hasOrders() const {
     return !ordersList->getOrderList()->empty();
 }
@@ -221,7 +229,6 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
 }
 
 
-// issueOrder()
 /**
  * Creates an order and adds it to the list of orders.
  * @param order
@@ -505,6 +512,8 @@ void Player::update(const shared_ptr<Deck>& deck) {
     this->hasConqueredTerritory = false;
     this->cardHand->clearPlayedCards();
 }
+
+
 
 
 

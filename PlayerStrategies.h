@@ -14,4 +14,11 @@ public:
     virtual unique_ptr<vector<shared_ptr<Territory>>> toDefend() = 0;
 };
 
+class Human: public PlayerStrategy {
+public:
+    void issueOrder();
+    unique_ptr<vector<shared_ptr<Territory>>> toAttack();
+    unique_ptr<vector<shared_ptr<Territory>>> toDefend();
+};
+
 #endif // PLAYERSTRATEGIES_H

@@ -8,6 +8,7 @@
 #include "Cards.h"
 #include "Orders.h"
 #include "GameEngine.h"
+#include "PlayerStrategies.h"
 
 using namespace std;
 class GameEngine;
@@ -76,6 +77,10 @@ public:
     bool getHasConqueredTerritory() const;
     void setHasConqueredTerritory(bool hasConqueredTerritory);
 
+    const unique_ptr<PlayerStrategy> &getPlayerStrategy() const;
+
+    void setPlayerStrategy(unique_ptr<PlayerStrategy> &playerStrategy);
+
     bool hasOrders() const;
     //part 3
     Player(std::string& playerName, GameEngine* gameEngine);
@@ -98,6 +103,8 @@ private:
     //part 3
     GameEngine* gameEngine;
     GameEngine* getGameEngine();
+
+    unique_ptr<PlayerStrategy> playerStrategy;
 };
 
 void playerDemo1();
