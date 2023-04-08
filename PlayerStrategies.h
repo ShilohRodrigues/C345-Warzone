@@ -39,6 +39,7 @@ public:
     void issueOrder();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
+    shared_ptr<Territory> getStrongestTerritory();
 };
 
 class Benevolent: public PlayerStrategy {

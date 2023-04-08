@@ -178,7 +178,22 @@ Aggressive::Aggressive(Player &player): PlayerStrategy(player) {}
  * enemy territories until it can't do so anymore
  */
 void Aggressive::issueOrder() {
+    auto attackList = this->toAttack();
+    // issue deploy order on strongest territory
 
+    // issue advance orders to attack adjacent enemy territories
+}
+
+shared_ptr<Territory> Aggressive::getStrongestTerritory() {
+    // Sort the player's territories based on their number of armies in descending order
+    auto sortedTerritories = *this->player->getTerritories();
+    sort(sortedTerritories.begin(), sortedTerritories.end(),
+         [](auto t1, auto t2) {
+             return *t1->getArmyCnt() > *t2->getArmyCnt();
+         });
+
+    // the strongest territory owned by the player is the first one
+    return sortedTerritories[0];
 }
 
 /**
@@ -187,15 +202,8 @@ void Aggressive::issueOrder() {
  * @return a pointer to the vector of territories to attack.
  */
 unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
-    // Sort the player's territories based on their number of armies in descending order
-    auto sortedTerritories = *this->player->getTerritories();
-    sort(sortedTerritories.begin(), sortedTerritories.end(),
-         [](auto t1, auto t2) {
-        return *t1->getArmyCnt() > *t2->getArmyCnt();
-    });
-
     // Get the strongest territory owned by the player
-    auto strongestTerritory = sortedTerritories[0];
+    auto strongestTerritory = this->getStrongestTerritory();
 
     // Add all adjacent enemy territories to the attack list
     auto attackList = make_unique<vector<shared_ptr<Territory>>>();
