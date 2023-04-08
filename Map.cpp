@@ -303,6 +303,37 @@ bool Map::areAdjacent(const Territory &territory1, const Territory &territory2) 
                        [&](int territoryID) { return territoryID == territory2.getId(); });
 }
 
+/**
+ * Returns a pointer to the territory corresponding to the given territory ID.
+ * @param territoryID of the desired territory
+ * @return a pointer to the territory corresponding to the given territory ID
+ */
+shared_ptr<Territory> Map::getTerritoryFromID(int territoryID) {
+    auto territories = this->getTerritories();
+    for (auto& territoryPair : territories) {
+        auto& territory = const_cast<Territory &>(territoryPair.first);
+        int currentTerritoryID = territory.getId();
+        if (currentTerritoryID == territoryID) {
+            return make_shared<Territory>(territory);
+        }
+    }
+
+    return nullptr;
+}
+
+/**
+ * Returns a pointer to a vector of territories adjacent to the given territory.
+ * @param territory the territory whose adjacent territories will be returned as a vector of territories
+ * @return a pointer to a vector of territories adjacent to the given territory
+ */
+unique_ptr<vector<shared_ptr<Territory>>> Map::getAdjacentTerritories(Territory &territory) {
+    auto adjacentTerritories = make_unique<vector<shared_ptr<Territory>>>();
+    for (auto& territoryID : *territory.getAdjacentTerritories()) {
+        adjacentTerritories->push_back(this->getTerritoryFromID(territoryID));
+    }
+    return adjacentTerritories;
+}
+
 //MapLoader Class
 //Helper function to split strings by the separator char.
 vector<string> split(string str, char separator) {

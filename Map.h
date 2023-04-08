@@ -107,7 +107,8 @@ public:
     vector<Continent>& getContinents();
 
     static bool areAdjacent(const Territory& territory1, const Territory& territory2);
-
+    unique_ptr<vector<shared_ptr<Territory>>> getAdjacentTerritories(Territory& territory);
+    shared_ptr<Territory> getTerritoryFromID(int territoryID);
 };
 
 class MapLoader {
