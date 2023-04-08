@@ -216,7 +216,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
  * @return An empty territory vector since this player does not care for defense.
  */
 unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
-
+    return make_unique<vector<shared_ptr<Territory>>>();
 }
 
 // -- BENEVOLENT player strategy --
