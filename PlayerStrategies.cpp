@@ -162,7 +162,7 @@ void Human::issueOrder() {
 //    }
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Human::toAttack() {
 
 }
 
@@ -244,7 +244,7 @@ void Benevolent::issueOrder() {
 
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toAttack() {
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Benevolent::toAttack() {
 
 }
 
@@ -259,13 +259,8 @@ void Neutral::issueOrder() {
     cout << "Neutral issueOrder()" << endl;
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() {
-    auto territories = make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
-    cout << "toAttack() Territories: " << endl;
-    for (const auto& t : *territories) {
-        cout << "\t" << *t << endl;
-    }
-    return territories;
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Neutral::toAttack() {
+
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
@@ -284,7 +279,7 @@ void Cheater::issueOrder() {
 
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Cheater::toAttack() {
 
 }
 
