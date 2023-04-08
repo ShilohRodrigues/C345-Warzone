@@ -1,4 +1,5 @@
 #include "PlayerStrategies.h"
+#include "Orders.h"
 
 using namespace std;
 
@@ -179,14 +180,19 @@ Aggressive::Aggressive(Player &player): PlayerStrategy(player) {}
  */
 void Aggressive::issueOrder() {
     auto attackList = this->toAttack();
-    // issue deploy order on strongest territory
+    // deploy the player's whole reinforcement pool to the player's strongest territory
+    auto strongestTerritory = this->getStrongestTerritory();
+    auto deployToStrongest = make_unique<Deploy>(this->player,
+                                                 strongestTerritory,
+                                                 this->player->getReinforcementPool());
 
     // issue advance orders to attack adjacent enemy territories
+
 }
 
 shared_ptr<Territory> Aggressive::getStrongestTerritory() {
     // Sort the player's territories based on their number of armies in descending order
-    auto sortedTerritories = *this->player->getTerritories();
+    auto& sortedTerritories = *this->player->getTerritories();
     sort(sortedTerritories.begin(), sortedTerritories.end(),
          [](auto t1, auto t2) {
              return *t1->getArmyCnt() > *t2->getArmyCnt();
@@ -196,27 +202,31 @@ shared_ptr<Territory> Aggressive::getStrongestTerritory() {
     return sortedTerritories[0];
 }
 
-/**
- * Gets the strongest player territory and returns a pointer to a vector of its
- * adjacent enemy territories as territories to attack.
- * @return a pointer to the vector of territories to attack.
- */
-unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
-    // Get the strongest territory owned by the player
-    auto strongestTerritory = this->getStrongestTerritory();
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Aggressive::toAttack() {
+    auto attackMap = make_unique<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>>();
 
-    // Add all adjacent enemy territories to the attack list
-    auto attackList = make_unique<vector<shared_ptr<Territory>>>();
-    auto adjacentTerritories = strongestTerritory->getAdjacentTerritoriesPointers();
-    for (auto& t : *adjacentTerritories) {
-        // if the territory is not owned by the player
-        if (!(t->getPlayerInPossession() == this->player->getName())) {
-            // add to the attack list
-            attackList->push_back(t);
+    // Get all territories owned by the player
+    auto& playerTerritories = *player->getTerritories();
+
+    // Iterate over all player territories and add adjacent enemy territories with armies to the attack map
+    for (auto& territory : playerTerritories) {
+        auto adjacentTerritories = territory->getAdjacentTerritoriesPointers();
+        for (auto& t : *adjacentTerritories) {
+            // if the territory is not owned by the player (enemy territory)
+            if (!(t->getPlayerInPossession() == player->getName())) {
+                if (*territory->getArmyCnt() > 1) {
+                    // If the attacking territory is not in the map yet, add it with an empty vector of targets
+                    if (attackMap->find(territory) == attackMap->end()) {
+                        (*attackMap)[territory] = vector<shared_ptr<Territory>>();
+                    }
+                    // Add the target territory to the list of targets for the attacking territory
+                    (*attackMap)[territory].push_back(t);
+                }
+            }
         }
     }
 
-    return attackList;
+    return attackMap;
 }
 
 /**

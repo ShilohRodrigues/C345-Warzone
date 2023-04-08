@@ -37,7 +37,7 @@ class Aggressive: public PlayerStrategy {
 public:
     Aggressive(Player& player);
     void issueOrder();
-    unique_ptr<vector<shared_ptr<Territory>>> toAttack();
+    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
     shared_ptr<Territory> getStrongestTerritory();
 };
