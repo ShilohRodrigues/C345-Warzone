@@ -190,6 +190,11 @@ void Aggressive::issueOrder() {
 
 }
 
+/**
+ * Returns the strongest territory owned by the player, based on the number of armies it contains.
+ *
+ * @return A shared_ptr to the strongest territory owned by the player.
+ */
 shared_ptr<Territory> Aggressive::getStrongestTerritory() {
     // Sort the player's territories based on their number of armies in descending order
     auto& sortedTerritories = *this->player->getTerritories();
@@ -202,6 +207,12 @@ shared_ptr<Territory> Aggressive::getStrongestTerritory() {
     return sortedTerritories[0];
 }
 
+/**
+ * Returns a unique pointer to an unordered map that contains the territories to attack for an aggressive player.
+ * The keys of the map are the territories owned by the player that have armies greater than 1 and have adjacent enemy territories.
+ * The values of the map are vectors of pointers to the adjacent enemy territories with armies.
+ * @return a unique pointer to an unordered map of territories to attack for an aggressive player.
+ */
 unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Aggressive::getToAttackMap() {
     auto attackMap = make_unique<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>>();
 
@@ -229,8 +240,37 @@ unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> 
     return attackMap;
 }
 
+/**
+ * Generates a list of all territories that can be attacked by the player, without duplicates.
+ *
+ * @return A unique_ptr to a vector of shared_ptr<Territory> objects representing the territories
+ * that the player can attack without duplicates.
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
+    auto attackMap = Aggressive::getToAttackMap();
 
+    auto attackableTerritories = make_unique<vector<shared_ptr<Territory>>>();
+
+    // Iterate over the attack map and add all target territories to the vector
+    for (const auto& [attackingTerritory, targetTerritories] : *attackMap) {
+        for (const auto& targetTerritory : targetTerritories) {
+            attackableTerritories->push_back(targetTerritory);
+        }
+    }
+
+    // Define a custom comparison function that compares shared_ptr<Territory> based on their territoryID
+    auto territoryPtrCompare =
+            [](const shared_ptr<Territory>& t1, const shared_ptr<Territory>& t2) {
+        return t1->getId() < t2->getId();
+    };
+
+    // Use std::sort and std::unique with the custom comparison function to remove duplicates from the vector
+    std::sort(attackableTerritories->begin(), attackableTerritories->end(), territoryPtrCompare);
+    auto last = std::unique(attackableTerritories->begin(), attackableTerritories->end(),
+                            territoryPtrCompare);
+    attackableTerritories->erase(last, attackableTerritories->end()); // shrink vector
+
+    return attackableTerritories;
 }
 
 /**
