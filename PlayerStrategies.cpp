@@ -2,16 +2,22 @@
 
 using namespace std;
 
+// default constructor
+PlayerStrategy::PlayerStrategy(Player &player):
+    player(make_shared<Player>(player)) {}
+
 // getters and setters
 const shared_ptr<Player> &PlayerStrategy::getPlayer() const {
     return player;
 }
 
 void PlayerStrategy::setPlayer(shared_ptr<Player> &player) {
-    PlayerStrategy::player = std::move(player);
+    PlayerStrategy::player = player;
 }
 
 // -- HUMAN player strategy --
+Human::Human(Player &player): PlayerStrategy(player) {}
+
 void Human::issueOrder() {
 //    Map* map = new Map();
 //    // The player decides which territories are to be defended in priority (as a list return by the toDefend() method).
@@ -164,19 +170,49 @@ unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {
 }
 
 // -- AGGRESSIVE player strategy --
+Aggressive::Aggressive(Player &player): PlayerStrategy(player) {}
+
+/**
+ * Decides which orders the aggressive player will choose to issue.
+ * It will deploy or advance armies on its strongest country, then always advance to
+ * enemy territories until it can't do so anymore
+ */
 void Aggressive::issueOrder() {
 
 }
 
+/**
+ * Gets the strongest player territory and returns a pointer to a vector of its
+ * adjacent enemy territories as territories to attack.
+ * @return a pointer to the vector of territories to attack.
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
+    // Sort the player's territories based on their number of armies in descending order
+    auto sortedTerritories = *this->player->getTerritories();
+    sort(sortedTerritories.begin(), sortedTerritories.end(),
+         [](auto t1, auto t2) {
+        return *t1->getArmyCnt() > *t2->getArmyCnt();
+    });
 
+    // Get the strongest territory owned by the player
+    auto strongestTerritory = sortedTerritories[0];
+
+    // Add all adjacent enemy territories to the attack list
+    auto attackList = make_unique<vector<shared_ptr<Territory>>>();
+    auto adjacentTerritories = strongestTerritory->getAdjacentTerritories();
 }
 
+/**
+ * Returns a pointer to the vector of territories to defend.
+ * @return An empty territory vector since this player does not care for defense.
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 
 }
 
 // -- BENEVOLENT player strategy --
+Benevolent::Benevolent(Player &player): PlayerStrategy(player) {}
+
 void Benevolent::issueOrder() {
 
 }
@@ -190,9 +226,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 }
 
 // -- NEUTRAL player strategy --
-Neutral::Neutral(shared_ptr<Player> player) {
-    this->setPlayer(player);
-}
+Neutral::Neutral(Player &player): PlayerStrategy(player) {}
 
 void Neutral::issueOrder() {
     cout << "Neutral issueOrder()" << endl;
@@ -217,6 +251,8 @@ unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
 }
 
 // -- CHEATER player strategy --
+Cheater::Cheater(Player &player): PlayerStrategy(player) {}
+
 void Cheater::issueOrder() {
 
 }

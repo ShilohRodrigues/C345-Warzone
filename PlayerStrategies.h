@@ -12,6 +12,8 @@ class Player;
 
 class PlayerStrategy {
 public:
+    PlayerStrategy(Player& player);
+
     virtual void issueOrder() = 0;
     virtual unique_ptr<vector<shared_ptr<Territory>>> toAttack() = 0;
     virtual unique_ptr<vector<shared_ptr<Territory>>> toDefend() = 0;
@@ -25,6 +27,7 @@ protected:
 
 class Human: public PlayerStrategy {
 public:
+    Human(Player& player);
     void issueOrder();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
@@ -32,6 +35,7 @@ public:
 
 class Aggressive: public PlayerStrategy {
 public:
+    Aggressive(Player& player);
     void issueOrder();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
@@ -39,6 +43,7 @@ public:
 
 class Benevolent: public PlayerStrategy {
 public:
+    Benevolent(Player& player);
     void issueOrder();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
@@ -46,8 +51,7 @@ public:
 
 class Neutral: public PlayerStrategy {
 public:
-    Neutral(shared_ptr<Player> player);
-
+    Neutral(Player& player);
     void issueOrder();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
@@ -55,6 +59,7 @@ public:
 
 class Cheater: public PlayerStrategy {
 public:
+    Cheater(Player& player);
     void issueOrder();
     unique_ptr<vector<shared_ptr<Territory>>> toAttack();
     unique_ptr<vector<shared_ptr<Territory>>> toDefend();
