@@ -35,6 +35,7 @@ private:
     unique_ptr<int> continentId;
     unique_ptr<int> armyCnt;
     shared_ptr<vector<int>> adjacentTerritories;
+    shared_ptr<vector<shared_ptr<Territory>>> adjacentTerritoriesPointers;
 
 public:
     //Initial territory
@@ -59,6 +60,9 @@ public:
 
     const shared_ptr<vector<int>> &getAdjacentTerritories() const;
     void setAdjacentTerritories(const shared_ptr<vector<int>> &adjacentTerritories);
+
+    const shared_ptr<vector<shared_ptr<Territory>>> &getAdjacentTerritoriesPointers() const;
+    void setAdjacentTerritoriesPointers(const shared_ptr<vector<shared_ptr<Territory>>> &adjacentTerritoriesPointers);
 };
 
 class Continent {
@@ -102,12 +106,13 @@ public:
     void printContinents();
     bool validate();
     bool isConnected(unordered_map<Territory, list<Territory>, MyHash> territories);
-    unordered_map<Territory, list<Territory>, MyHash> getTerritories();
+    unordered_map<Territory, list<Territory>, MyHash>& getTerritories();
+
     // part 3 add//
     vector<Continent>& getContinents();
 
     static bool areAdjacent(const Territory& territory1, const Territory& territory2);
-    unique_ptr<vector<shared_ptr<Territory>>> getAdjacentTerritories(Territory& territory);
+    shared_ptr<vector<shared_ptr<Territory>>> getAdjacentTerritories(Territory& territory);
     shared_ptr<Territory> getTerritoryFromID(int territoryID);
 };
 
