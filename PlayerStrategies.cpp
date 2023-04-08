@@ -199,7 +199,16 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
 
     // Add all adjacent enemy territories to the attack list
     auto attackList = make_unique<vector<shared_ptr<Territory>>>();
-    auto adjacentTerritories = strongestTerritory->getAdjacentTerritories();
+    auto adjacentTerritories = strongestTerritory->getAdjacentTerritoriesPointers();
+    for (auto& t : *adjacentTerritories) {
+        // if the territory is not owned by the player
+        if (!(t->getPlayerInPossession() == this->player->getName())) {
+            // add to the attack list
+            attackList->push_back(t);
+        }
+    }
+
+    return attackList;
 }
 
 /**
