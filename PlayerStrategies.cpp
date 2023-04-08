@@ -4,8 +4,8 @@
 using namespace std;
 
 // default constructor
-PlayerStrategy::PlayerStrategy(Player &player):
-    player(make_shared<Player>(player)) {}
+PlayerStrategy::PlayerStrategy(shared_ptr<Player> player):
+    player(player) {}
 
 unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> PlayerStrategy::getToAttackMap() {
     return nullptr;
@@ -21,7 +21,7 @@ void PlayerStrategy::setPlayer(shared_ptr<Player> &player) {
 }
 
 // -- HUMAN player strategy --
-Human::Human(Player &player): PlayerStrategy(player) {}
+Human::Human(shared_ptr<Player> player): PlayerStrategy(player) {}
 
 void Human::issueOrder() {
 //    Map* map = new Map();
@@ -171,7 +171,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {}
 unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {}
 
 // -- AGGRESSIVE player strategy --
-Aggressive::Aggressive(Player &player): PlayerStrategy(player) {}
+Aggressive::Aggressive(shared_ptr<Player> player): PlayerStrategy(player) {}
 
 /**
  * Decides which orders the aggressive player will choose to issue.
@@ -242,7 +242,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 }
 
 // -- BENEVOLENT player strategy --
-Benevolent::Benevolent(Player &player): PlayerStrategy(player) {}
+Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {}
 
 void Benevolent::issueOrder() {
 
@@ -259,7 +259,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 }
 
 // -- NEUTRAL player strategy --
-Neutral::Neutral(Player &player): PlayerStrategy(player) {}
+Neutral::Neutral(shared_ptr<Player> player): PlayerStrategy(player) {}
 
 void Neutral::issueOrder() {
     cout << "Neutral issueOrder()" << endl;
@@ -269,7 +269,7 @@ unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> 
 
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() {}
+unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() { return nullptr; }
 
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
     auto territories = make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
@@ -281,7 +281,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
 }
 
 // -- CHEATER player strategy --
-Cheater::Cheater(Player &player): PlayerStrategy(player) {}
+Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {}
 
 void Cheater::issueOrder() {
 

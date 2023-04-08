@@ -12,7 +12,7 @@ class Player;
 
 class PlayerStrategy {
 public:
-    PlayerStrategy(Player& player);
+    PlayerStrategy(shared_ptr<Player> player);
 
     virtual void issueOrder() = 0;
     virtual unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap();
@@ -28,7 +28,7 @@ protected:
 
 class Human: public PlayerStrategy {
 public:
-    Human(Player& player);
+    Human(shared_ptr<Player> player);
     void issueOrder() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
@@ -36,7 +36,7 @@ public:
 
 class Aggressive: public PlayerStrategy {
 public:
-    Aggressive(Player& player);
+    Aggressive(shared_ptr<Player> player);
     void issueOrder() override;
     unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
@@ -46,7 +46,7 @@ public:
 
 class Benevolent: public PlayerStrategy {
 public:
-    Benevolent(Player& player);
+    Benevolent(shared_ptr<Player> player);
     void issueOrder() override;
     unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
@@ -55,7 +55,7 @@ public:
 
 class Neutral: public PlayerStrategy {
 public:
-    Neutral(Player& player);
+    Neutral(shared_ptr<Player> player);
     void issueOrder() override;
     unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
@@ -64,7 +64,7 @@ public:
 
 class Cheater: public PlayerStrategy {
 public:
-    Cheater(Player& player);
+    Cheater(shared_ptr<Player> player);
     void issueOrder() override;
     unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
