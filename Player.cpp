@@ -206,8 +206,6 @@ bool Player::hasOrders() const {
 // destructor
 Player::~Player() = default; // deletion of data members handled by smart pointers already
 
-
-// toDefend()
 /**
  * Returns a list of territories to defend.
  * @return list of territories to defend
@@ -216,7 +214,6 @@ unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
     return playerStrategy->toDefend();
 }
 
-// toAttack()
 /**
  * Returns a list of territories to attack.
  * @return list of territories to attack

@@ -15,7 +15,8 @@ public:
     PlayerStrategy(Player& player);
 
     virtual void issueOrder() = 0;
-    virtual unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> toAttack() = 0;
+    virtual unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap();
+    virtual unique_ptr<vector<shared_ptr<Territory>>> toAttack() = 0;
     virtual unique_ptr<vector<shared_ptr<Territory>>> toDefend() = 0;
 
     const shared_ptr<Player> &getPlayer() const;
@@ -29,7 +30,7 @@ class Human: public PlayerStrategy {
 public:
     Human(Player& player);
     void issueOrder() override;
-    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> toAttack() override;
+    unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
 };
 
@@ -37,7 +38,8 @@ class Aggressive: public PlayerStrategy {
 public:
     Aggressive(Player& player);
     void issueOrder() override;
-    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> toAttack() override;
+    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
+    unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
     shared_ptr<Territory> getStrongestTerritory();
 };
@@ -46,7 +48,8 @@ class Benevolent: public PlayerStrategy {
 public:
     Benevolent(Player& player);
     void issueOrder() override;
-    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> toAttack() override;
+    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
+    unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
 };
 
@@ -54,7 +57,8 @@ class Neutral: public PlayerStrategy {
 public:
     Neutral(Player& player);
     void issueOrder() override;
-    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> toAttack() override;
+    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
+    unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
 };
 
@@ -62,7 +66,8 @@ class Cheater: public PlayerStrategy {
 public:
     Cheater(Player& player);
     void issueOrder() override;
-    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> toAttack() override;
+    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
+    unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
 };
 

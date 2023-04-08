@@ -7,6 +7,10 @@ using namespace std;
 PlayerStrategy::PlayerStrategy(Player &player):
     player(make_shared<Player>(player)) {}
 
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> PlayerStrategy::getToAttackMap() {
+    return nullptr;
+}
+
 // getters and setters
 const shared_ptr<Player> &PlayerStrategy::getPlayer() const {
     return player;
@@ -23,8 +27,8 @@ void Human::issueOrder() {
 //    Map* map = new Map();
 //    // The player decides which territories are to be defended in priority (as a list return by the toDefend() method).
 //    auto territoriesToDefend = toDefend();
-//    // The player decides which adjacent territories are to be attacked in priority (as a list return by the toAttack() method).
-//    auto territoriesToAttack = toAttack();
+//    // The player decides which adjacent territories are to be attacked in priority (as a list return by the getToAttackMap() method).
+//    auto territoriesToAttack = getToAttackMap();
 //
 //    // The player issues deploy orders on its own territories that are in the list returned by toDefend().
 //    // As long as the player has armies still to deploy, it will issue a deploy order and no other order.
@@ -41,7 +45,7 @@ void Human::issueOrder() {
 //        }
 //    }
 //
-//    // The player issues advance orders to either:(1) move armies from one of its own territory to the other in order to defend them (using toDefend() to make the decision), and/or (2) move armies from one of its territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
+//    // The player issues advance orders to either:(1) move armies from one of its own territory to the other in order to defend them (using toDefend() to make the decision), and/or (2) move armies from one of its territories to a neighboring enemy territory to attack them (using getToAttackMap() to make the decision).
 //    for (const auto& territory : *territoriesToAttack) {
 //        // check if player has armies to deploy
 //        while (this->reinforcementPool > 0) {
@@ -162,13 +166,9 @@ void Human::issueOrder() {
 //    }
 }
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Human::toAttack() {
+unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {}
 
-}
-
-unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {
-
-}
+unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {}
 
 // -- AGGRESSIVE player strategy --
 Aggressive::Aggressive(Player &player): PlayerStrategy(player) {}
@@ -179,7 +179,7 @@ Aggressive::Aggressive(Player &player): PlayerStrategy(player) {}
  * enemy territories until it can't do so anymore
  */
 void Aggressive::issueOrder() {
-    auto attackList = this->toAttack();
+    auto attackList = this->getToAttackMap();
     // deploy the player's whole reinforcement pool to the player's strongest territory
     auto strongestTerritory = this->getStrongestTerritory();
     auto deployToStrongest = make_unique<Deploy>(this->player,
@@ -202,7 +202,7 @@ shared_ptr<Territory> Aggressive::getStrongestTerritory() {
     return sortedTerritories[0];
 }
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Aggressive::toAttack() {
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Aggressive::getToAttackMap() {
     auto attackMap = make_unique<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>>();
 
     // Get all territories owned by the player
@@ -229,6 +229,10 @@ unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> 
     return attackMap;
 }
 
+unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
+
+}
+
 /**
  * Returns a pointer to the vector of territories to defend.
  * @return An empty territory vector since this player does not care for defense.
@@ -244,9 +248,11 @@ void Benevolent::issueOrder() {
 
 }
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Benevolent::toAttack() {
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Benevolent::getToAttackMap() {
 
 }
+
+unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toAttack() {}
 
 unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 
@@ -259,9 +265,11 @@ void Neutral::issueOrder() {
     cout << "Neutral issueOrder()" << endl;
 }
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Neutral::toAttack() {
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Neutral::getToAttackMap() {
 
 }
+
+unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() {}
 
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
     auto territories = make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
@@ -279,7 +287,9 @@ void Cheater::issueOrder() {
 
 }
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Cheater::toAttack() {
+unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {}
+
+unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Cheater::getToAttackMap() {
 
 }
 
