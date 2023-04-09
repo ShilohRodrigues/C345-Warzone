@@ -902,7 +902,20 @@ ostream& operator<<(ostream& os, const OrdersList& ordersList) {
     // make sure we're not iterating over a nullptr
     if (ordersList.orderList) {
         for (const auto& order : *ordersList.orderList) {
-            os << *order << endl;
+            // check which type of order it is and use the appropriate stream insertion operator
+            if (auto deploy = dynamic_pointer_cast<Deploy>(order)) {
+                os << *deploy << endl;
+            } else if (auto advance = dynamic_pointer_cast<Advance>(order)) {
+                os << *advance << endl;
+            } else if (auto bomb = dynamic_pointer_cast<Bomb>(order)) {
+                os << *bomb << endl;
+            } else if (auto blockade = dynamic_pointer_cast<Blockade>(order)) {
+                os << *blockade << endl;
+            } else if (auto airlift = dynamic_pointer_cast<Airlift>(order)) {
+                os << *airlift << endl;
+            } else if (auto negotiate = dynamic_pointer_cast<Negotiate>(order)) {
+                os << *negotiate << endl;
+            }
         }
     } else {
         os << "null\n";
