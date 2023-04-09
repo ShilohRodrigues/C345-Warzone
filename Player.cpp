@@ -360,7 +360,7 @@ void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
  */
 void Player::update(const shared_ptr<Deck>& deck) {
     this->updateArmyCount();
-    this->reinforcementPool = this->armyCount;
+    this->reinforcementPool = 3 + this->armyCount/2; // I don't know the rule
     this->updateTerritories();
     this->clearNegotiatedPlayers();
     this->drawIfHasConquered(deck);
