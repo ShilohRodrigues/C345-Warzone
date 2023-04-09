@@ -108,6 +108,9 @@ void Deploy::stringToLog(std::ostream &out) const {
 }
 
 int Deploy::execute() {
+    // status report
+    cout << "Trying to deploy " << deployedArmies << " to " << this->targetTerritory->getName()
+         << " belonging to " << this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // add deployed armies to existing armies
         int updatedArmies = *targetTerritory->getArmyCnt() + deployedArmies;
@@ -117,6 +120,9 @@ int Deploy::execute() {
         // remove deployed armies from the player's reinforcement pool
         player->setReinforcementPool(player->getReinforcementPool() - deployedArmies);
         notify(this);
+
+        // report outcome
+        cout << "Deploy order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
 
         return 0;
     } else {
