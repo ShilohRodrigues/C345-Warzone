@@ -25,6 +25,7 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     armyCnt = std::make_unique<int>(0);
     playerInPossession = "";
     adjacentTerritories = std::make_shared<vector<int>>();
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>();
 }
 //Parameterized
 Territory::Territory(int idTerritory, const string& territoryName, int territoryContinent, const string& player,int armies) {
@@ -34,6 +35,7 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     playerInPossession = player;
     armyCnt = std::make_unique<int>(armies);
     adjacentTerritories = std::make_shared<vector<int>>();
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>();
 }
 
 //Copy
@@ -44,6 +46,7 @@ Territory::Territory(const Territory &territory) {
     playerInPossession = territory.playerInPossession;
     armyCnt = std::make_unique<int>(*territory.armyCnt);
     adjacentTerritories = std::make_shared<vector<int>>(*territory.adjacentTerritories);
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>(*territory.adjacentTerritoriesPointers);
 }
 //Destructor
 Territory::~Territory() = default;
@@ -62,6 +65,7 @@ Territory& Territory::operator=(const Territory& territory) {
     armyCnt = std::make_unique<int>(*territory.armyCnt);
     playerInPossession = territory.playerInPossession;
     adjacentTerritories = std::make_shared<vector<int>>(*territory.adjacentTerritories);
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>(*territory.adjacentTerritoriesPointers);
     // This is a pointer that deals with our current object, by returning this, we are returning the
     //current object
     return *this;
