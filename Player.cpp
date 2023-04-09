@@ -158,7 +158,7 @@ void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territori
     }
 }
 
-const unique_ptr<OrdersList> &Player::getOrdersList() const {
+const shared_ptr<OrdersList> &Player::getOrdersList() const {
     return ordersList;
 }
 
