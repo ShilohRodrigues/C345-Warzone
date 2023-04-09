@@ -1,5 +1,6 @@
 #include "PlayerStrategies.h"
 #include "Orders.h"
+#include <random>
 
 using namespace std;
 
@@ -174,9 +175,9 @@ unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {}
 Aggressive::Aggressive(shared_ptr<Player> player): PlayerStrategy(player) {}
 
 /**
- * Decides which orders the aggressive player will choose to issue.
+ * Decides which orders the aggressive player will choose to issue and adds it to the player's orders list.
  * It will deploy or advance armies on its strongest country, then always advance to
- * enemy territories until it can't do so anymore
+ * enemy territories until it can't do so anymore.
  */
 void Aggressive::issueOrder() {
     auto attackList = this->getToAttackMap();
@@ -187,7 +188,43 @@ void Aggressive::issueOrder() {
                                                  this->player->getReinforcementPool());
 
     // issue advance orders to attack adjacent enemy territories
+    auto attackMap = this->getToAttackMap();
 
+    // Iterate over all attacking territories (owned by player) and advance armies to attackable territories
+    for (auto& attackingTerritory : *attackMap) {
+        auto& armyCnt = *attackingTerritory.first->getArmyCnt();
+
+        // Keep advancing armies until there are no more attackable territories or no more armies left to advance
+        while (!attackingTerritory.second.empty() && armyCnt > 1) {
+            // Define a random number generator
+            random_device rd;
+            mt19937 rng(rd());
+
+            // Choose a random target territory from the list of attackable territories
+            uniform_int_distribution<int> distribution(0, attackingTerritory.second.size() - 1);
+
+            auto randomIndex = distribution(rng);
+            auto targetTerritory = attackingTerritory.second[randomIndex];
+
+            // Calculate the number of armies to advance to the target territory
+            auto numArmiesToAdvance = min(armyCnt - 1, *targetTerritory->getArmyCnt());
+
+            if (numArmiesToAdvance > 0) {
+                // Create and execute an Advance order to advance the armies to the target territory
+                auto advanceOrder = make_shared<Advance>(this->player,
+                                                         attackingTerritory.first, targetTerritory,
+                                                         numArmiesToAdvance);
+                // add the order to the player's order list
+                auto ordersList = this->player->getOrdersList();
+                ordersList->add(advanceOrder);
+            }
+
+            // Remove the target territory from the list of attackable territories if it is no longer attackable
+            if (*targetTerritory->getArmyCnt() == 0) {
+                attackingTerritory.second.erase(attackingTerritory.second.begin() + randomIndex);
+            }
+        }
+    }
 }
 
 /**
