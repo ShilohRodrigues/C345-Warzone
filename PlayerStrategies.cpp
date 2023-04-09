@@ -320,10 +320,6 @@ void Benevolent::issueOrder() {
 
 }
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Benevolent::getToAttackMap() {
-
-}
-
 unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toAttack() {}
 
 unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {

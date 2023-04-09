@@ -48,7 +48,6 @@ class Benevolent: public PlayerStrategy {
 public:
     Benevolent(shared_ptr<Player> player);
     void issueOrder() override;
-    unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
 };
