@@ -72,5 +72,7 @@ public:
 };
 
 void playerStrategyDemo();
+void aggressiveDemo();
+void neutralDemo();
 
 #endif // PLAYERSTRATEGIES_H
