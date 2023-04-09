@@ -330,8 +330,31 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toAttack() {
     return make_unique<vector<shared_ptr<Territory>>>();
 }
 
+/**
+ * Returns a vector representing the territories to defend.
+ * For the benevolent player, we choose to define this as the weakest half of its territories.
+ * @return a vector representing the territories to defend
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
+    // get all territories owned by the player
+    auto& playerTerritories = this->player->getTerritories();
 
+    // sort territories by number of armies in ascending order
+    sort(playerTerritories->begin(), playerTerritories->end(),
+         [](const shared_ptr<Territory>& a, const shared_ptr<Territory>& b) {
+        return a->getArmyCnt() < b->getArmyCnt();
+    });
+
+    // calculate the number of territories to defend
+    int numTerritoriesToDefend = playerTerritories->size() / 2;
+
+    // create a list of weakest territories to defend
+    auto defendList = make_unique<vector<shared_ptr<Territory>>>();
+    for (int i = 0; i < numTerritoriesToDefend; i++) {
+        defendList->push_back(playerTerritories->at(i));
+    }
+
+    return defendList;
 }
 
 // -- NEUTRAL player strategy --
