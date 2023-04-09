@@ -139,6 +139,16 @@ void Territory::setAdjacentTerritoriesPointers(
     Territory::adjacentTerritoriesPointers = adjacentTerritoriesPointers;
 }
 
+/**
+ * Adds the given territory to both Territory data members related to adjacency.
+ * Used for test purposes.
+ * @param territory
+ */
+void Territory::addAdjacent(const shared_ptr<Territory>& territory) {
+    this->adjacentTerritories->push_back(territory->getId());
+    this->adjacentTerritoriesPointers->push_back(territory);
+}
+
 ////////////// Continent Class /////////////////////
 //Parameterized
 Continent::Continent(int cid, const string& cname) {

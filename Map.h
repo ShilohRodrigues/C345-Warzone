@@ -63,6 +63,8 @@ public:
 
     const shared_ptr<vector<shared_ptr<Territory>>> &getAdjacentTerritoriesPointers() const;
     void setAdjacentTerritoriesPointers(const shared_ptr<vector<shared_ptr<Territory>>> &adjacentTerritoriesPointers);
+
+    void addAdjacent(const shared_ptr<Territory>& territory);
 };
 
 class Continent {
