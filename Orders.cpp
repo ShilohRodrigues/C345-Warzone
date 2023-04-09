@@ -52,11 +52,13 @@ Deploy::Deploy(const shared_ptr<Player>& player,
                const shared_ptr<Territory>& targetTerritory,
                const int deployedArmies):
     Order(), player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
+
 Deploy::Deploy(const Deploy& deploy):Order(deploy) {
     this->player = deploy.player;
     this->targetTerritory = deploy.targetTerritory;
     this->deployedArmies = deploy.deployedArmies;
 }
+
 Deploy& Deploy::operator=(const Deploy& deploy) {
     if (this == &deploy) {
         return *this;
@@ -67,6 +69,7 @@ Deploy& Deploy::operator=(const Deploy& deploy) {
         return *this;
     }
 }
+
 ostream& operator<<(ostream& os, const Deploy& deploy) {
     os << static_cast<const Order&>(deploy);
     os << " - player: " << deploy.player->getName();
@@ -1026,6 +1029,15 @@ void OrdersList::remove(int orderID) {
         // remove the order
         this->orderList->remove(*orderIterator);
     }
+}
+
+void OrdersList::executeAll() {
+    cout << "Executing all orders . . ." << endl;
+    for (auto& order : *this->orderList) {
+        order->execute();
+    }
+    this->orderList->clear();
+    cout << "All orders executed." << endl;
 }
 
 // getters and setters
