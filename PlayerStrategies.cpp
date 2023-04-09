@@ -320,7 +320,15 @@ void Benevolent::issueOrder() {
 
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toAttack() {}
+/**
+ * Returns a vector representing the territories to attack.
+ * Since the Benevolent player does not attack, this vector is empty.
+ * @return a vector representing the territories to attack.
+ */
+unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toAttack() {
+    // Benevolent players don't attack
+    return make_unique<vector<shared_ptr<Territory>>>();
+}
 
 unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 
