@@ -183,9 +183,12 @@ void Aggressive::issueOrder() {
     auto attackList = this->getToAttackMap();
     // deploy the player's whole reinforcement pool to the player's strongest territory
     auto strongestTerritory = this->getStrongestTerritory();
-    auto deployToStrongest = make_unique<Deploy>(this->player,
+    auto deployToStrongest = make_shared<Deploy>(this->player,
                                                  strongestTerritory,
                                                  this->player->getReinforcementPool());
+    // add deploy order to player's orders list
+    auto ordersList = this->player->getOrdersList();
+    ordersList->add(deployToStrongest);
 
     // issue advance orders to attack adjacent enemy territories
     auto attackMap = this->getToAttackMap();
@@ -214,7 +217,6 @@ void Aggressive::issueOrder() {
                                                      attackingTerritory.first, targetTerritory,
                                                      numArmiesToAdvance);
             // add the order to the player's order list
-            auto ordersList = this->player->getOrdersList();
             ordersList->add(advanceOrder);
         }
     }
