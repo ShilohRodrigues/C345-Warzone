@@ -109,7 +109,7 @@ void Deploy::stringToLog(std::ostream &out) const {
 
 int Deploy::execute() {
     // status report
-    cout << "Trying to deploy " << deployedArmies << " to " << this->targetTerritory->getName()
+    cout << "Trying to deploy " << deployedArmies << " armies to " << this->targetTerritory->getName()
          << " belonging to " << this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // add deployed armies to existing armies
