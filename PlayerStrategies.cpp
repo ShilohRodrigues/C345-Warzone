@@ -416,7 +416,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
     // sort territories by number of armies in ascending order
     sort(playerTerritories->begin(), playerTerritories->end(),
          [](const shared_ptr<Territory>& a, const shared_ptr<Territory>& b) {
-        return a->getArmyCnt() < b->getArmyCnt();
+        return *a->getArmyCnt() < *b->getArmyCnt();
     });
 
     // calculate the number of territories to defend
