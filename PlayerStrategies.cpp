@@ -1,6 +1,7 @@
 #include "PlayerStrategies.h"
 #include "Orders.h"
 #include <random>
+#include <set>
 
 using namespace std;
 
@@ -316,8 +317,81 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 // -- BENEVOLENT player strategy --
 Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {}
 
+/**
+ * computer player that focuses on protecting its weak countries
+ * (deploys or advances armies on its weakest countries, never advances to enemy territories).
+ */
 void Benevolent::issueOrder() {
+    auto toDefendList = this->toDefend();
+    auto& territories = *this->player->getTerritories();
+    auto reinforcementPool = this->player->getReinforcementPool();
+    set<int> reinforcedTerritoryIDs;
+    set<int> usedSourceTerritoryIDs;
 
+    // deploy orders
+    while (reinforcementPool > 0) {
+        for (const auto& t : *toDefendList) {
+            if (reinforcementPool > 0) {
+                // create deploy order to weakest territories 1 army at a time
+                auto deployOrder = make_shared<Deploy>(this->player, t, 1);
+
+                // add it to the player's orders list
+                this->player->getOrdersList()->add(deployOrder);
+                reinforcedTerritoryIDs.insert(t->getId());
+                reinforcementPool--; // we do this manually with a copy of the player's reinforcement pool because creating the order itself doesn't decrement it before execution
+            }
+        }
+    }
+
+    // advance orders
+    for (const auto& t : *toDefendList) {
+        auto it = reinforcedTerritoryIDs.find(t->getId());
+        // if the territory to defend has not been reinforced already
+        if (it == reinforcedTerritoryIDs.end()) {
+            auto& adjacentTerritories = *t->getAdjacentTerritoriesPointers();
+            // Define a random number generator
+            random_device rd;
+            mt19937 rng(rd());
+
+            const int maxTries = 3;
+            shared_ptr<Territory> sourceTerritory = nullptr;
+
+            for (int i = 0; i < maxTries; i++) {
+                // Choose a random territory from the list of adjacent territories
+                if (adjacentTerritories.empty()) {
+                    break;
+                }
+                uniform_int_distribution<int> distribution(0, adjacentTerritories.size() - 1);
+                auto randomIndex = distribution(rng);
+                sourceTerritory = adjacentTerritories[randomIndex];
+
+                // check that it's not in the territories already reinforced and
+                // that it hasn't been used as a source territory already
+                if (reinforcedTerritoryIDs.find(sourceTerritory->getId()) == reinforcedTerritoryIDs.end() ||
+                    usedSourceTerritoryIDs.find(sourceTerritory->getId()) == usedSourceTerritoryIDs.end()) {
+                    // check that it is in the territories to defend
+                    if (find_if(toDefendList->begin(), toDefendList->end(),
+                                [sourceTerritory](const shared_ptr<Territory>& t)
+                                { return t->getId() == sourceTerritory->getId(); }) != toDefendList->end()) {
+                        // make sure that it has > 0 armies
+                        if (*sourceTerritory->getArmyCnt() > 0) {
+                            // eligible! use it
+                            usedSourceTerritoryIDs.insert(sourceTerritory->getId());
+                            break;
+                        }
+                    }
+                } // else keep trying until you get an adjacent territory that fits or you hit the max tries
+            }
+
+            // if an appropriate adjacent territory is found
+            if (sourceTerritory != nullptr) {
+                // create an advance order from the found source territory to the current territory to defend
+                auto advanceOrder = make_shared<Advance>(this->player, sourceTerritory, t, 1);
+                // add it to the player's orders list
+                this->player->getOrdersList()->add(advanceOrder);
+            }
+        }
+    }
 }
 
 /**
