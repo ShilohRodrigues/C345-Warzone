@@ -448,10 +448,6 @@ void Neutral::issueOrder() {
     cout << "Neutral issueOrder()" << endl;
 }
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Neutral::getToAttackMap() {
-
-}
-
 /**
  * Returns a vector of territories representing the territories to attack.
  * Since the Neutral player doesn't issue any orders, this vector is empty.
