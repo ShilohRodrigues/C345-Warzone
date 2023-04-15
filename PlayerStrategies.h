@@ -72,6 +72,7 @@ public:
 
 void playerStrategyDemo();
 void aggressiveDemo();
+void benevolentDemo();
 void neutralDemo();
 
 #endif // PLAYERSTRATEGIES_H
