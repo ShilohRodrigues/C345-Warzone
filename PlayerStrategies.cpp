@@ -318,8 +318,18 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {}
 
 /**
- * computer player that focuses on protecting its weak countries
- * (deploys or advances armies on its weakest countries, never advances to enemy territories).
+ * Decides which orders the Benevolent player should issue and adds them to the player's orders list.
+ *
+ * The Benevolent player focuses on protecting its weak countries by deploying or advancing armies on its weakest countries,
+ * and never advances to enemy territories.
+ *
+ * Deploys one army at a time to the weakest territories until the reinforcement pool is empty.
+ * Then, searches for a random adjacent territory to each weak territory that has not yet been reinforced,
+ * and that has not been used as a source territory already.
+ * If a valid adjacent territory is found, it creates an advance order
+ * from the found source territory to the current territory to defend.
+ *
+ * The method ends once all weak territories are either reinforced or cannot be reinforced anymore.
  */
 void Benevolent::issueOrder() {
     auto toDefendList = this->toDefend();
