@@ -1,12 +1,11 @@
 #include "PlayerStrategies.h"
 #include "Orders.h"
 #include <random>
-#include <set>
 
 using namespace std;
 
 // default constructor
-PlayerStrategy::PlayerStrategy(shared_ptr<Player> player):
+PlayerStrategy::PlayerStrategy(shared_ptr<Player> player) :
     player(player) {}
 
 unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> PlayerStrategy::getToAttackMap() {
@@ -14,166 +13,182 @@ unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> 
 }
 
 // getters and setters
-const shared_ptr<Player> &PlayerStrategy::getPlayer() const {
+const shared_ptr<Player>& PlayerStrategy::getPlayer() const {
     return player;
 }
 
-void PlayerStrategy::setPlayer(shared_ptr<Player> &player) {
+void PlayerStrategy::setPlayer(shared_ptr<Player>& player) {
     PlayerStrategy::player = player;
 }
 
 // -- HUMAN player strategy --
-Human::Human(shared_ptr<Player> player): PlayerStrategy(player) {}
+Human::Human(shared_ptr<Player> player) : PlayerStrategy(player) {
 
-void Human::issueOrder() {
-//    Map* map = new Map();
-//    // The player decides which territories are to be defended in priority (as a list return by the toDefend() method).
-//    auto territoriesToDefend = toDefend();
-//    // The player decides which adjacent territories are to be attacked in priority (as a list return by the getToAttackMap() method).
-//    auto territoriesToAttack = getToAttackMap();
-//
-//    // The player issues deploy orders on its own territories that are in the list returned by toDefend().
-//    // As long as the player has armies still to deploy, it will issue a deploy order and no other order.
-//    // Once it has deployed all its  armies, it can proceed with other kinds of orders.
-//    for (const auto& territory : *territoriesToDefend) {
-//        // check if player has armies to deploy
-//        while (this->reinforcementPool > 0) {
-//            // create deploy order
-//            auto deployOrder = make_shared<Deploy>(make_shared<Player>(*this), territory, this->reinforcementPool);
-//            // add deploy order to orders list
-//            this->ordersList->add(deployOrder);
-//            // decrement reinforcement pool
-//            this->reinforcementPool--;
-//        }
-//    }
-//
-//    // The player issues advance orders to either:(1) move armies from one of its own territory to the other in order to defend them (using toDefend() to make the decision), and/or (2) move armies from one of its territories to a neighboring enemy territory to attack them (using getToAttackMap() to make the decision).
-//    for (const auto& territory : *territoriesToAttack) {
-//        // check if player has armies to deploy
-//        while (this->reinforcementPool > 0) {
-//            // create deploy order
-//            auto deployOrder = make_shared<Deploy>(make_shared<Player>(*this), territory, this->reinforcementPool);
-//            // add deploy order to orders list
-//            this->ordersList->add(deployOrder);
-//            // decrement reinforcement pool
-//            this->reinforcementPool--;
-//        }
-//    }
-//
-//    // get a shared_ptr to the deck object
-//    auto sharedDeck = std::make_shared<Deck>();
-//    // check if the player has any cards
-//    auto handOfCards = this->getCardHand()->getHandOfCards();
-//    // if the player has any card in their hand of cards, let them choose one to play
-//    if (!handOfCards->empty()) {
-//        // display the player's hand of cards and prompt them to choose one
-//        cout << "Your hand of cards: " << endl;
-//        for (size_t i = 0; i < handOfCards->size(); i++) {
-//            cout << i << ": " << handOfCards->at(i)->getCardType() << " " << endl;
-//        }
-//        cout << "Choose a card to play (enter the index): " << endl;
-//        // get the player's choice
-//        size_t choice;
-//        cin >> choice;
-//        // check if the choice is valid
-//        if (choice < handOfCards->size()) {
-//            // play the chosen card
-//            auto chosenCard = handOfCards->at(choice);
-//            ////this->playCard(sharedDeck, chosenCard->getCardType());
-//            auto cardType = chosenCard->getCardType();
-//
-//            // execute the corresponding method for the card type
-//            if (cardType == "Bomb") {
-//                // prompt the player to choose a target territory
-//                cout << "Choose a territory to bomb: " << endl;
-//                auto targetTerritory = map->getTerritories();
-//                // create the bomb order
-//                auto playerPtr = make_shared<Player>(*this);
-////                auto bombOrder = make_shared<Bomb>(playerPtr, targetTerritory);
-//                // execute the bomb order
-////                bombOrder->execute();
-//            }
-//            else if (cardType == "Blockade") {
-//                cout << "Choose a territory to blockade: " << endl;
-//                auto targetTerritory = map->getTerritories();
-//                // Create a neutral player
-////                auto neutralPlayer = make_shared<Player>("Neutral");
-//                // Create the blockade order
-//                auto playerPtr = make_shared<Player>(*this);
-////                auto blockadeOrder = make_shared<Blockade>(playerPtr, neutralPlayer, targetTerritory);
-//                // Execute the blockade order
-////                blockadeOrder->execute();
-//            }
-//            else if (cardType == "Airlift") {
-//                cout << "Choose the source territory: " << endl;
-//                auto allTerritories = map->getTerritories();
-//                int sourceTerritoryIndex;
-//                cin >> sourceTerritoryIndex;
-//
-//                auto sourceTerritoryIt = allTerritories.begin();
-//                std::advance(sourceTerritoryIt, sourceTerritoryIndex - 1);
-//                auto sourceTerritory = sourceTerritoryIt->second;
-//
-//                cout << "Choose the target territory: " << endl;
-//                auto targetTerritories = map->getTerritories();
-//                int targetTerritoryIndex;
-//                cin >> targetTerritoryIndex;
-//
-//                auto targetTerritoryIt = allTerritories.begin();
-//                std::advance(targetTerritoryIt, targetTerritoryIndex - 1);
-//                auto targetTerritory = targetTerritoryIt->second;
-//
-//                cout << "Enter the number of armies to airlift: " << endl;
-//                auto numArmies = getArmyCount();
-//                cin >> numArmies;
-//                // create the airlift order
-//                auto playerPtr = make_shared<Player>(*this);
-////                auto airliftOrder = make_shared<Airlift>(playerPtr, sourceTerritory, targetTerritory, numArmies);
-//                // execute the airlift order
-////                airliftOrder->execute();
-//            }
-//            else if (cardType == "Diplomacy") {
-//                // Get the list of all players in the game
-//                auto players = getGameEngine()->getPlayers();
-//
-//                cout << "Choose a player to negotiate with: " << endl;
-//                for (size_t i = 0; i < players.size(); ++i) {
-//                    cout << i + 1 << ": " << players[i].getName() << endl;
-//                }
-//
-//                size_t targetPlayerIndex;
-//                cin >> targetPlayerIndex;
-//
-//                if (targetPlayerIndex >= 1 && targetPlayerIndex <= players.size()) {
-//                    auto targetPlayer = players[targetPlayerIndex - 1];
-//
-//                    // Check if the target player is not the same as the issuer
-//                    if (targetPlayer.getName() != this->getName()) {
-//
-////                        auto NegotiateOrder = make_shared<Negotiate>(this->getName(), targetPlayer);
-////                        NegotiateOrder->execute();
-//                    }
-//                }
-//                else {
-//                    cout << "Invalid choice. Please choose a valid player index." << endl;
-//                }
-//            }
-//            else {
-//                cout << "Invalid choice." << endl;
-//            }
-//        }
-//        else {
-//            cout << "You have no cards in your hand." << endl;
-//        }
-//    }
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {}
+void Human::issueOrder() {
+    auto humanDefendList = this->toDefend();
 
-unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {}
+    //--------------------------Deploy order to place armies 
+    auto humanTerritories = *this->player->getTerritories();
+    // Print the player's territories
+    cout << "Your territories:\n";
+    int i = 1;
+    for (const auto& territory : humanTerritories) {
+        cout << i << ". " << territory->getName() << " (Armies: " << *territory->getArmyCnt() << ")\n";
+        i++;
+    }
+    // Get the player's input for the source territory
+    int i2;
+    cout << "Enter the index of the territory to deploy armies: ";
+    cin >> i2;
+    if (i2 < 1 || i2 > humanTerritories.size()) {
+        cout << "Invalid index. Please try again." << endl;
+        return;
+    }
+    auto humanSourceTerritory = humanTerritories.at(i2 - 1);
+    auto humanDeploy = make_shared<Deploy>(this->player, humanSourceTerritory, this->player->getReinforcementPool());
+    // add deploy order to player's orders list
+    auto ordersList = *this->player->getOrdersList();
+    ordersList.add(humanDeploy);
+
+    //--------------------------Advance order to Defend
+    auto defendList = this->toDefend();
+
+
+    //--------------------------Advance order to Attack
+    auto territories = *this->player->getTerritories();
+
+    // Print the player's territories
+    cout << "Your territories:\n";
+    int index = 1;
+    for (const auto& territory : territories) {
+        cout << index << ". " << territory->getName() << " (Armies: " << *territory->getArmyCnt() << ")\n";
+        index++;
+    }
+
+    // Get the player's input for the source territory
+    int sourceIndex;
+    cout << "Enter the index of the source territory: ";
+    cin >> sourceIndex;
+    if (sourceIndex < 1 || sourceIndex > territories.size()) {
+        cout << "Invalid index. Please try again." << endl;
+        return;
+    }
+    auto sourceTerritory = territories.at(sourceIndex - 1);
+
+    auto attackList = this->toAttack();
+    // Get the player's input for the target territory
+    cout << "Enter the name of the target territory to attack: ";
+    int targetIndex;
+    cin >> targetIndex;
+
+    auto targetTerritory = attackList->at(targetIndex - 1);
+    if (!targetTerritory || targetTerritory->getPlayerInPossession() == player->getName()) {
+        cout << "Invalid target territory" << endl;
+        return;
+    }
+
+    auto& armyCnt = *sourceTerritory->getArmyCnt();
+    if (armyCnt > 0) {
+        // Get the player's input for the number of armies to advance
+        int numArmiesToAdvance;
+        cout << "Enter the number of armies to advance (1 to " << armyCnt << "): ";
+        cin >> numArmiesToAdvance;
+
+        if (numArmiesToAdvance < 1 || numArmiesToAdvance > armyCnt) {
+            cout << "Invalid number of armies." << endl;
+            return;
+        }
+
+        // Create and execute an Advance order to advance the armies to the target territory
+        auto advanceOrder = make_shared<Advance>(this->player,
+            sourceTerritory, targetTerritory,
+            numArmiesToAdvance);
+        // Add the order to the player's order list
+        ordersList.add(advanceOrder);
+    }
+        
+        //--------------------------Execute Card 
+        auto handOfCards = *this->getPlayer()->getCardHand()->getHandOfCards();
+        // if the player has any card in their hand of cards, let them choose one to play
+        if (!handOfCards.empty()) {
+            // display the player's hand of cards and prompt them to choose one
+            cout << "Your hand of cards: " << endl;
+            for (size_t i = 0; i < handOfCards.size(); i++) {
+                cout << i << ": " << handOfCards.at(i)->getCardType() << " " << endl;
+            }
+            cout << "Choose a card to play (enter the index): " << endl;
+            // get the player's choice
+            size_t choice;
+            cin >> choice;
+            // check if the choice is valid
+            if (choice < handOfCards.size()) {
+                // play the chosen card
+                auto chosenCard = handOfCards.at(choice);
+                auto cardType = chosenCard->getCardType();
+
+                // execute the corresponding method for the card type
+                if (cardType == "Bomb") {
+
+                } 
+                else if (cardType == "Blockade") {
+                
+                }
+                else if (cardType == "Airlift") {
+
+                }
+                else if (cardType == "Diplomacy") {
+
+                }
+            }
+            else {
+                cout << "Invalid choice." << endl;
+             }
+        }
+        else {
+            cout << "You have no cards in your hand." << endl;
+        }
+}
+
+unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {
+    unique_ptr<vector<shared_ptr<Territory>>> attackList = make_unique<vector<shared_ptr<Territory>>>();
+    cout << "The list of territories to attack:" << endl;
+    int index = 1;
+    for (const auto& territory : *player->getTerritories()) {
+        if (territory->getPlayerInPossession() != player->getName()) {
+            // Iterate over adjacent territories and check if they are not owned by the player
+            for (int adjacentTerritoryID : *territory->getAdjacentTerritories()) {
+                shared_ptr<Territory> adjacentTerritory = player->getTerritoryByID(adjacentTerritoryID);
+                if (adjacentTerritory->getPlayerInPossession() != player->getName()) {
+                    attackList->push_back(adjacentTerritory);
+                    cout << index << ". " << territory->getName() << endl;
+                    index++;
+                }
+            }
+        }
+    }
+    return attackList;
+}
+
+unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {
+    unique_ptr<vector<shared_ptr<Territory>>> defendList = make_unique<vector<shared_ptr<Territory>>>();
+    cout << "The list of territories to defend:" << endl;
+    // Iterate through the territories owned by the player
+    int index = 1;
+    for (const auto& territory : *player->getTerritories()) {
+        // Add the territory to the defendList since the player owns it
+        if (territory->getPlayerInPossession() == player->getName()) {
+            defendList->push_back(territory);
+            cout << index << ". " << territory->getName() << endl;
+            index++;
+        }
+    }
+    return defendList;
+}
 
 // -- AGGRESSIVE player strategy --
-Aggressive::Aggressive(shared_ptr<Player> player): PlayerStrategy(player) {}
+Aggressive::Aggressive(shared_ptr<Player> player) : PlayerStrategy(player) {}
 
 /**
  * Decides which orders the aggressive player will choose to issue and adds it to the player's orders list.
@@ -185,8 +200,8 @@ void Aggressive::issueOrder() {
     // deploy the player's whole reinforcement pool to the player's strongest territory
     auto strongestTerritory = this->getStrongestTerritory();
     auto deployToStrongest = make_shared<Deploy>(this->player,
-                                                 strongestTerritory,
-                                                 this->player->getReinforcementPool());
+        strongestTerritory,
+        this->player->getReinforcementPool());
     // add deploy order to player's orders list
     auto ordersList = this->player->getOrdersList();
     ordersList->add(deployToStrongest);
@@ -215,8 +230,8 @@ void Aggressive::issueOrder() {
 
             // Create and execute an Advance order to advance the armies to the target territory
             auto advanceOrder = make_shared<Advance>(this->player,
-                                                     attackingTerritory.first, targetTerritory,
-                                                     numArmiesToAdvance);
+                attackingTerritory.first, targetTerritory,
+                numArmiesToAdvance);
             // add the order to the player's order list
             ordersList->add(advanceOrder);
         }
@@ -232,9 +247,9 @@ shared_ptr<Territory> Aggressive::getStrongestTerritory() {
     // Sort the player's territories based on their number of armies in descending order
     auto& sortedTerritories = *this->player->getTerritories();
     sort(sortedTerritories.begin(), sortedTerritories.end(),
-         [](auto t1, auto t2) {
-             return *t1->getArmyCnt() > *t2->getArmyCnt();
-         });
+        [](auto t1, auto t2) {
+            return *t1->getArmyCnt() > *t2->getArmyCnt();
+        });
 
     // the strongest territory owned by the player is the first one
     return sortedTerritories[0];
@@ -293,14 +308,14 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toAttack() {
 
     // Define a custom comparison function that compares shared_ptr<Territory> based on their territoryID
     auto territoryPtrCompare =
-            [](const shared_ptr<Territory>& t1, const shared_ptr<Territory>& t2) {
+        [](const shared_ptr<Territory>& t1, const shared_ptr<Territory>& t2) {
         return t1->getId() < t2->getId();
     };
 
     // Use std::sort and std::unique with the custom comparison function to remove duplicates from the vector
     std::sort(attackableTerritories->begin(), attackableTerritories->end(), territoryPtrCompare);
     auto last = std::unique(attackableTerritories->begin(), attackableTerritories->end(),
-                            territoryPtrCompare);
+        territoryPtrCompare);
     attackableTerritories->erase(last, attackableTerritories->end()); // shrink vector
 
     return attackableTerritories;
@@ -315,7 +330,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 }
 
 // -- BENEVOLENT player strategy --
-Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {}
+Benevolent::Benevolent(shared_ptr<Player> player) : PlayerStrategy(player) {}
 
 /**
  * Decides which orders the Benevolent player should issue and adds them to the player's orders list.
@@ -381,8 +396,8 @@ void Benevolent::issueOrder() {
                     usedSourceTerritoryIDs.find(sourceTerritory->getId()) == usedSourceTerritoryIDs.end()) {
                     // check that it is in the territories to defend
                     if (find_if(toDefendList->begin(), toDefendList->end(),
-                                [sourceTerritory](const shared_ptr<Territory>& t)
-                                { return t->getId() == sourceTerritory->getId(); }) != toDefendList->end()) {
+                        [sourceTerritory](const shared_ptr<Territory>& t)
+                        { return t->getId() == sourceTerritory->getId(); }) != toDefendList->end()) {
                         // make sure that it has > 0 armies
                         if (*sourceTerritory->getArmyCnt() > 0) {
                             // eligible! use it
@@ -425,9 +440,9 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 
     // sort territories by number of armies in ascending order
     sort(playerTerritories->begin(), playerTerritories->end(),
-         [](const shared_ptr<Territory>& a, const shared_ptr<Territory>& b) {
-        return *a->getArmyCnt() < *b->getArmyCnt();
-    });
+        [](const shared_ptr<Territory>& a, const shared_ptr<Territory>& b) {
+            return *a->getArmyCnt() < *b->getArmyCnt();
+        });
 
     // calculate the number of territories to defend
     int numTerritoriesToDefend = playerTerritories->size() / 2;
@@ -442,7 +457,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 }
 
 // -- NEUTRAL player strategy --
-Neutral::Neutral(shared_ptr<Player> player): PlayerStrategy(player) {}
+Neutral::Neutral(shared_ptr<Player> player) : PlayerStrategy(player) {}
 
 void Neutral::issueOrder() {
     cout << "Neutral issueOrder()" << endl;
@@ -464,7 +479,7 @@ unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
 }
 
 // -- CHEATER player strategy --
-Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {}
+Cheater::Cheater(shared_ptr<Player> player) : PlayerStrategy(player) {}
 
 void Cheater::issueOrder() {
 
@@ -479,5 +494,3 @@ unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> 
 unique_ptr<vector<shared_ptr<Territory>>> Cheater::toDefend() {
 
 }
-
-
