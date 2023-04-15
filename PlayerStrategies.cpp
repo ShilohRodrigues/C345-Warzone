@@ -1,6 +1,7 @@
 #include "PlayerStrategies.h"
 #include "Orders.h"
 #include <random>
+#include <set>
 
 using namespace std;
 
