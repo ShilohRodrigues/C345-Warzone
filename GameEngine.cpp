@@ -2,6 +2,7 @@
 #include <memory>
 #include "GameEngine.h"
 #include "LoggingObserver.h"
+#include "Map.h"
 
 using namespace std;
 
@@ -106,6 +107,7 @@ void GameEngine::shufflePlayers() {
 const shared_ptr<Deck> &GameEngine::getDeck() const {
   return deck;
 }
+
 
 
 ///////////////// State Class Implementations //////////////////////////

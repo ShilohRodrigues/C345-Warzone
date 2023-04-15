@@ -96,6 +96,54 @@ bool CommandProcessor::validate(Command cmd, GameEngine &game) {
 
 }
 
+#include "CommandProcessing.h"
+
+// ... (rest of the code)
+/*The function is used to parse commands for running our tournament */
+bool CommandProcessor::parseTournamentCommand(const std::string& command) {
+    //Declaring our ssObject
+    std::stringstream ssObject(command);
+    std::string token, mapFilesStr, playerStrategiesStr;
+    int numGames = 0, maxTurns = 0;
+
+    //verifying if users input is tournament
+    ssObject >> token;
+    if (token != "tournament") return false;
+
+    //If tournament mode,
+    while (ssObject >> token) {
+        if (token == "-M") {
+            ssObject >> mapFilesStr;
+            //I'm not sure if we need to can use the mapValidater in map.h or would we need to implement a new one?
+            cout << "-M works" << endl;
+            // TODO: Validate mapFilesStr
+        } else if (token == "-P") {
+            ssObject >> playerStrategiesStr;
+            cout << "-P works" << endl;
+            //@shiloh need to figure out if we can use player validater by eugenie or need to figure out some other way.
+            // TODO: Validate playerStrategiesStr
+        } else if (token == "-G") {
+            ssObject >> numGames;
+            if (numGames < 1 || numGames > 5) return false;
+        } else if (token == "-D") {
+            ssObject >> maxTurns;
+            if (maxTurns < 10 || maxTurns > 50) return false;
+        } else {
+            return false; // Unknown token
+        }
+    }
+
+    // Check if all required parameters are set
+    if (mapFilesStr.empty() || playerStrategiesStr.empty() || numGames == 0 || maxTurns == 0) {
+        return false;
+    }
+
+    // If everything is valid, return true
+    return true;
+}
+
+
+
 ///////////// FileCommandProcessorAdapter class implementations /////////////////////
 //Constructor
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(string filename) {

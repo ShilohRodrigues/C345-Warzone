@@ -7,6 +7,7 @@
 #include <memory>
 #include <filesystem>
 #include <string>
+#include <sstream>
 #include "LoggingObserver.h"
 #include "GameEngine.h"
 
@@ -47,8 +48,11 @@ class CommandProcessor: public virtual Subject, public virtual ILoggable {
     friend ostream& operator<<(ostream& strm, const CommandProcessor& cp);
 
     Command getCommand(GameEngine &game);
-	  bool validate(Command cmd, GameEngine &game);
+    bool validate(Command cmd, GameEngine &game);
     void stringToLog(std::ostream &out) const override;
+
+    //
+    bool parseTournamentCommand(const string&);
 
   protected:
     virtual Command readCommand();
