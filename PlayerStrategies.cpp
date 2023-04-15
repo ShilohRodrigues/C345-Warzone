@@ -452,15 +452,24 @@ unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> 
 
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() { return nullptr; }
+/**
+ * Returns a vector of territories representing the territories to attack.
+ * Since the Neutral player doesn't issue any orders, this vector is empty.
+ * @return a vector of territories representing the territories to attack.
+ */
+unique_ptr<vector<shared_ptr<Territory>>> Neutral::toAttack() {
+    // the neutral player doesn't issue any orders
+    return make_unique<vector<shared_ptr<Territory>>>();
+}
 
+/**
+ * Returns a vector of territories representing the territories to defend.
+ * Since the Neutral player doesn't issue any orders, this vector is empty.
+ * @return a vector of territories representing the territories to attack.
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
-    auto territories = make_unique<vector<shared_ptr<Territory>>>(*this->player->getTerritories());
-    cout << "toDefend() Territories: " << endl;
-    for (const auto& t : *territories) {
-        cout << "\t" << *t << endl;
-    }
-    return territories;
+    // the neutral player doesn't issue any orders
+    return make_unique<vector<shared_ptr<Territory>>>();
 }
 
 // -- CHEATER player strategy --
