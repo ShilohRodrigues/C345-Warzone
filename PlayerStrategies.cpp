@@ -515,7 +515,8 @@ unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> 
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Cheater::toDefend() {
-
+    // the cheater doesn't need to defend any territories
+    return make_unique<vector<shared_ptr<Territory>>>();
 }
 
 
