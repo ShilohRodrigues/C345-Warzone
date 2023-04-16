@@ -1,9 +1,1 @@
-invalid command test
-loadmap sw_baltic.map
-validatemap
-addplayer
-validatemap
-addplayer
-addplayer
-gamestart
-quit
+tournament -M sw_baltic.map,sw_baltic.map -P Human,Benevolent -G 3 -D 10

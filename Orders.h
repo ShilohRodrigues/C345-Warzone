@@ -233,6 +233,7 @@ public:
     // move(), remove()
     void move(const string& direction, int orderID);
     void remove(int orderID);
+    void executeAll();
 
     // getters and setters
     const unique_ptr<list<shared_ptr<Order>>> &getOrderList() const;

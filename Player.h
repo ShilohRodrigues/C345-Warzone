@@ -7,10 +7,13 @@
 #include "Map.h"
 #include "Cards.h"
 #include "Orders.h"
+#include "GameEngine.h"
+#include "PlayerStrategies.h"
 
 using namespace std;
-
+class GameEngine;
 class OrdersList;
+class PlayerStrategy;
 
 class Player {
 public:
@@ -49,6 +52,8 @@ public:
     bool hasCardInHand(const string& cardType);
     void playCard(const shared_ptr<Deck>& deck, const string& cardType);
 
+    bool wasAttacked();
+    
     void update(const shared_ptr<Deck>& deck);
 
     // getters and setters
@@ -66,14 +71,25 @@ public:
     const unique_ptr<vector<shared_ptr<Territory>>> &getTerritories() const;
     void setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories);
 
-    const unique_ptr<OrdersList> &getOrdersList() const;
-    void setOrdersList(unique_ptr<OrdersList> &ordersList);
+    const shared_ptr<OrdersList> &getOrdersList() const;
+    void setOrdersList(shared_ptr<OrdersList> &ordersList);
 
     const unique_ptr<vector<shared_ptr<Player>>> &getNegotiatedPlayers() const;
     void setNegotiatedPlayers(const unique_ptr<vector<shared_ptr<Player>>> &negotiatedPlayers);
 
     bool getHasConqueredTerritory() const;
     void setHasConqueredTerritory(bool hasConqueredTerritory);
+
+    const shared_ptr<PlayerStrategy> &getPlayerStrategy();
+
+    template <typename T>
+    void setPlayerStrategy(shared_ptr<T> &playerStrategy);
+    void setPlayerStrategy1(shared_ptr<PlayerStrategy> &ps);
+
+    bool hasOrders() const;
+    //part 3
+    Player(std::string& playerName, GameEngine* gameEngine);
+    shared_ptr<Territory> getTerritoryByID(int territoryID) const;
 
 private:
     static int nextID;
@@ -86,9 +102,20 @@ private:
     // player owns collection of territories
     unique_ptr<vector<shared_ptr<Territory>>> territories;
     // player has list of orders
-    unique_ptr<OrdersList> ordersList;
+    shared_ptr<OrdersList> ordersList;
     // for the negotiation order
     unique_ptr<vector<shared_ptr<Player>>> negotiatedPlayers;
+
+    //part 3
+    GameEngine* gameEngine;
+    GameEngine* getGameEngine();
+
+    shared_ptr<PlayerStrategy> playerStrategy;
+};
+
+class NeutralPlayer : public Player {
+public:
+    NeutralPlayer();
 };
 
 void playerDemo1();

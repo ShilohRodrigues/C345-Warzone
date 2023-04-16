@@ -2,8 +2,138 @@
 #include <memory>
 #include "GameEngine.h"
 #include "LoggingObserver.h"
+#include "Map.h"
 
 using namespace std;
+
+////////////////// 3 Phases ///////////////////////////////////////
+void GameEngine::reinforcementPhase() {
+    cout << "********** Reinforcement Phase **********" << endl;
+    // Iterate through all players and calculate their reinforcement armies
+    for (auto& player : players) {
+        int armies = player.getTerritories()->size() /3;
+        if (armies < 3) {
+            armies = 3;
+        }
+        for (auto continent : map->getContinents()) {
+            bool ownsContinent = true;
+            for (const auto& territory : continent.getTerritories()) {
+                if (territory.first.getPlayerInPossession() != player.getName()) {
+                    ownsContinent = false;
+                    break;
+                }
+            }
+            if (ownsContinent) {
+                armies += 1;
+            }
+        }
+        player.setReinforcementPool(armies);
+    }
+}
+
+void GameEngine::issueOrdersPhase() {
+    cout << "********** Issuing Orders Phase **********" << endl;
+    int currentPlayerIndex = 0;
+
+    // Continue issuing orders until all players have no more orders to issue
+    bool ordersRemaining = true;
+    while (ordersRemaining) {
+        ordersRemaining = false;
+        // Iterate through all players in round robin fashion
+        for (int i = 0; i < players.size(); i++) {
+            auto currentPlayer = players[currentPlayerIndex];
+
+            if (currentPlayer.hasOrders()) {
+                currentPlayer.issueOrder();
+                ordersRemaining = true;
+            }
+            // Move to the next player
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        }
+    }
+}
+
+void GameEngine::sortOrders(OrdersList* orderList) {
+    // Sort orders in descending order of priority
+    orderList->getOrderList()->sort([](const shared_ptr<Order>& a, const shared_ptr<Order>& b) {
+        return a->getOrderId() > b->getOrderId(); });
+}
+
+
+void GameEngine::executeOrdersPhase() {
+    cout << "********** Executing Orders **********" << endl;
+
+    bool ordersRemaining = true;
+    int currentPlayerIndex = 0;
+
+    // Loop until all orders have been executed
+    while (ordersRemaining) {
+        ordersRemaining = false;
+
+        // Loop through all players in round-robin fashion
+        for (int i = 0; i < players.size(); i++) {
+            auto& player = players[currentPlayerIndex];
+
+            // Sort player's orders by priority
+            sortOrders(player.getOrdersList().get());
+
+            auto& ordersList = *(player.getOrdersList()->getOrderList());
+
+            if (!ordersList.empty()) {
+                // Get the top order
+                auto& topOrder = ordersList.front();
+                // Execute the order
+                topOrder->execute();
+                // Remove the executed order from the list
+                ordersList.pop_front();
+                // Indicate that there are still orders remaining to be executed
+                ordersRemaining = true;
+            }
+
+            // Move to the next player
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        }
+    }
+    for (auto& player : players) {
+        player.update(this->deck);
+    }
+}
+
+//Checks if the game is over
+bool GameEngine::checkEndGameCondition() {
+  for(int i=0; i<players.size(); i++) {
+    //Check if a player owns no territories 
+    if (players[i].getTerritories()->size() == 0) {
+      players.erase(players.begin() + i);
+      i--;
+    }
+  }
+  return players.size() == 1;
+}
+
+string GameEngine::mainGameLoop(int maxTurns) {
+
+  int i=0;
+  while(!(this->checkEndGameCondition())) {
+    this->reinforcementPhase();
+    this->issueOrdersPhase();
+    this->executeOrdersPhase();
+    i++;
+    if (i >= maxTurns) break;
+  }
+
+  if (i >= maxTurns) {
+    cout << "Draw!" << endl;
+    return "Draw";
+  }
+  else  {
+    cout << players[0].getPlayerStrategy()->getStrategyName() << " Wins!" << endl;
+    return players[0].getPlayerStrategy()->getStrategyName();
+  }
+
+  cout << endl << endl;
+
+}
 
 void GameEngine::startupPhase() {
 
@@ -24,9 +154,96 @@ void GameEngine::startupPhase() {
       cout << endl << "End of startup phase. Game will start." << endl;
       break;
     } 
-
   }
 
+  mainGameLoop(50);
+
+}
+
+void GameEngine::resetGame() {
+  state = shared_ptr<State>(new StartState()); //Shared pointed, no need to delete
+  map = shared_ptr<Map>(new Map());
+  deck = shared_ptr<Deck>(new Deck());
+  deck->MakeDeck();
+  players.clear();
+}
+
+void GameEngine::runTournamentMode(vector<string> maps, vector<string> playerStrategies, int numGames, int maxTurns) {
+
+    ofstream outfile;
+    outfile.open("tournament.txt"); // open file for writing
+    if (outfile.is_open()) { // check if file is successfully opened
+        outfile << "Tournament Result\n\n"; // write text to file
+    } else {
+        cout << "Unable to open output file.\n";
+    }
+
+  //Loop for each map
+  int j=0;
+  int k=0;
+  for (auto &map:maps) {
+    //Loop for each game
+    for (int i=0; i<numGames; i++) {
+      //Load the current map
+      if (nextState("loadmap " + map) == 1) {
+        cout << "Invalid map name entered. Quitting tournament mode." << endl;
+        return;
+      }
+      //Validate the map
+      if (nextState("validatemap") == 1) {
+        cout << "Map could not be validated. Quitting tournament mode." << endl;
+        return;
+      }
+      //Add players
+      for (auto &playerStrategy:playerStrategies) {
+        if (nextState("addplayer") == 1) {
+          cout << "Player could not be added. Quitting tournament mode." << endl;
+          return;
+        }
+        
+        //Current player to assign a strategy 
+        shared_ptr<Player> currPlayerPtr(make_shared<Player>(players[players.size()-1]));
+        //Set player strategy
+        shared_ptr<PlayerStrategy> strategy;
+        switch(playerStrategy[0]) {
+          case 'A':
+            strategy = make_shared<Aggressive>(currPlayerPtr);
+            break;
+          case 'H':
+            strategy = make_shared<Human>(currPlayerPtr); 
+            break;
+          case 'B':
+            strategy = make_shared<Benevolent>(currPlayerPtr);  
+            break;
+          case 'N':
+            strategy = make_shared<Neutral>(currPlayerPtr); 
+            break;
+          case 'C':
+            strategy = make_shared<Cheater>(currPlayerPtr); 
+            break;
+          default:
+            cout << "Invalid player strategy. Quitting tournament mode." << endl;
+            return;
+            break;
+        }
+        players[players.size()-1].setPlayerStrategy1(strategy);
+      }
+
+      //Start the game
+      nextState("gamestart");
+
+      string winner = mainGameLoop(maxTurns);
+
+      outfile << "Game #" << k << ", Map #" << j << ": " << winner << endl;
+
+      resetGame();
+      k++;
+    }
+    j++;
+  }
+
+  outfile.close(); // close file
+  
 }
 
 ///////////////// Game Class Implementations //////////////////////////
@@ -108,6 +325,7 @@ const shared_ptr<Deck> &GameEngine::getDeck() const {
 }
 
 
+
 ///////////////// State Class Implementations //////////////////////////
 //State class insertion stream
 ostream &operator<<(ostream &strm, State const &s) { 
@@ -164,7 +382,8 @@ vector<string> StartState::getCommands(){
 
 bool StartState::checkCommand(string cmd) {
 
-  if (cmd.find("loadmap")!= std::string::npos) return true;
+  if (cmd.find("loadmap")!= std::string::npos || cmd.find("tournament")!= std::string::npos) return true;
+  
   return false;
 
 }
@@ -570,4 +789,8 @@ vector<string> WinState::getCommands(){
 }
 bool WinState::checkCommand(string cmd) {
   return true;
+}
+
+vector<Player> GameEngine::getAllPlayers() {
+    return players;
 }

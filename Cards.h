@@ -25,7 +25,7 @@ const string& getCardType() const;
 friend ostream& operator<<(ostream& os, const Card& card);
 
 private:
-vector<string> cardsTypes = { "Spy", "Bomb", "Reinforcement", "Blockade", "Airlift", "Diplomacy" };
+vector<string> cardsTypes = {"Bomb", "Blockade", "Airlift", "Diplomacy" };
 string* aCardType = nullptr;
 };
 //---------------------------------------------------DECK---------------------------------------------------

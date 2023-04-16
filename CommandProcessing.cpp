@@ -27,7 +27,7 @@ ostream& operator<<(ostream &strm, const Command &c) {
   return strm << "Command: " << c.command << ", Effect: " << c.effect << endl;
 }
 //Save effect method
-void Command::stringToLog(std::ostream &out) const {
+void Command::stringToLog(ostream &out) const {
     out << "Command: Saved Effect";
 }
 void Command::saveEffect(string e) {
@@ -80,7 +80,7 @@ Command CommandProcessor::readCommand() {
   getline(cin, cmd);
   return  *(new Command(cmd));
 }
-void CommandProcessor::stringToLog(std::ostream &out) const {
+void CommandProcessor::stringToLog(ostream &out) const {
     out << "Commands Effect: Save Command";
 }
 //Save a command in the vector of commands
@@ -94,6 +94,22 @@ bool CommandProcessor::validate(Command cmd, GameEngine &game) {
   if (game.getState()->checkCommand(cmd.getName())) return true;
   else return false;
 
+}
+
+//Helper function to split strings by the separator char.
+vector<string> split1(string str, char separator) {
+    vector<string> strings;
+    int startIndex = 0, endIndex = 0;
+    for (int i = 0; i <= str.size(); i++) {
+        if (str[i] == separator || i == str.size()) {
+            endIndex = i;
+            string temp;
+            temp.append(str, startIndex, endIndex - startIndex);
+            strings.push_back(temp);
+            startIndex = endIndex + 1;
+        }
+    }
+    return strings;
 }
 
 ///////////// FileCommandProcessorAdapter class implementations /////////////////////
@@ -192,10 +208,86 @@ int CommandProcessingDriverDemo(GameEngine &game, string fileName) {
       continue;
     }
 
+    //Enter tournament mode
+    if (c.getName().find("tournament") != string::npos) {
+      //Parse and validate command 
+      vector<string> maps, players;
+      int numGames = 0, maxTurns = 0;
+
+      // Parse the command
+      string command = c.getName();
+      istringstream iss(command);
+      vector<string> tokens(istream_iterator<string>{iss}, istream_iterator<string>{});
+
+      // Parse the tokens
+      for (int i = 1; i < tokens.size(); i += 2) {
+          string token = tokens[i];
+          string arg = tokens[i + 1];
+          if (token == "-M") {
+              // Parse ListOfMaps
+              string delimiter = ",";
+              size_t pos = 0;
+              while ((pos = arg.find(delimiter)) != string::npos) {
+                  string map = arg.substr(0, pos);
+                  maps.push_back(map);
+                  arg.erase(0, pos + delimiter.length());
+              }
+              maps.push_back(arg);
+              if (maps.size() < 1 || maps.size() > 5) {
+                  cout << "Invalid tournament command" << endl;
+                  return 0; // invalid number of maps
+              }
+          } else if (token == "-P") {
+              // Parse ListOfPlayers
+              string delimiter = ",";
+              size_t pos = 0;
+              while ((pos = arg.find(delimiter)) != string::npos) {
+                  string player = arg.substr(0, pos);
+                  players.push_back(player);
+                  arg.erase(0, pos + delimiter.length());
+              }
+              players.push_back(arg);
+              if (players.size() < 2 || players.size() > 4) {
+                  cout << "Invalid tournament command" << endl;
+                  return 0; // invalid number of players
+              }
+          } else if (token == "-G") {
+              // Parse NumberOfGames
+              try {
+                  numGames = stoi(arg);
+                  if (numGames < 1 || numGames > 5) {
+                      cout << "Invalid tournament command" << endl;
+                      return 0; // invalid number of games
+                  }
+              } catch (...) {
+                  return false; // invalid number format
+              }
+          } else if (token == "-D") {
+              // Parse maxNumberOfTurns
+              try {
+                  maxTurns = stoi(arg);
+                  if (maxTurns < 10 || maxTurns > 50) {
+                      cout << "Invalid tournament command" << endl;
+                      return 0; // invalid number of turns
+                  }
+              } catch (...) {
+                  cout << "Invalid tournament command" << endl;
+                  return 0; // invalid number format
+              }
+          } else {
+              cout << "Invalid tournament command" << endl;
+              return 0; // invalid token
+          }
+      }
+      
+      game.runTournamentMode(maps, players, numGames, maxTurns);
+      return 0;
+    }
+
     cout << "Command is valid!" << endl;
     int status = game.nextState(c.getName());
     if (status == 0 && c.getName() == "gamestart") {
-      cout << endl << "Entering assign reinforcement phase." << endl << endl;
+      game.mainGameLoop(50);
       break;
     } 
 

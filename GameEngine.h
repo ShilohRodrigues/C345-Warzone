@@ -2,6 +2,7 @@
 #define GAME_ENGINE
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <memory>
@@ -11,7 +12,18 @@
 #include "Player.h"
 #include "Cards.h"
 #include "LoggingObserver.h"
+#include "PlayerStrategies.h"
 using namespace std;
+
+class PlayerStrategy;
+class Human;
+class Benevolent;
+class Aggressive;
+class Cheater;
+class Neutral;
+
+class Player;
+class OrdersList;
 
 class State;
 class GameEngine;
@@ -41,12 +53,27 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     const shared_ptr<Deck> &getDeck() const;
     //Part 5
     void stringToLog(std::ostream &out) const override;
+    void resetGame();
+
+
+    // part 3 add//
+    string mainGameLoop(int maxTurns);
+    bool checkEndGameCondition();
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+    void sortOrders(OrdersList* orderList);
+    vector<Player> getAllPlayers();
+
+    void runTournamentMode(vector<string> maps, vector<string> playerStrategies, int numGames, int maxTurns);
 
   private:
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
     vector<Player> players;
     shared_ptr<Deck> deck;
+    int currentPlayerIndex = 0;
+
 
 };
 
@@ -76,7 +103,7 @@ class StartState: public State {
     virtual bool checkCommand(string cmd) override;
 
   private:
-    vector<string> commands{"loadmap <filename>"};
+    vector<string> commands{"loadmap <filename>", "tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>"};
 };
 class MapLoadedState: public State {
   public:

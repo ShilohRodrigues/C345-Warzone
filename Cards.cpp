@@ -96,9 +96,9 @@ Deck& Deck::operator=(const Deck& d)
 void Deck::MakeDeck()
 {
 	srand(time(0));
-	int i = rand() % 6 + 5;
+	int i = rand() % 4 + 5;
 	for (int n = 0; n < i; n++) {
-		for (int j = 0; j < 6; j++)
+		for (int j = 0; j < 4; j++)
 		{
 			card = new Card;
 			card->setCardType(j);
