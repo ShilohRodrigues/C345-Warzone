@@ -1,1 +1,1 @@
-tournament -M map1,map2,map3 -P player1,player2 -G 3 -D 20
+tournament -M sw_baltic.map,sw_baltic.map -P Human,Benevolent -G 3 -D 10

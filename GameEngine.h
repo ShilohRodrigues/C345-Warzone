@@ -2,6 +2,7 @@
 #define GAME_ENGINE
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <memory>
@@ -11,7 +12,15 @@
 #include "Player.h"
 #include "Cards.h"
 #include "LoggingObserver.h"
+#include "PlayerStrategies.h"
 using namespace std;
+
+class PlayerStrategy;
+class Human;
+class Benevolent;
+class Aggressive;
+class Cheater;
+class Neutral;
 
 class Player;
 class OrdersList;
@@ -48,11 +57,15 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
 
 
     // part 3 add//
+    string mainGameLoop(int maxTurns);
+    bool checkEndGameCondition();
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
     void sortOrders(OrdersList* orderList);
     vector<Player> getAllPlayers();
+
+    void runTournamentMode(vector<string> maps, vector<string> playerStrategies, int numGames, int maxTurns);
 
   private:
     shared_ptr<State> state;  //Tracks the state of the game  

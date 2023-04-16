@@ -1,0 +1,8 @@
+Tournament Result
+
+Game #0, Map #0: Draw
+Game #1, Map #0: Draw
+Game #2, Map #0: Draw
+Game #3, Map #1: Draw
+Game #4, Map #1: Draw
+Game #5, Map #1: Draw

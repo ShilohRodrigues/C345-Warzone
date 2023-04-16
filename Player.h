@@ -84,6 +84,7 @@ public:
 
     template <typename T>
     void setPlayerStrategy(shared_ptr<T> &playerStrategy);
+    void setPlayerStrategy1(shared_ptr<PlayerStrategy> &ps);
 
     bool hasOrders() const;
     //part 3

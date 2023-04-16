@@ -8,7 +8,7 @@ using namespace std;
 
 ////////////////// 3 Phases ///////////////////////////////////////
 void GameEngine::reinforcementPhase() {
-    cout << "\n********** Reinforcement Phase **********\n" << endl;
+    cout << "********** Reinforcement Phase **********" << endl;
     // Iterate through all players and calculate their reinforcement armies
     for (auto& player : players) {
         int armies = player.getTerritories()->size() /3;
@@ -32,7 +32,7 @@ void GameEngine::reinforcementPhase() {
 }
 
 void GameEngine::issueOrdersPhase() {
-    cout << "\n********** Issuing Orders Phase **********\n" << endl;
+    cout << "********** Issuing Orders Phase **********" << endl;
     int currentPlayerIndex = 0;
 
     // Continue issuing orders until all players have no more orders to issue
@@ -61,7 +61,7 @@ void GameEngine::sortOrders(OrdersList* orderList) {
 
 
 void GameEngine::executeOrdersPhase() {
-    cout << "\n********** Executing Orders **********\n" << endl;
+    cout << "********** Executing Orders **********" << endl;
 
     bool ordersRemaining = true;
     int currentPlayerIndex = 0;
@@ -99,6 +99,41 @@ void GameEngine::executeOrdersPhase() {
     }
 }
 
+//Checks if the game is over
+bool GameEngine::checkEndGameCondition() {
+  for(int i=0; i<players.size(); i++) {
+    //Check if a player owns no territories 
+    if (players[i].getTerritories()->size() == 0) {
+      players.erase(players.begin() + i);
+      i--;
+    }
+  }
+  return players.size() == 1;
+}
+
+string GameEngine::mainGameLoop(int maxTurns) {
+
+  int i=0;
+  while(!(this->checkEndGameCondition())) {
+    this->reinforcementPhase();
+    this->issueOrdersPhase();
+    this->executeOrdersPhase();
+    i++;
+    if (i >= maxTurns) break;
+  }
+
+  if (i >= maxTurns) {
+    cout << "Draw!" << endl;
+    return "Draw";
+  }
+  else  {
+    cout << players[0].getPlayerStrategy()->getStrategyName() << " Wins!" << endl;
+    return players[0].getPlayerStrategy()->getStrategyName();
+  }
+
+  cout << endl << endl;
+
+}
 
 void GameEngine::startupPhase() {
 
@@ -120,6 +155,9 @@ void GameEngine::startupPhase() {
       break;
     } 
   }
+
+  mainGameLoop(50);
+
 }
 
 void GameEngine::resetGame() {
@@ -128,6 +166,84 @@ void GameEngine::resetGame() {
   deck = shared_ptr<Deck>(new Deck());
   deck->MakeDeck();
   players.clear();
+}
+
+void GameEngine::runTournamentMode(vector<string> maps, vector<string> playerStrategies, int numGames, int maxTurns) {
+
+    ofstream outfile;
+    outfile.open("tournament.txt"); // open file for writing
+    if (outfile.is_open()) { // check if file is successfully opened
+        outfile << "Tournament Result\n\n"; // write text to file
+    } else {
+        cout << "Unable to open output file.\n";
+    }
+
+  //Loop for each map
+  int j=0;
+  int k=0;
+  for (auto &map:maps) {
+    //Loop for each game
+    for (int i=0; i<numGames; i++) {
+      //Load the current map
+      if (nextState("loadmap " + map) == 1) {
+        cout << "Invalid map name entered. Quitting tournament mode." << endl;
+        return;
+      }
+      //Validate the map
+      if (nextState("validatemap") == 1) {
+        cout << "Map could not be validated. Quitting tournament mode." << endl;
+        return;
+      }
+      //Add players
+      for (auto &playerStrategy:playerStrategies) {
+        if (nextState("addplayer") == 1) {
+          cout << "Player could not be added. Quitting tournament mode." << endl;
+          return;
+        }
+        
+        //Current player to assign a strategy 
+        shared_ptr<Player> currPlayerPtr(make_shared<Player>(players[players.size()-1]));
+        //Set player strategy
+        shared_ptr<PlayerStrategy> strategy;
+        switch(playerStrategy[0]) {
+          case 'A':
+            strategy = make_shared<Aggressive>(currPlayerPtr);
+            break;
+          case 'H':
+            strategy = make_shared<Human>(currPlayerPtr); 
+            break;
+          case 'B':
+            strategy = make_shared<Benevolent>(currPlayerPtr);  
+            break;
+          case 'N':
+            strategy = make_shared<Neutral>(currPlayerPtr); 
+            break;
+          case 'C':
+            strategy = make_shared<Cheater>(currPlayerPtr); 
+            break;
+          default:
+            cout << "Invalid player strategy. Quitting tournament mode." << endl;
+            return;
+            break;
+        }
+        players[players.size()-1].setPlayerStrategy1(strategy);
+      }
+
+      //Start the game
+      nextState("gamestart");
+
+      string winner = mainGameLoop(maxTurns);
+
+      outfile << "Game #" << k << ", Map #" << j << ": " << winner << endl;
+
+      resetGame();
+      k++;
+    }
+    j++;
+  }
+
+  outfile.close(); // close file
+  
 }
 
 ///////////////// Game Class Implementations //////////////////////////

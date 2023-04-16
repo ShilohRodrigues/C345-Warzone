@@ -280,14 +280,14 @@ int CommandProcessingDriverDemo(GameEngine &game, string fileName) {
           }
       }
       
-      runTournamentMode(game, maps, players, numGames, maxTurns);
+      game.runTournamentMode(maps, players, numGames, maxTurns);
       return 0;
     }
 
     cout << "Command is valid!" << endl;
     int status = game.nextState(c.getName());
     if (status == 0 && c.getName() == "gamestart") {
-      cout << endl << "Entering assign reinforcement phase." << endl << endl;
+      game.mainGameLoop(50);
       break;
     } 
 
@@ -296,38 +296,4 @@ int CommandProcessingDriverDemo(GameEngine &game, string fileName) {
   if (file) cout << "All commands have been read from the file." << endl;
 
   return 0;
-}
-
-void runTournamentMode(GameEngine &game, vector<string> maps, vector<string> players, int numGames, int maxTurns) {
-
-  //Loop for each map
-  for (auto &map:maps) {
-    //Loop for each game
-    for (int i=0; i<numGames; i++) {
-      //Load the current map
-      if (game.nextState("loadmap " + map) == 1) {
-        cout << "Invalid map name entered. Quitting tournament mode." << endl;
-        return;
-      }
-      //Validate the map
-      if (game.nextState("validatemap") == 1) {
-        cout << "Map could not be validated. Quitting tournament mode." << endl;
-        return;
-      }
-      //Add players
-      for (auto &player:players) {
-        if (game.nextState("addplayer") == 1) {
-          cout << "Player could not be added. Quitting tournament mode." << endl;
-          return;
-        }
-      }
-
-      //Start the game
-      game.nextState("gamestart");
-
-      game.resetGame();
-
-    }
-  }
-
 }

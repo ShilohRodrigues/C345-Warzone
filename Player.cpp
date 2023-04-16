@@ -193,6 +193,9 @@ template <typename T>
 void Player::setPlayerStrategy(shared_ptr<T> &playerStrategy) {
     Player::playerStrategy = std::move(playerStrategy);
 }
+void Player::setPlayerStrategy1(shared_ptr<PlayerStrategy> &ps) {
+    Player::playerStrategy = std::move(ps);
+}
 
 template void Player::setPlayerStrategy<Human>(shared_ptr<Human>& playerStrategy);
 template void Player::setPlayerStrategy<Aggressive>(shared_ptr<Aggressive>& playerStrategy);
