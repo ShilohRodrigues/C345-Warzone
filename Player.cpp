@@ -110,7 +110,8 @@ ostream& operator<<(ostream& os, const Player& player) {
             os << p->getName() << "  ";
         }
     }
-    os << "\nhasConqueredTerritory: " << player.hasConqueredTerritory << endl;
+    os << "\nhasConqueredTerritory: " << player.hasConqueredTerritory;
+    os << "\nplayerStrategy: " << player.playerStrategy->getStrategyName() << endl;
 
     return os;
 }
