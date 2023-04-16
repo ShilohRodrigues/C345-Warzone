@@ -2,6 +2,7 @@
 #include <memory>
 #include "GameEngine.h"
 #include "LoggingObserver.h"
+#include "Map.h"
 
 using namespace std;
 
@@ -119,6 +120,14 @@ void GameEngine::startupPhase() {
       break;
     } 
   }
+}
+
+void GameEngine::resetGame() {
+  state = shared_ptr<State>(new StartState()); //Shared pointed, no need to delete
+  map = shared_ptr<Map>(new Map());
+  deck = shared_ptr<Deck>(new Deck());
+  deck->MakeDeck();
+  players.clear();
 }
 
 ///////////////// Game Class Implementations //////////////////////////
@@ -257,7 +266,8 @@ vector<string> StartState::getCommands(){
 
 bool StartState::checkCommand(string cmd) {
 
-  if (cmd.find("loadmap")!= std::string::npos) return true;
+  if (cmd.find("loadmap")!= std::string::npos || cmd.find("tournament")!= std::string::npos) return true;
+  
   return false;
 
 }
