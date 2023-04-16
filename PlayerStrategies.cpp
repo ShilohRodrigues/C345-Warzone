@@ -273,7 +273,8 @@ void Aggressive::issueOrder() {
 
         if (armyCnt > 0) {
             // Randomly select the number of armies to advance to the target territory
-            uniform_int_distribution<int> armiesDistribution(1, armyCnt);
+            int min = max(1, armyCnt/2);
+            uniform_int_distribution<int> armiesDistribution(min, armyCnt);
             auto numArmiesToAdvance = armiesDistribution(rng);
 
             // Create and execute an Advance order to advance the armies to the target territory
