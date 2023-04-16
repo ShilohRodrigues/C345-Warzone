@@ -7,7 +7,7 @@ using namespace std;
 
 // default constructor
 PlayerStrategy::PlayerStrategy(shared_ptr<Player> player):
-    player(player) {}
+    player(player), strategyName("") {}
 
 unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> PlayerStrategy::getToAttackMap() {
     return nullptr;
@@ -23,7 +23,9 @@ void PlayerStrategy::setPlayer(shared_ptr<Player> &player) {
 }
 
 // -- HUMAN player strategy --
-Human::Human(shared_ptr<Player> player): PlayerStrategy(player) {}
+Human::Human(shared_ptr<Player> player): PlayerStrategy(player) {
+    this->strategyName = strategyName;
+}
 
 void Human::issueOrder() {
 //    Map* map = new Map();
@@ -173,7 +175,9 @@ unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {}
 unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {}
 
 // -- AGGRESSIVE player strategy --
-Aggressive::Aggressive(shared_ptr<Player> player): PlayerStrategy(player) {}
+Aggressive::Aggressive(shared_ptr<Player> player): PlayerStrategy(player) {
+    this->strategyName = "Aggressive";
+}
 
 /**
  * Decides which orders the aggressive player will choose to issue and adds it to the player's orders list.
@@ -315,7 +319,9 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 }
 
 // -- BENEVOLENT player strategy --
-Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {}
+Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {
+    this->strategyName = "Benevolent";
+}
 
 /**
  * Decides which orders the Benevolent player should issue and adds them to the player's orders list.
@@ -442,10 +448,16 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 }
 
 // -- NEUTRAL player strategy --
-Neutral::Neutral(shared_ptr<Player> player): PlayerStrategy(player) {}
+Neutral::Neutral(shared_ptr<Player> player): PlayerStrategy(player) {
+    this->strategyName = "Neutral";
+}
 
+/**
+ * Issues orders for the Neutral player.
+ * The Neutral player never issues any orders, but if it gets attacked, it becomes an aggressive player.
+ */
 void Neutral::issueOrder() {
-    cout << "Neutral issueOrder()" << endl;
+    // the neutral player doesn't issue any orders
 }
 
 /**
@@ -469,7 +481,9 @@ unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
 }
 
 // -- CHEATER player strategy --
-Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {}
+Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {
+    this->strategyName = "Cheater";
+}
 
 void Cheater::issueOrder() {
 

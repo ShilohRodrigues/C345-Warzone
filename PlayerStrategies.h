@@ -24,6 +24,7 @@ public:
 
 protected:
     shared_ptr<Player> player;
+    string strategyName;
 };
 
 class Human: public PlayerStrategy {
