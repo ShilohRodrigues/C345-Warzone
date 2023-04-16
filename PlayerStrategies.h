@@ -90,14 +90,21 @@ public:
     Cheater& operator=(const Cheater& cheater);
     friend ostream& operator<<(ostream& os, const Cheater& cheater);
 
+    bool getCanCheat() const;
+    void setCanCheat(bool canCheat);
+
     void issueOrder() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
+
+private:
+    bool canCheat;
 };
 
 void playerStrategyDemo();
 void aggressiveDemo();
 void benevolentDemo();
 void neutralDemo();
+void cheaterDemo();
 
 #endif // PLAYERSTRATEGIES_H
