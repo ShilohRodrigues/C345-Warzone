@@ -207,6 +207,15 @@ bool Player::hasOrders() const {
 // destructor
 Player::~Player() = default; // deletion of data members handled by smart pointers already
 
+shared_ptr<Territory> Player::getTerritoryByID(int territoryID) const {
+    for (const auto& territory : *territories) {
+        if (territory->getId() == territoryID) {
+            return territory;
+        }
+    }
+    // Return nullptr if the territory is not found
+    return nullptr;
+}
 /**
  * Returns a list of territories to defend.
  * @return list of territories to defend
@@ -380,7 +389,7 @@ bool Player::wasAttacked() {
  */
 void Player::update(const shared_ptr<Deck>& deck) {
     this->updateArmyCount();
-    this->reinforcementPool = max(3, this->armyCount/2); // I don't know the rule
+    this->reinforcementPool = max(3, this->armyCount / 2); // I don't know the rule
     this->updateTerritories();
     this->clearNegotiatedPlayers();
     this->drawIfHasConquered(deck);

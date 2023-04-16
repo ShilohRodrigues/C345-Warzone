@@ -46,7 +46,7 @@ void GameEngine::issueOrdersPhase() {
                 currentPlayer.issueOrder();
                 ordersRemaining = true;
             }
-            // Move to the next player (round-robin)
+            // Move to the next player
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         }
     }
@@ -663,4 +663,8 @@ vector<string> WinState::getCommands(){
 }
 bool WinState::checkCommand(string cmd) {
   return true;
+}
+
+vector<Player> GameEngine::getAllPlayers() {
+    return players;
 }
