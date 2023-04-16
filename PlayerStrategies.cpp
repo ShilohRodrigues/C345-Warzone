@@ -472,6 +472,11 @@ void Neutral::issueOrder() {
         auto aggressiveStrategy = make_shared<Aggressive>(this->player);
         this->player->setPlayerStrategy(aggressiveStrategy);
     }
+
+    if (this->player->getPlayerStrategy()->getStrategyName() == "Aggressive") {
+        // issue orders as an aggressive player
+        this->player->issueOrder();
+    }
 }
 
 /**
