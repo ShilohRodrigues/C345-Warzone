@@ -36,6 +36,7 @@ private:
     unique_ptr<int> armyCnt;
     shared_ptr<vector<int>> adjacentTerritories;
     shared_ptr<vector<shared_ptr<Territory>>> adjacentTerritoriesPointers;
+    bool wasAttacked;
 
 public:
     //Initial territory
@@ -63,6 +64,9 @@ public:
 
     const shared_ptr<vector<shared_ptr<Territory>>> &getAdjacentTerritoriesPointers() const;
     void setAdjacentTerritoriesPointers(const shared_ptr<vector<shared_ptr<Territory>>> &adjacentTerritoriesPointers);
+
+    bool territoryWasAttacked() const;
+    void setWasAttacked(bool wasAttacked);
 
     void addAdjacent(const shared_ptr<Territory>& territory);
 };

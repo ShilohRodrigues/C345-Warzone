@@ -26,6 +26,7 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     playerInPossession = "";
     adjacentTerritories = std::make_shared<vector<int>>();
     adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>();
+    wasAttacked = false;
 }
 //Parameterized
 Territory::Territory(int idTerritory, const string& territoryName, int territoryContinent, const string& player,int armies) {
@@ -36,6 +37,7 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     armyCnt = std::make_unique<int>(armies);
     adjacentTerritories = std::make_shared<vector<int>>();
     adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>();
+    wasAttacked = false;
 }
 
 //Copy
@@ -47,6 +49,7 @@ Territory::Territory(const Territory &territory) {
     armyCnt = std::make_unique<int>(*territory.armyCnt);
     adjacentTerritories = std::make_shared<vector<int>>(*territory.adjacentTerritories);
     adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>(*territory.adjacentTerritoriesPointers);
+    wasAttacked = territory.wasAttacked;
 }
 //Destructor
 Territory::~Territory() = default;
@@ -147,6 +150,14 @@ void Territory::setAdjacentTerritoriesPointers(
 void Territory::addAdjacent(const shared_ptr<Territory>& territory) {
     this->adjacentTerritories->push_back(territory->getId());
     this->adjacentTerritoriesPointers->push_back(territory);
+}
+
+bool Territory::territoryWasAttacked() const {
+    return wasAttacked;
+}
+
+void Territory::setWasAttacked(bool wasAttacked) {
+    Territory::wasAttacked = wasAttacked;
 }
 
 ////////////// Continent Class /////////////////////
