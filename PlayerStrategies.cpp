@@ -9,6 +9,23 @@ using namespace std;
 PlayerStrategy::PlayerStrategy(shared_ptr<Player> player):
     player(player), strategyName("") {}
 
+// copy constructor
+PlayerStrategy::PlayerStrategy(const PlayerStrategy &playerStrategy):
+    player(playerStrategy.player), strategyName(playerStrategy.strategyName) {}
+
+// assignment operator
+PlayerStrategy& PlayerStrategy::operator=(const PlayerStrategy &playerStrategy) {
+    this->player = playerStrategy.player;
+    this->strategyName = playerStrategy.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const PlayerStrategy& playerStrategy) {
+    os << "strategy: " << playerStrategy.strategyName;
+    return os;
+}
+
 unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> PlayerStrategy::getToAttackMap() {
     return nullptr;
 }
@@ -31,8 +48,25 @@ void PlayerStrategy::setStrategyName(const string &strategyName) {
 }
 
 // -- HUMAN player strategy --
+// default constructor
 Human::Human(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = strategyName;
+}
+
+// copy constructor
+Human::Human(const Human &human): PlayerStrategy(human) {}
+
+// assignment operator
+Human& Human::operator=(const Human& human) {
+    this->player = human.player;
+    this->strategyName = human.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Human& human) {
+    os << "strategy: " << human.strategyName;
+    return os;
 }
 
 void Human::issueOrder() {
@@ -197,8 +231,25 @@ unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {
 }
 
 // -- AGGRESSIVE player strategy --
+// default constructor
 Aggressive::Aggressive(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Aggressive";
+}
+
+// copy constructor
+Aggressive::Aggressive(const Aggressive &aggressive): PlayerStrategy(aggressive) {}
+
+// assignment operator
+Aggressive& Aggressive::operator=(const Aggressive& aggressive) {
+    this->player = aggressive.player;
+    this->strategyName = aggressive.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Aggressive& aggressive) {
+    os << "strategy: " << aggressive.strategyName;
+    return os;
 }
 
 /**
@@ -236,7 +287,8 @@ void Aggressive::issueOrder() {
 
         if (armyCnt > 0) {
             // Randomly select the number of armies to advance to the target territory
-            uniform_int_distribution<int> armiesDistribution(1, armyCnt);
+            int min = max(1, armyCnt/2);
+            uniform_int_distribution<int> armiesDistribution(min, armyCnt);
             auto numArmiesToAdvance = armiesDistribution(rng);
 
             // Create and execute an Advance order to advance the armies to the target territory
@@ -341,8 +393,25 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 }
 
 // -- BENEVOLENT player strategy --
+// default constructor
 Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Benevolent";
+}
+
+// copy constructor
+Benevolent::Benevolent(const Benevolent &benevolent): PlayerStrategy(benevolent) {}
+
+// assignment operator
+Benevolent& Benevolent::operator=(const Benevolent& benevolent) {
+    this->player = benevolent.player;
+    this->strategyName = benevolent.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Benevolent& benevolent) {
+    os << "strategy: " << benevolent.strategyName;
+    return os;
 }
 
 /**
@@ -470,8 +539,25 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 }
 
 // -- NEUTRAL player strategy --
+// default constructor
 Neutral::Neutral(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Neutral";
+}
+
+// copy constructor
+Neutral::Neutral(const Neutral &neutral): PlayerStrategy(neutral) {}
+
+// assignment operator
+Neutral& Neutral::operator=(const Neutral& neutral) {
+    this->player = neutral.player;
+    this->strategyName = neutral.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Neutral& neutral) {
+    os << "strategy: " << neutral.strategyName;
+    return os;
 }
 
 /**
@@ -514,22 +600,92 @@ unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
 }
 
 // -- CHEATER player strategy --
+// default constructor
 Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Cheater";
+    this->canCheat = true;
 }
 
+// copy constructor
+Cheater::Cheater(const Cheater &cheater): PlayerStrategy(cheater) {
+    this->canCheat = cheater.canCheat;
+}
+
+// assignment operator
+Cheater& Cheater::operator=(const Cheater& cheater) {
+    this->player = cheater.player;
+    this->strategyName = cheater.strategyName;
+    this->canCheat = cheater.canCheat;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Cheater& cheater) {
+    os << "strategy: " << cheater.strategyName;
+    os << "canCheat: " << cheater.canCheat;
+    return os;
+}
+
+/**
+ * Issues orders for the Cheater player, but since the cheater can automatically conquer all of its adjacent
+ * enemy territories, it doesn't need to issue any orders.
+ * Instead the method goes through all of the territories to attack and conquers them automatically by
+ * changing the player in possession and adding each territory to the player's list of territories.
+ * The method uses the canCheat variable to ensure that the player can only cheat once per turn.
+ */
 void Cheater::issueOrder() {
-
+    // can only cheat once per turn
+    if (canCheat) {
+        auto attackList = this->toAttack();
+        // conquer all territories in the attack list
+        for (auto& t : *attackList) {
+            // change the territory's owner
+            t->setPlayerInPossession(this->player->getName());
+            // add the territory to the player's territories
+            this->player->addTerritory(t);
+        }
+        // can't cheat again for the rest of the turn until the Player::update() is called
+        canCheat = false;
+    }
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {}
+/**
+ * Generates a list of territories to attack, in this case all of the enemy territories adjacent to
+ * player-owned territories.
+ * @return the list of players to attack
+ */
+unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {
+    auto attackList = make_unique<vector<shared_ptr<Territory>>>();
 
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Cheater::getToAttackMap() {
+    for (auto& t : *this->player->getTerritories()) {
+        auto adjacentTerritories = t->getAdjacentTerritoriesPointers();
+        for (auto& adjacentTerritory : *adjacentTerritories) {
+            // Check if the adjacent territory is an enemy territory
+            if (adjacentTerritory->getPlayerInPossession() != this->player->getName()) {
+                // Add the enemy territory to the attack list
+                attackList->push_back(adjacentTerritory);
+            }
+        }
+    }
 
+    return attackList;
 }
 
+/**
+ * Generates a list of territories to defend, in this case none are required, so the vector is empty.
+ * @return the list of territories to defend
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Cheater::toDefend() {
+    // the cheater doesn't need to defend any territories
+    return make_unique<vector<shared_ptr<Territory>>>();
+}
 
+bool Cheater::getCanCheat() const {
+    return canCheat;
+}
+
+void Cheater::setCanCheat(bool canCheat) {
+    Cheater::canCheat = canCheat;
 }
 
 
