@@ -5,7 +5,8 @@ using namespace std;
 
 void playerStrategyDemo() {
 //    aggressiveDemo();
-    benevolentDemo();
+//    benevolentDemo();
+    neutralDemo();
 }
 
 void aggressiveDemo() {
@@ -124,12 +125,73 @@ void benevolentDemo() {
 }
 
 void neutralDemo() {
+    cout << "-- NEUTRAL STRATEGY DEMO --" << endl;
+    // make test player
     auto testNeutralPlayer = make_shared<Player>();
+    testNeutralPlayer->setArmyCount(5);
+    testNeutralPlayer->setReinforcementPool(3);
+
+    // make other player to attack the neutral player
+    auto testEnemy = make_shared<Player>();
+
+    // assign strategy
     auto neutralStrategy = make_shared<Neutral>(testNeutralPlayer);
-    auto testTerritory = make_shared<Territory>(0, "testTerritory", 0, "test", 0);
-    testNeutralPlayer->addTerritory(testTerritory);
     testNeutralPlayer->setPlayerStrategy(neutralStrategy);
+
+    // make territories
+    auto testTerritory1 = make_shared<Territory>(1, "testTerritory1", 0, "test", 4);
+    auto testTerritory2 = make_shared<Territory>(2, "testTerritory2", 0, "Enemy", 1);
+    auto testTerritory3 = make_shared<Territory>(3, "testTerritory3", 0, "Enemy", 1);
+    auto testTerritory4 = make_shared<Territory>(4, "testTerritory4", 0, "test", 1);
+    auto testTerritory5 = make_shared<Territory>(5, "testTerritory5", 0, "Enemy", 3);
+    auto testTerritory6 = make_shared<Territory>(6, "testTerritory6", 0, "Enemy", 1);
+
+    testTerritory1->addAdjacent(testTerritory2);
+    testTerritory1->addAdjacent(testTerritory3);
+    testTerritory4->addAdjacent(testTerritory5);
+    testTerritory4->addAdjacent(testTerritory6);
+    testTerritory5->addAdjacent(testTerritory4);
+    testTerritory5->addAdjacent(testTerritory6);
+    testTerritory2->addAdjacent(testTerritory1);
+    testTerritory2->addAdjacent(testTerritory3);
+
+    // assign territories to player
+    testNeutralPlayer->addTerritory(testTerritory1);
+    testNeutralPlayer->addTerritory(testTerritory4);
+    testEnemy->addTerritory(testTerritory2);
+    testEnemy->addTerritory(testTerritory3);
+    testEnemy->addTerritory(testTerritory5);
+    testEnemy->addTerritory(testTerritory6);
+
+    // simulate turn where the neutral player is not attacked
     testNeutralPlayer->issueOrder();
-    testNeutralPlayer->toAttack();
-    testNeutralPlayer->toDefend();
+    cout << "-- Test Neutral Player (after issuing orders turn 1 -- was not attacked): " << endl;
+    cout << *testNeutralPlayer << endl;
+    testNeutralPlayer->getOrdersList()->executeAll();
+    cout << "We see that because the neutral player does not issue any orders, nothing happened.\n" << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testNeutralPlayer->update(deck);
+
+    // simulate turn where the neutral player is not attacked
+    testNeutralPlayer->issueOrder();
+    cout << "-- Test Neutral Player (after issuing orders turn 2 -- was not attacked): " << endl;
+    cout << *testNeutralPlayer << endl;
+    testNeutralPlayer->getOrdersList()->executeAll();
+    testNeutralPlayer->update(deck);
+    cout << "Again, we see that as long as the neutral player is not attacked, it does not issue any orders.\n" << endl;
+
+    // simulate another turn where the neutral player was attacked
+    cout << "\n-- Enemy bombs the Neutral player:" << endl;
+    testEnemy->getCardHand()->addCardToHand("Bomb");
+    auto enemyBombAttack = make_shared<Bomb>(testEnemy, testTerritory1);
+    testEnemy->playCard(deck, "Bomb");
+    enemyBombAttack->execute();
+    testNeutralPlayer->issueOrder();
+    cout << "\n-- Test Neutral Player (after issuing orders turn 3 -- was attacked): " << endl;
+    cout << *testNeutralPlayer << endl;
+    cout << "We see that the neutral player was attacked, and so it became an aggressive player."
+            "\nThis is why it is now issuing aggressive orders." << endl;
+    cout << "\nWe have demonstrated that the neutral player never issues any order, and that "
+            "\nit becomes an aggressive player if attacked." << endl;
 }
