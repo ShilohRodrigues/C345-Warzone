@@ -611,17 +611,21 @@ ostream& operator<<(ostream& os, const Cheater& cheater) {
  * enemy territories, it doesn't need to issue any orders.
  * Instead the method goes through all of the territories to attack and conquers them automatically by
  * changing the player in possession and adding each territory to the player's list of territories.
+ * The method uses the canCheat variable to ensure that the player can only cheat once per turn.
  */
 void Cheater::issueOrder() {
-    auto attackList = this->toAttack();
-
-    // conquer all territories in the attack list
-    for (auto& t : *attackList) {
-        // change the territory's owner
-        t->setPlayerInPossession(this->player->getName());
-
-        // add the territory to the player's territories
-        this->player->addTerritory(t);
+    // can only cheat once per turn
+    if (canCheat) {
+        auto attackList = this->toAttack();
+        // conquer all territories in the attack list
+        for (auto& t : *attackList) {
+            // change the territory's owner
+            t->setPlayerInPossession(this->player->getName());
+            // add the territory to the player's territories
+            this->player->addTerritory(t);
+        }
+        // can't cheat again for the rest of the turn until the Player::update() is called
+        canCheat = false;
     }
 }
 
@@ -654,6 +658,14 @@ unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {
 unique_ptr<vector<shared_ptr<Territory>>> Cheater::toDefend() {
     // the cheater doesn't need to defend any territories
     return make_unique<vector<shared_ptr<Territory>>>();
+}
+
+bool Cheater::getCanCheat() const {
+    return canCheat;
+}
+
+void Cheater::setCanCheat(bool canCheat) {
+    Cheater::canCheat = canCheat;
 }
 
 
