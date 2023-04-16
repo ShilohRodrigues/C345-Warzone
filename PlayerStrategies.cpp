@@ -588,21 +588,26 @@ unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
 // default constructor
 Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Cheater";
+    this->canCheat = true;
 }
 
 // copy constructor
-Cheater::Cheater(const Cheater &cheater): PlayerStrategy(cheater) {}
+Cheater::Cheater(const Cheater &cheater): PlayerStrategy(cheater) {
+    this->canCheat = cheater.canCheat;
+}
 
 // assignment operator
 Cheater& Cheater::operator=(const Cheater& cheater) {
     this->player = cheater.player;
     this->strategyName = cheater.strategyName;
+    this->canCheat = cheater.canCheat;
     return *this;
 }
 
 // stream insertion operator
 ostream& operator<<(ostream& os, const Cheater& cheater) {
     os << "strategy: " << cheater.strategyName;
+    os << "canCheat: " << cheater.canCheat;
     return os;
 }
 
