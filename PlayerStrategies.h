@@ -13,6 +13,9 @@ class Player;
 class PlayerStrategy {
 public:
     PlayerStrategy(shared_ptr<Player> player);
+    PlayerStrategy(const PlayerStrategy& playerStrategy);
+    PlayerStrategy& operator=(const PlayerStrategy& playerStrategy);
+    friend ostream& operator<<(ostream& os, const PlayerStrategy& playerStrategy);
 
     virtual void issueOrder() = 0;
     virtual unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap();

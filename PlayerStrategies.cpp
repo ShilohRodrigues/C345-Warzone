@@ -9,6 +9,24 @@ using namespace std;
 PlayerStrategy::PlayerStrategy(shared_ptr<Player> player):
     player(player), strategyName("") {}
 
+// copy constructor
+PlayerStrategy::PlayerStrategy(const PlayerStrategy &playerStrategy):
+    player(playerStrategy.player), strategyName(playerStrategy.strategyName) {}
+
+// assignment operator
+PlayerStrategy& PlayerStrategy::operator=(const PlayerStrategy &playerStrategy) {
+    this->player = playerStrategy.player;
+    this->strategyName = playerStrategy.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const PlayerStrategy& playerStrategy) {
+    os << "strategy: " << playerStrategy.strategyName;
+    return os;
+}
+
+
 unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> PlayerStrategy::getToAttackMap() {
     return nullptr;
 }
@@ -505,12 +523,12 @@ Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {
 }
 
 void Cheater::issueOrder() {
+    // the cheater doesn't actually need to issue any orders because it'll automatically conquer
+    // all territories in the toAttack list
 
 }
 
-unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {}
-
-unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> Cheater::getToAttackMap() {
+unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {
 
 }
 
