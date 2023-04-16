@@ -606,16 +606,51 @@ ostream& operator<<(ostream& os, const Cheater& cheater) {
     return os;
 }
 
+/**
+ * Issues orders for the Cheater player, but since the cheater can automatically conquer all of its adjacent
+ * enemy territories, it doesn't need to issue any orders.
+ * Instead the method goes through all of the territories to attack and conquers them automatically by
+ * changing the player in possession and adding each territory to the player's list of territories.
+ */
 void Cheater::issueOrder() {
-    // the cheater doesn't actually need to issue any orders because it'll automatically conquer
-    // all territories in the toAttack list
+    auto attackList = this->toAttack();
 
+    // conquer all territories in the attack list
+    for (auto& t : *attackList) {
+        // change the territory's owner
+        t->setPlayerInPossession(this->player->getName());
+
+        // add the territory to the player's territories
+        this->player->addTerritory(t);
+    }
 }
 
+/**
+ * Generates a list of territories to attack, in this case all of the enemy territories adjacent to
+ * player-owned territories.
+ * @return the list of players to attack
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Cheater::toAttack() {
+    auto attackList = make_unique<vector<shared_ptr<Territory>>>();
 
+    for (auto& t : *this->player->getTerritories()) {
+        auto adjacentTerritories = t->getAdjacentTerritoriesPointers();
+        for (auto& adjacentTerritory : *adjacentTerritories) {
+            // Check if the adjacent territory is an enemy territory
+            if (adjacentTerritory->getPlayerInPossession() != this->player->getName()) {
+                // Add the enemy territory to the attack list
+                attackList->push_back(adjacentTerritory);
+            }
+        }
+    }
+
+    return attackList;
 }
 
+/**
+ * Generates a list of territories to defend, in this case none are required, so the vector is empty.
+ * @return the list of territories to defend
+ */
 unique_ptr<vector<shared_ptr<Territory>>> Cheater::toDefend() {
     // the cheater doesn't need to defend any territories
     return make_unique<vector<shared_ptr<Territory>>>();
