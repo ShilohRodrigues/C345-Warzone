@@ -36,6 +36,10 @@ protected:
 class Human: public PlayerStrategy {
 public:
     Human(shared_ptr<Player> player);
+    Human(const Human& human);
+    Human& operator=(const Human& human);
+    friend ostream& operator<<(ostream& os, const Human& human);
+
     void issueOrder() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
@@ -44,6 +48,10 @@ public:
 class Aggressive: public PlayerStrategy {
 public:
     Aggressive(shared_ptr<Player> player);
+    Aggressive(const Aggressive& aggressive);
+    Aggressive& operator=(const Aggressive& aggressive);
+    friend ostream& operator<<(ostream& os, const Aggressive& aggressive);
+
     void issueOrder() override;
     unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> getToAttackMap() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
@@ -54,6 +62,10 @@ public:
 class Benevolent: public PlayerStrategy {
 public:
     Benevolent(shared_ptr<Player> player);
+    Benevolent(const Benevolent& benevolent);
+    Benevolent& operator=(const Benevolent& benevolent);
+    friend ostream& operator<<(ostream& os, const Benevolent& benevolent);
+
     void issueOrder() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
@@ -62,6 +74,10 @@ public:
 class Neutral: public PlayerStrategy {
 public:
     Neutral(shared_ptr<Player> player);
+    Neutral(const Neutral& neutral);
+    Neutral& operator=(const Neutral& neutral);
+    friend ostream& operator<<(ostream& os, const Neutral& neutral);
+
     void issueOrder() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
@@ -70,6 +86,10 @@ public:
 class Cheater: public PlayerStrategy {
 public:
     Cheater(shared_ptr<Player> player);
+    Cheater(const Cheater& cheater);
+    Cheater& operator=(const Cheater& cheater);
+    friend ostream& operator<<(ostream& os, const Cheater& cheater);
+
     void issueOrder() override;
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;

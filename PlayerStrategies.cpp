@@ -26,7 +26,6 @@ ostream& operator<<(ostream& os, const PlayerStrategy& playerStrategy) {
     return os;
 }
 
-
 unique_ptr<unordered_map<shared_ptr<Territory>, vector<shared_ptr<Territory>>>> PlayerStrategy::getToAttackMap() {
     return nullptr;
 }
@@ -49,8 +48,25 @@ void PlayerStrategy::setStrategyName(const string &strategyName) {
 }
 
 // -- HUMAN player strategy --
+// default constructor
 Human::Human(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = strategyName;
+}
+
+// copy constructor
+Human::Human(const Human &human): PlayerStrategy(human) {}
+
+// assignment operator
+Human& Human::operator=(const Human& human) {
+    this->player = human.player;
+    this->strategyName = human.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Human& human) {
+    os << "strategy: " << human.strategyName;
+    return os;
 }
 
 void Human::issueOrder() {
@@ -201,8 +217,25 @@ unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {}
 unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {}
 
 // -- AGGRESSIVE player strategy --
+// default constructor
 Aggressive::Aggressive(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Aggressive";
+}
+
+// copy constructor
+Aggressive::Aggressive(const Aggressive &aggressive): PlayerStrategy(aggressive) {}
+
+// assignment operator
+Aggressive& Aggressive::operator=(const Aggressive& aggressive) {
+    this->player = aggressive.player;
+    this->strategyName = aggressive.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Aggressive& aggressive) {
+    os << "strategy: " << aggressive.strategyName;
+    return os;
 }
 
 /**
@@ -345,8 +378,25 @@ unique_ptr<vector<shared_ptr<Territory>>> Aggressive::toDefend() {
 }
 
 // -- BENEVOLENT player strategy --
+// default constructor
 Benevolent::Benevolent(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Benevolent";
+}
+
+// copy constructor
+Benevolent::Benevolent(const Benevolent &benevolent): PlayerStrategy(benevolent) {}
+
+// assignment operator
+Benevolent& Benevolent::operator=(const Benevolent& benevolent) {
+    this->player = benevolent.player;
+    this->strategyName = benevolent.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Benevolent& benevolent) {
+    os << "strategy: " << benevolent.strategyName;
+    return os;
 }
 
 /**
@@ -474,8 +524,25 @@ unique_ptr<vector<shared_ptr<Territory>>> Benevolent::toDefend() {
 }
 
 // -- NEUTRAL player strategy --
+// default constructor
 Neutral::Neutral(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Neutral";
+}
+
+// copy constructor
+Neutral::Neutral(const Neutral &neutral): PlayerStrategy(neutral) {}
+
+// assignment operator
+Neutral& Neutral::operator=(const Neutral& neutral) {
+    this->player = neutral.player;
+    this->strategyName = neutral.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Neutral& neutral) {
+    os << "strategy: " << neutral.strategyName;
+    return os;
 }
 
 /**
@@ -518,8 +585,25 @@ unique_ptr<vector<shared_ptr<Territory>>> Neutral::toDefend() {
 }
 
 // -- CHEATER player strategy --
+// default constructor
 Cheater::Cheater(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = "Cheater";
+}
+
+// copy constructor
+Cheater::Cheater(const Cheater &cheater): PlayerStrategy(cheater) {}
+
+// assignment operator
+Cheater& Cheater::operator=(const Cheater& cheater) {
+    this->player = cheater.player;
+    this->strategyName = cheater.strategyName;
+    return *this;
+}
+
+// stream insertion operator
+ostream& operator<<(ostream& os, const Cheater& cheater) {
+    os << "strategy: " << cheater.strategyName;
+    return os;
 }
 
 void Cheater::issueOrder() {
