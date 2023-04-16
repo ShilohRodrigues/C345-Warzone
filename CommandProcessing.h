@@ -51,9 +51,6 @@ class CommandProcessor: public virtual Subject, public virtual ILoggable {
     bool validate(Command cmd, GameEngine &game);
     void stringToLog(std::ostream &out) const override;
 
-    //
-    bool parseTournamentCommand(const string&);
-
   protected:
     virtual Command readCommand();
     void saveCommand(Command cmd);
@@ -99,5 +96,6 @@ class FileLineReader {
 };
 
 int CommandProcessingDriverDemo(GameEngine &game, string fileName);
+void runTournamentMode(GameEngine &game, vector<string> maps, vector<string> players, int numGames, int maxTurns);
 
 #endif //COMMAND_PROCESSING

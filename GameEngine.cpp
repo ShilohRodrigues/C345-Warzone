@@ -30,6 +30,14 @@ void GameEngine::startupPhase() {
 
 }
 
+void GameEngine::resetGame() {
+  state = shared_ptr<State>(new StartState()); //Shared pointed, no need to delete
+  map = shared_ptr<Map>(new Map());
+  deck = shared_ptr<Deck>(new Deck());
+  deck->MakeDeck();
+  players.clear();
+}
+
 ///////////////// Game Class Implementations //////////////////////////
 //Game constructor, initializes the state to the starting state
 GameEngine::GameEngine() {
@@ -166,7 +174,8 @@ vector<string> StartState::getCommands(){
 
 bool StartState::checkCommand(string cmd) {
 
-  if (cmd.find("loadmap")!= std::string::npos) return true;
+  if (cmd.find("loadmap")!= std::string::npos || cmd.find("tournament")!= std::string::npos) return true;
+  
   return false;
 
 }

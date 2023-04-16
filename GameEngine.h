@@ -41,7 +41,7 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     const shared_ptr<Deck> &getDeck() const;
     //Part 5
     void stringToLog(std::ostream &out) const override;
-    void executeTournament(int numMaps, const std::vector<std::string>& mapFiles, const std::vector<std::string>& playerStrategies, int numGames, int maxTurns);
+    void resetGame();
 
 private:
     shared_ptr<State> state;  //Tracks the state of the game  
@@ -77,7 +77,7 @@ class StartState: public State {
     virtual bool checkCommand(string cmd) override;
 
   private:
-    vector<string> commands{"loadmap <filename>"};
+    vector<string> commands{"loadmap <filename>", "tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>"};
 };
 class MapLoadedState: public State {
   public:

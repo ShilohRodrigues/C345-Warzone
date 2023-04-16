@@ -1,9 +1,1 @@
-invalid command test
-loadmap sw_baltic.map
-validatemap
-addplayer
-validatemap
-addplayer
-addplayer
-gamestart
-quit
+tournament -M map1,map2,map3 -P player1,player2 -G 3 -D 20

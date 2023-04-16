@@ -27,7 +27,7 @@ ostream& operator<<(ostream &strm, const Command &c) {
   return strm << "Command: " << c.command << ", Effect: " << c.effect << endl;
 }
 //Save effect method
-void Command::stringToLog(std::ostream &out) const {
+void Command::stringToLog(ostream &out) const {
     out << "Command: Saved Effect";
 }
 void Command::saveEffect(string e) {
@@ -80,7 +80,7 @@ Command CommandProcessor::readCommand() {
   getline(cin, cmd);
   return  *(new Command(cmd));
 }
-void CommandProcessor::stringToLog(std::ostream &out) const {
+void CommandProcessor::stringToLog(ostream &out) const {
     out << "Commands Effect: Save Command";
 }
 //Save a command in the vector of commands
@@ -96,53 +96,21 @@ bool CommandProcessor::validate(Command cmd, GameEngine &game) {
 
 }
 
-#include "CommandProcessing.h"
-
-// ... (rest of the code)
-/*The function is used to parse commands for running our tournament */
-bool CommandProcessor::parseTournamentCommand(const std::string& command) {
-    //Declaring our ssObject
-    std::stringstream ssObject(command);
-    std::string token, mapFilesStr, playerStrategiesStr;
-    int numGames = 0, maxTurns = 0;
-
-    //verifying if users input is tournament
-    ssObject >> token;
-    if (token != "tournament") return false;
-
-    //If tournament mode,
-    while (ssObject >> token) {
-        if (token == "-M") {
-            ssObject >> mapFilesStr;
-            //I'm not sure if we need to can use the mapValidater in map.h or would we need to implement a new one?
-            cout << "-M works" << endl;
-            // TODO: Validate mapFilesStr
-        } else if (token == "-P") {
-            ssObject >> playerStrategiesStr;
-            cout << "-P works" << endl;
-            //@shiloh need to figure out if we can use player validater by eugenie or need to figure out some other way.
-            // TODO: Validate playerStrategiesStr
-        } else if (token == "-G") {
-            ssObject >> numGames;
-            if (numGames < 1 || numGames > 5) return false;
-        } else if (token == "-D") {
-            ssObject >> maxTurns;
-            if (maxTurns < 10 || maxTurns > 50) return false;
-        } else {
-            return false; // Unknown token
+//Helper function to split strings by the separator char.
+vector<string> split1(string str, char separator) {
+    vector<string> strings;
+    int startIndex = 0, endIndex = 0;
+    for (int i = 0; i <= str.size(); i++) {
+        if (str[i] == separator || i == str.size()) {
+            endIndex = i;
+            string temp;
+            temp.append(str, startIndex, endIndex - startIndex);
+            strings.push_back(temp);
+            startIndex = endIndex + 1;
         }
     }
-
-    // Check if all required parameters are set
-    if (mapFilesStr.empty() || playerStrategiesStr.empty() || numGames == 0 || maxTurns == 0) {
-        return false;
-    }
-
-    // If everything is valid, return true
-    return true;
+    return strings;
 }
-
-
 
 ///////////// FileCommandProcessorAdapter class implementations /////////////////////
 //Constructor
@@ -240,6 +208,82 @@ int CommandProcessingDriverDemo(GameEngine &game, string fileName) {
       continue;
     }
 
+    //Enter tournament mode
+    if (c.getName().find("tournament") != string::npos) {
+      //Parse and validate command 
+      vector<string> maps, players;
+      int numGames = 0, maxTurns = 0;
+
+      // Parse the command
+      string command = c.getName();
+      istringstream iss(command);
+      vector<string> tokens(istream_iterator<string>{iss}, istream_iterator<string>{});
+
+      // Parse the tokens
+      for (int i = 1; i < tokens.size(); i += 2) {
+          string token = tokens[i];
+          string arg = tokens[i + 1];
+          if (token == "-M") {
+              // Parse ListOfMaps
+              string delimiter = ",";
+              size_t pos = 0;
+              while ((pos = arg.find(delimiter)) != string::npos) {
+                  string map = arg.substr(0, pos);
+                  maps.push_back(map);
+                  arg.erase(0, pos + delimiter.length());
+              }
+              maps.push_back(arg);
+              if (maps.size() < 1 || maps.size() > 5) {
+                  cout << "Invalid tournament command" << endl;
+                  return 0; // invalid number of maps
+              }
+          } else if (token == "-P") {
+              // Parse ListOfPlayers
+              string delimiter = ",";
+              size_t pos = 0;
+              while ((pos = arg.find(delimiter)) != string::npos) {
+                  string player = arg.substr(0, pos);
+                  players.push_back(player);
+                  arg.erase(0, pos + delimiter.length());
+              }
+              players.push_back(arg);
+              if (players.size() < 2 || players.size() > 4) {
+                  cout << "Invalid tournament command" << endl;
+                  return 0; // invalid number of players
+              }
+          } else if (token == "-G") {
+              // Parse NumberOfGames
+              try {
+                  numGames = stoi(arg);
+                  if (numGames < 1 || numGames > 5) {
+                      cout << "Invalid tournament command" << endl;
+                      return 0; // invalid number of games
+                  }
+              } catch (...) {
+                  return false; // invalid number format
+              }
+          } else if (token == "-D") {
+              // Parse maxNumberOfTurns
+              try {
+                  maxTurns = stoi(arg);
+                  if (maxTurns < 10 || maxTurns > 50) {
+                      cout << "Invalid tournament command" << endl;
+                      return 0; // invalid number of turns
+                  }
+              } catch (...) {
+                  cout << "Invalid tournament command" << endl;
+                  return 0; // invalid number format
+              }
+          } else {
+              cout << "Invalid tournament command" << endl;
+              return 0; // invalid token
+          }
+      }
+      
+      runTournamentMode(game, maps, players, numGames, maxTurns);
+      return 0;
+    }
+
     cout << "Command is valid!" << endl;
     int status = game.nextState(c.getName());
     if (status == 0 && c.getName() == "gamestart") {
@@ -252,4 +296,38 @@ int CommandProcessingDriverDemo(GameEngine &game, string fileName) {
   if (file) cout << "All commands have been read from the file." << endl;
 
   return 0;
+}
+
+void runTournamentMode(GameEngine &game, vector<string> maps, vector<string> players, int numGames, int maxTurns) {
+
+  //Loop for each map
+  for (auto &map:maps) {
+    //Loop for each game
+    for (int i=0; i<numGames; i++) {
+      //Load the current map
+      if (game.nextState("loadmap " + map) == 1) {
+        cout << "Invalid map name entered. Quitting tournament mode." << endl;
+        return;
+      }
+      //Validate the map
+      if (game.nextState("validatemap") == 1) {
+        cout << "Map could not be validated. Quitting tournament mode." << endl;
+        return;
+      }
+      //Add players
+      for (auto &player:players) {
+        if (game.nextState("addplayer") == 1) {
+          cout << "Player could not be added. Quitting tournament mode." << endl;
+          return;
+        }
+      }
+
+      //Start the game
+      game.nextState("gamestart");
+
+      game.resetGame();
+
+    }
+  }
+
 }
