@@ -1,9 +1,18 @@
 #include "Player.h"
 #include <algorithm>
+#include "GameEngine.h"
 
 using namespace std;
 
 int Player::nextID = 0;
+
+Player::Player(std::string& playerName, GameEngine* gameEngine)
+    : name(playerName), gameEngine(gameEngine) {
+}
+
+GameEngine* Player::getGameEngine(){
+    return gameEngine;
+}
 
 // default constructor
 Player::Player():
@@ -101,7 +110,8 @@ ostream& operator<<(ostream& os, const Player& player) {
             os << p->getName() << "  ";
         }
     }
-    os << "\nhasConqueredTerritory: " << player.hasConqueredTerritory << endl;
+    os << "\nhasConqueredTerritory: " << player.hasConqueredTerritory;
+    os << "\nplayerStrategy: " << player.playerStrategy->getStrategyName() << endl;
 
     return os;
 }
@@ -149,11 +159,11 @@ void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territori
     }
 }
 
-const unique_ptr<OrdersList> &Player::getOrdersList() const {
+const shared_ptr<OrdersList> &Player::getOrdersList() const {
     return ordersList;
 }
 
-void Player::setOrdersList(unique_ptr<OrdersList> &ordersList) {
+void Player::setOrdersList(shared_ptr<OrdersList> &ordersList) {
     Player::ordersList = std::move(ordersList);
 }
 
@@ -175,48 +185,60 @@ void Player::setHasConqueredTerritory(bool hasConqueredTerritory) {
     Player::hasConqueredTerritory = hasConqueredTerritory;
 }
 
+const shared_ptr<PlayerStrategy> &Player::getPlayerStrategy() {
+    return playerStrategy;
+}
+
+template <typename T>
+void Player::setPlayerStrategy(shared_ptr<T> &playerStrategy) {
+    Player::playerStrategy = std::move(playerStrategy);
+}
+
+template void Player::setPlayerStrategy<Human>(shared_ptr<Human>& playerStrategy);
+template void Player::setPlayerStrategy<Aggressive>(shared_ptr<Aggressive>& playerStrategy);
+template void Player::setPlayerStrategy<Benevolent>(shared_ptr<Benevolent>& playerStrategy);
+template void Player::setPlayerStrategy<Neutral>(shared_ptr<Neutral>& playerStrategy);
+template void Player::setPlayerStrategy<Cheater>(shared_ptr<Cheater>& playerStrategy);
+
+bool Player::hasOrders() const {
+    return !ordersList->getOrderList()->empty();
+}
+
 // destructor
 Player::~Player() = default; // deletion of data members handled by smart pointers already
 
-
-// toDefend()
+shared_ptr<Territory> Player::getTerritoryByID(int territoryID) const {
+    for (const auto& territory : *territories) {
+        if (territory->getId() == territoryID) {
+            return territory;
+        }
+    }
+    // Return nullptr if the territory is not found
+    return nullptr;
+}
 /**
  * Returns a list of territories to defend.
  * @return list of territories to defend
  */
 unique_ptr<vector<shared_ptr<Territory>>> Player::toDefend() {
-    // TODO: not arbitrary anymore
-    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back(this->territories->at(0));
-    arbitraryList->push_back(this->territories->at(1));
-
-    return arbitraryList;
+    return playerStrategy->toDefend();
 }
 
-// toAttack()
 /**
  * Returns a list of territories to attack.
  * @return list of territories to attack
  */
 unique_ptr<vector<shared_ptr<Territory>>> Player::toAttack() {
-    // TODO: not arbitrary anymore
-    auto arbitraryList = make_unique<vector<shared_ptr<Territory>>>();
-    arbitraryList->push_back(this->territories->at(2));
-    arbitraryList->push_back(this->territories->at(3));
-
-    return arbitraryList;
+    return playerStrategy->toAttack();
 }
 
 
-// issueOrder()
 /**
  * Creates an order and adds it to the list of orders.
  * @param order
  */
 void Player::issueOrder() {
-    // TODO: not arbitrary anymore
-//    auto testOrder = make_shared<Deploy>();
-//    ordersList->add(testOrder);
+    playerStrategy->issueOrder();
 }
 
 void Player::addTerritory(const shared_ptr<Territory>& territory) {
@@ -253,6 +275,7 @@ void Player::removeTerritory(const shared_ptr<Territory> &territory, const share
  */
 void Player::updateTerritories() {
     for (const auto& territory : *this->territories) {
+        territory->setWasAttacked(false);
         if (territory->getPlayerInPossession() != this->name) {
             this->removeTerritory(territory);
         }
@@ -330,6 +353,23 @@ void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
 }
 
 /**
+ * Checks if the player has been attacked at any time this turn.
+ * @return true if the player was attacked
+ */
+bool Player::wasAttacked() {
+    // Check if any territories owned by the player have changed ownership
+    for (auto& territory : *this->territories) {
+        if (territory->territoryWasAttacked() == true) {
+            // owned or previously owned territory was attacked, so player has been attacked
+            return true;
+        }
+    }
+
+    // No territories have changed ownership
+    return false;
+}
+
+/**
  * Updates all the player data members that need to be updated after every turn
  * and executes any additional actions that need to be done every turn.
  *
@@ -341,6 +381,7 @@ void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
  * 5) draw if hasConqueredTerritory
  * 6) clear hasConqueredTerritory
  * 7) clear player's played cards
+ * 8) reset the cheater canCheat if the player is a cheater
  *
  * This method is meant to be called at the end of every turn on every player.
  *
@@ -348,13 +389,22 @@ void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
  */
 void Player::update(const shared_ptr<Deck>& deck) {
     this->updateArmyCount();
-    this->reinforcementPool = this->armyCount;
+    this->reinforcementPool = max(3, this->armyCount / 2); // I don't know the rule
     this->updateTerritories();
     this->clearNegotiatedPlayers();
     this->drawIfHasConquered(deck);
     this->hasConqueredTerritory = false;
     this->cardHand->clearPlayedCards();
+    // cheater only
+    if (this->playerStrategy->getStrategyName() == "Cheater") {
+        auto cheaterStrategy = dynamic_pointer_cast<Cheater>(this->playerStrategy);
+        if (cheaterStrategy) {
+            cheaterStrategy->setCanCheat(true);
+        }
+    }
 }
+
+
 
 
 

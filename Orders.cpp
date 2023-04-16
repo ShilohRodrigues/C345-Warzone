@@ -52,11 +52,13 @@ Deploy::Deploy(const shared_ptr<Player>& player,
                const shared_ptr<Territory>& targetTerritory,
                const int deployedArmies):
     Order(), player(player), targetTerritory(targetTerritory), deployedArmies(deployedArmies) {}
+
 Deploy::Deploy(const Deploy& deploy):Order(deploy) {
     this->player = deploy.player;
     this->targetTerritory = deploy.targetTerritory;
     this->deployedArmies = deploy.deployedArmies;
 }
+
 Deploy& Deploy::operator=(const Deploy& deploy) {
     if (this == &deploy) {
         return *this;
@@ -67,6 +69,7 @@ Deploy& Deploy::operator=(const Deploy& deploy) {
         return *this;
     }
 }
+
 ostream& operator<<(ostream& os, const Deploy& deploy) {
     os << static_cast<const Order&>(deploy);
     os << " - player: " << deploy.player->getName();
@@ -105,6 +108,9 @@ void Deploy::stringToLog(std::ostream &out) const {
 }
 
 int Deploy::execute() {
+    // status report
+    cout << "Trying to deploy " << deployedArmies << " armies to " << this->targetTerritory->getName()
+         << " belonging to " << this->targetTerritory->getPlayerInPossession() << endl;
     if (validate()) {
         // add deployed armies to existing armies
         int updatedArmies = *targetTerritory->getArmyCnt() + deployedArmies;
@@ -114,6 +120,9 @@ int Deploy::execute() {
         // remove deployed armies from the player's reinforcement pool
         player->setReinforcementPool(player->getReinforcementPool() - deployedArmies);
         notify(this);
+
+        // report outcome
+        cout << "Deploy order completed.\nTarget territory status: " << endl << *targetTerritory << endl;
 
         return 0;
     } else {
@@ -268,6 +277,9 @@ void Advance::attack() {
     int sourceArmies = *this->sourceTerritory->getArmyCnt();
     int attackingArmies = this->advanceArmies;
     int defendingArmies = *this->targetTerritory->getArmyCnt();
+
+    // signal that the target territory was attacked
+    this->targetTerritory->setWasAttacked(true);
 
     // move armies out of the source territory
     sourceArmies = sourceArmies - attackingArmies;
@@ -437,6 +449,10 @@ int Bomb::execute() {
     cout << "Trying to bomb territory:" << endl;
     cout << *this->targetTerritory;
     if (validate()) {
+        // signal that the target territory was attacked
+        this->targetTerritory->setWasAttacked(true);
+
+        // update target armies count
         int targetArmies = *this->targetTerritory->getArmyCnt();
         targetArmies = targetArmies / 2;
         auto newTargetArmiesPtr = make_unique<int>(targetArmies);
@@ -902,7 +918,20 @@ ostream& operator<<(ostream& os, const OrdersList& ordersList) {
     // make sure we're not iterating over a nullptr
     if (ordersList.orderList) {
         for (const auto& order : *ordersList.orderList) {
-            os << *order << endl;
+            // check which type of order it is and use the appropriate stream insertion operator
+            if (auto deploy = dynamic_pointer_cast<Deploy>(order)) {
+                os << *deploy << endl;
+            } else if (auto advance = dynamic_pointer_cast<Advance>(order)) {
+                os << *advance << endl;
+            } else if (auto bomb = dynamic_pointer_cast<Bomb>(order)) {
+                os << *bomb << endl;
+            } else if (auto blockade = dynamic_pointer_cast<Blockade>(order)) {
+                os << *blockade << endl;
+            } else if (auto airlift = dynamic_pointer_cast<Airlift>(order)) {
+                os << *airlift << endl;
+            } else if (auto negotiate = dynamic_pointer_cast<Negotiate>(order)) {
+                os << *negotiate << endl;
+            }
         }
     } else {
         os << "null\n";
@@ -1013,6 +1042,15 @@ void OrdersList::remove(int orderID) {
         // remove the order
         this->orderList->remove(*orderIterator);
     }
+}
+
+void OrdersList::executeAll() {
+    cout << "Executing all orders . . ." << endl;
+    for (auto& order : *this->orderList) {
+        order->execute();
+    }
+    this->orderList->clear();
+    cout << "All orders executed." << endl;
 }
 
 // getters and setters

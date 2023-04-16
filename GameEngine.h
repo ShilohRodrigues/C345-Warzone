@@ -13,6 +13,9 @@
 #include "LoggingObserver.h"
 using namespace std;
 
+class Player;
+class OrdersList;
+
 class State;
 class GameEngine;
 class CommandProcessor;
@@ -43,11 +46,21 @@ class GameEngine:public virtual Subject, public virtual ILoggable {
     void stringToLog(std::ostream &out) const override;
     void resetGame();
 
-private:
+
+    // part 3 add//
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+    void sortOrders(OrdersList* orderList);
+    vector<Player> getAllPlayers();
+
+  private:
     shared_ptr<State> state;  //Tracks the state of the game  
     shared_ptr<Map> map;
     vector<Player> players;
     shared_ptr<Deck> deck;
+    int currentPlayerIndex = 0;
+
 
 };
 

@@ -25,6 +25,8 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     armyCnt = std::make_unique<int>(0);
     playerInPossession = "";
     adjacentTerritories = std::make_shared<vector<int>>();
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>();
+    wasAttacked = false;
 }
 //Parameterized
 Territory::Territory(int idTerritory, const string& territoryName, int territoryContinent, const string& player,int armies) {
@@ -34,6 +36,8 @@ Territory::Territory(int idTerritory, const string& territoryName, int territory
     playerInPossession = player;
     armyCnt = std::make_unique<int>(armies);
     adjacentTerritories = std::make_shared<vector<int>>();
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>();
+    wasAttacked = false;
 }
 
 //Copy
@@ -44,6 +48,8 @@ Territory::Territory(const Territory &territory) {
     playerInPossession = territory.playerInPossession;
     armyCnt = std::make_unique<int>(*territory.armyCnt);
     adjacentTerritories = std::make_shared<vector<int>>(*territory.adjacentTerritories);
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>(*territory.adjacentTerritoriesPointers);
+    wasAttacked = territory.wasAttacked;
 }
 //Destructor
 Territory::~Territory() = default;
@@ -62,6 +68,7 @@ Territory& Territory::operator=(const Territory& territory) {
     armyCnt = std::make_unique<int>(*territory.armyCnt);
     playerInPossession = territory.playerInPossession;
     adjacentTerritories = std::make_shared<vector<int>>(*territory.adjacentTerritories);
+    adjacentTerritoriesPointers = std::make_shared<vector<shared_ptr<Territory>>>(*territory.adjacentTerritoriesPointers);
     // This is a pointer that deals with our current object, by returning this, we are returning the
     //current object
     return *this;
@@ -124,6 +131,33 @@ const shared_ptr<vector<int>> &Territory::getAdjacentTerritories() const {
 
 void Territory::setAdjacentTerritories(const shared_ptr<vector<int>> &adjacentTerritories) {
     Territory::adjacentTerritories = adjacentTerritories;
+}
+
+const shared_ptr<vector<shared_ptr<Territory>>> &Territory::getAdjacentTerritoriesPointers() const {
+    return adjacentTerritoriesPointers;
+}
+
+void Territory::setAdjacentTerritoriesPointers(
+        const shared_ptr<vector<shared_ptr<Territory>>> &adjacentTerritoriesPointers) {
+    Territory::adjacentTerritoriesPointers = adjacentTerritoriesPointers;
+}
+
+/**
+ * Adds the given territory to both Territory data members related to adjacency.
+ * Used for test purposes.
+ * @param territory
+ */
+void Territory::addAdjacent(const shared_ptr<Territory>& territory) {
+    this->adjacentTerritories->push_back(territory->getId());
+    this->adjacentTerritoriesPointers->push_back(territory);
+}
+
+bool Territory::territoryWasAttacked() const {
+    return wasAttacked;
+}
+
+void Territory::setWasAttacked(bool wasAttacked) {
+    Territory::wasAttacked = wasAttacked;
 }
 
 ////////////// Continent Class /////////////////////
@@ -233,6 +267,11 @@ void Map::addBorder(const Territory& from, list<Territory> to) {
 void Map::addContinent(const Continent& c) {
     continents->push_back(c);
 }
+
+//Get all continents
+vector<Continent>& Map::getContinents() {
+    return *(continents);
+}
 //Add a border for a continent
 void Map::addBorderContinent(int cid, const Territory& from, list<Territory> to) {
     (*continents)[cid].addBorder(from, std::move(to));
@@ -282,7 +321,7 @@ bool Map::isConnected(unordered_map<Territory, list<Territory>, MyHash> t) {
     return visited.size() == t.size() && t.size() > 1;
 }
 //Get territories
-unordered_map<Territory, list<Territory>, MyHash> Map::getTerritories() {
+unordered_map<Territory, list<Territory>, MyHash>& Map::getTerritories() {
     return *territories;
 }
 
@@ -296,6 +335,46 @@ bool Map::areAdjacent(const Territory &territory1, const Territory &territory2) 
     const auto& adjTerritories = *territory1.getAdjacentTerritories();
     return std::any_of(adjTerritories.begin(), adjTerritories.end(),
                        [&](int territoryID) { return territoryID == territory2.getId(); });
+}
+
+/**
+ * Returns a pointer to the territory corresponding to the given territory ID.
+ * @param territoryID of the desired territory
+ * @return a pointer to the territory corresponding to the given territory ID
+ */
+shared_ptr<Territory> Map::getTerritoryFromID(int territoryID) {
+    // get a reference to the map of territories
+    auto& territories = this->getTerritories();
+    auto it = std::find_if(territories.begin(), territories.end(),
+                           [territoryID](const pair<Territory, list<Territory>>& territoryPair)
+                           {
+                               // find the pair of (Territory, list<Territory>) that matches the given territory ID
+                               return territoryPair.first.getId() == territoryID;
+                           });
+
+    if (it != territories.end()) {
+        // get a reference to the Territory object in the found pair
+        auto& territory = const_cast<Territory &>(it->first);
+        // create a shared_ptr that points to the original Territory object and does not delete it
+        // (doesn't cause a memory leak because the territories will be deleted when the map is deleted)
+        return shared_ptr<Territory>(&territory, [](Territory*){});
+    }
+    else {
+        return nullptr;
+    }
+}
+
+/**
+ * Returns a pointer to a vector of territories adjacent to the given territory.
+ * @param territory the territory whose adjacent territories will be returned as a vector of territories
+ * @return a pointer to a vector of territories adjacent to the given territory
+ */
+shared_ptr<vector<shared_ptr<Territory>>> Map::getAdjacentTerritories(Territory &territory) {
+    auto adjacentTerritories = make_shared<vector<shared_ptr<Territory>>>();
+    for (auto& territoryID : *territory.getAdjacentTerritories()) {
+        adjacentTerritories->push_back(this->getTerritoryFromID(territoryID));
+    }
+    return adjacentTerritories;
 }
 
 //MapLoader Class
@@ -405,8 +484,9 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
             }
         }
     }
+
     // Set the adjacency list for each territory in the map
-    auto territories = mp.getTerritories();
+    auto& territories = mp.getTerritories();
     for (auto& territoryPair : territories) {
         auto& territory = const_cast<Territory &>(territoryPair.first);
         int territoryId = territory.getId();
@@ -414,6 +494,13 @@ bool MapLoader::loadMap(Map& mp, const string& path) {
             shared_ptr<vector<int>> adjacentTerritories = make_shared<vector<int>>(adjacencyList[territoryId]);
             territory.setAdjacentTerritories(adjacentTerritories);
         }
+    }
+
+    // set vector of adjacent territories pointers for each territory
+    for (auto& territoryPair : territories) {
+        auto& territory = const_cast<Territory &>(territoryPair.first);
+        auto adjacentTerritoriesPointers = mp.getAdjacentTerritories(territory);
+        territory.setAdjacentTerritoriesPointers(adjacentTerritoriesPointers);
     }
 
     mapFile.close();
