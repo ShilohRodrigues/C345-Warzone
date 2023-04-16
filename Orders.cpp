@@ -278,6 +278,9 @@ void Advance::attack() {
     int attackingArmies = this->advanceArmies;
     int defendingArmies = *this->targetTerritory->getArmyCnt();
 
+    // signal that the target territory was attacked
+    this->targetTerritory->setWasAttacked(true);
+
     // move armies out of the source territory
     sourceArmies = sourceArmies - attackingArmies;
     auto newSourceArmyPtr = make_unique<int>(sourceArmies);
@@ -446,6 +449,10 @@ int Bomb::execute() {
     cout << "Trying to bomb territory:" << endl;
     cout << *this->targetTerritory;
     if (validate()) {
+        // signal that the target territory was attacked
+        this->targetTerritory->setWasAttacked(true);
+
+        // update target armies count
         int targetArmies = *this->targetTerritory->getArmyCnt();
         targetArmies = targetArmies / 2;
         auto newTargetArmiesPtr = make_unique<int>(targetArmies);
