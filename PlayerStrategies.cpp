@@ -69,6 +69,8 @@ ostream& operator<<(ostream& os, const Human& human) {
     return os;
 }
 
+void Human::issueOrder() {}
+
 void Human::issueOrder(const vector<shared_ptr<Player>>& allPlayers) {
     auto humanDefendList = this->toDefend();
 
@@ -149,10 +151,10 @@ void Human::issueOrder(const vector<shared_ptr<Player>>& allPlayers) {
                     cout << "Invalid target territory" << endl;
                     return;
                 }
-                auto neutralPlayer = make_shared<NeutralPlayer>();
-                auto blockadeOrder = make_shared<Blockade>(this->player, neutralPlayer, targetTerritory);
+//                auto neutralPlayer = make_shared<Neutral>();
+//                auto blockadeOrder = make_shared<Blockade>(this->player, neutralPlayer, targetTerritory);
                 auto ordersList = *this->player->getOrdersList();
-                ordersList.add(blockadeOrder);
+//                ordersList.add(blockadeOrder);
             }
             else if (cardType == "Airlift"){
                 auto defendList = this->toDefend();
