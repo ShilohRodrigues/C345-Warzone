@@ -161,23 +161,23 @@ void Human::issueOrder() {
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Human::toAttack() {
-    unique_ptr<vector<shared_ptr<Territory>>> attackList = make_unique<vector<shared_ptr<Territory>>>();
-    cout << "The list of territories to attack:" << endl;
-    int index = 1;
-    for (const auto& territory : *player->getTerritories()) {
-        if (territory->getPlayerInPossession() != player->getName()) {
-            // Iterate over adjacent territories and check if they are not owned by the player
-            for (int adjacentTerritoryID : *territory->getAdjacentTerritories()) {
-                shared_ptr<Territory> adjacentTerritory = player->getTerritoryByID(adjacentTerritoryID);
-                if (adjacentTerritory->getPlayerInPossession() != player->getName()) {
-                    attackList->push_back(adjacentTerritory);
-                    cout << index << ". " << territory->getName() << endl;
-                    index++;
-                }
-            }
-        }
-    }
-    return attackList;
+//    unique_ptr<vector<shared_ptr<Territory>>> attackList = make_unique<vector<shared_ptr<Territory>>>();
+//    cout << "The list of territories to attack:" << endl;
+//    int index = 1;
+//    for (const auto& territory : *player->getTerritories()) {
+//        if (territory->getPlayerInPossession() != player->getName()) {
+//            // Iterate over adjacent territories and check if they are not owned by the player
+//            for (int adjacentTerritoryID : *territory->getAdjacentTerritories()) {
+//                shared_ptr<Territory> adjacentTerritory = player->getTerritoryByID(adjacentTerritoryID);
+//                if (adjacentTerritory->getPlayerInPossession() != player->getName()) {
+//                    attackList->push_back(adjacentTerritory);
+//                    cout << index << ". " << territory->getName() << endl;
+//                    index++;
+//                }
+//            }
+//        }
+//    }
+//    return attackList;
 }
 
 unique_ptr<vector<shared_ptr<Territory>>> Human::toDefend() {
