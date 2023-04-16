@@ -4,10 +4,10 @@
 using namespace std;
 
 void playerStrategyDemo() {
-//    aggressiveDemo();
+    aggressiveDemo();
 //    benevolentDemo();
 //    neutralDemo();
-    cheaterDemo();
+//    cheaterDemo();
 }
 
 void aggressiveDemo() {
@@ -15,16 +15,17 @@ void aggressiveDemo() {
     // make test player
     auto testAggressivePlayer = make_shared<Player>();
     testAggressivePlayer->setReinforcementPool(10);
+    testAggressivePlayer->setArmyCount(7);
 
     // assign strategy
     auto aggressiveStrategy = make_shared<Aggressive>(testAggressivePlayer);
     testAggressivePlayer->setPlayerStrategy(aggressiveStrategy);
 
     // make territories
-    auto testTerritory1 = make_shared<Territory>(1, "testTerritory1", 0, "test", 2);
+    auto testTerritory1 = make_shared<Territory>(1, "testTerritory1", 0, "test", 4);
     auto testTerritory2 = make_shared<Territory>(2, "testTerritory2", 0, "Enemy", 1);
     auto testTerritory3 = make_shared<Territory>(3, "testTerritory3", 0, "Enemy", 1);
-    auto testTerritory4 = make_shared<Territory>(4, "testTerritory4", 0, "test", 1);
+    auto testTerritory4 = make_shared<Territory>(4, "testTerritory4", 0, "test", 2);
     auto testTerritory5 = make_shared<Territory>(5, "testTerritory5", 0, "Enemy", 1);
     auto testTerritory6 = make_shared<Territory>(6, "testTerritory6", 0, "Enemy", 1);
 
