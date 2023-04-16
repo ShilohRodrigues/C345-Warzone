@@ -71,9 +71,8 @@ public:
     const unique_ptr<vector<shared_ptr<Territory>>> &getTerritories() const;
     void setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories);
 
-
-    const unique_ptr<OrdersList> &getOrdersList() const;
-    void setOrdersList(unique_ptr<OrdersList> &ordersList);
+    const shared_ptr<OrdersList> &getOrdersList() const;
+    void setOrdersList(shared_ptr<OrdersList> &ordersList);
 
     const unique_ptr<vector<shared_ptr<Player>>> &getNegotiatedPlayers() const;
     void setNegotiatedPlayers(const unique_ptr<vector<shared_ptr<Player>>> &negotiatedPlayers);
@@ -102,7 +101,7 @@ private:
     // player owns collection of territories
     unique_ptr<vector<shared_ptr<Territory>>> territories;
     // player has list of orders
-    unique_ptr<OrdersList> ordersList;
+    shared_ptr<OrdersList> ordersList;
     // for the negotiation order
     unique_ptr<vector<shared_ptr<Player>>> negotiatedPlayers;
 

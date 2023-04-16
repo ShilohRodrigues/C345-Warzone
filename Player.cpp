@@ -163,7 +163,7 @@ const shared_ptr<OrdersList> &Player::getOrdersList() const {
     return ordersList;
 }
 
-void Player::setOrdersList(unique_ptr<OrdersList> &ordersList) {
+void Player::setOrdersList(shared_ptr<OrdersList> &ordersList) {
     Player::ordersList = std::move(ordersList);
 }
 
