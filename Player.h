@@ -52,8 +52,6 @@ public:
     bool hasCardInHand(const string& cardType);
     void playCard(const shared_ptr<Deck>& deck, const string& cardType);
 
-    bool wasAttacked();
-
     void update(const shared_ptr<Deck>& deck);
 
     // getters and setters
@@ -71,7 +69,8 @@ public:
     const unique_ptr<vector<shared_ptr<Territory>>> &getTerritories() const;
     void setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territories);
 
-    const shared_ptr<OrdersList> &getOrdersList() const;
+
+    const unique_ptr<OrdersList> &getOrdersList() const;
     void setOrdersList(unique_ptr<OrdersList> &ordersList);
 
     const unique_ptr<vector<shared_ptr<Player>>> &getNegotiatedPlayers() const;
@@ -88,6 +87,7 @@ public:
     bool hasOrders() const;
     //part 3
     Player(std::string& playerName, GameEngine* gameEngine);
+    shared_ptr<Territory> getTerritoryByID(int territoryID) const;
 
 private:
     static int nextID;
@@ -100,7 +100,7 @@ private:
     // player owns collection of territories
     unique_ptr<vector<shared_ptr<Territory>>> territories;
     // player has list of orders
-    shared_ptr<OrdersList> ordersList;
+    unique_ptr<OrdersList> ordersList;
     // for the negotiation order
     unique_ptr<vector<shared_ptr<Player>>> negotiatedPlayers;
 
@@ -109,6 +109,11 @@ private:
     GameEngine* getGameEngine();
 
     shared_ptr<PlayerStrategy> playerStrategy;
+};
+
+class NeutralPlayer : public Player {
+public:
+    NeutralPlayer();
 };
 
 void playerDemo1();

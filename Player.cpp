@@ -159,7 +159,7 @@ void Player::setTerritories(unique_ptr<vector<shared_ptr<Territory>>> &territori
     }
 }
 
-const shared_ptr<OrdersList> &Player::getOrdersList() const {
+const unique_ptr<OrdersList> &Player::getOrdersList() const {
     return ordersList;
 }
 
@@ -207,6 +207,15 @@ bool Player::hasOrders() const {
 // destructor
 Player::~Player() = default; // deletion of data members handled by smart pointers already
 
+shared_ptr<Territory> Player::getTerritoryByID(int territoryID) const {
+    for (const auto& territory : *territories) {
+        if (territory->getId() == territoryID) {
+            return territory;
+        }
+    }
+    // Return nullptr if the territory is not found
+    return nullptr;
+}
 /**
  * Returns a list of territories to defend.
  * @return list of territories to defend
@@ -283,10 +292,10 @@ void Player::clearNegotiatedPlayers() {
 
 bool Player::isInNegotiatedPlayers(string playerName) {
     return any_of(this->negotiatedPlayers->begin(),
-                  this->negotiatedPlayers->end(),
-                  [&](const auto& player) {
-        return player->getName() == playerName;
-    });
+        this->negotiatedPlayers->end(),
+        [&](const auto& player) {
+            return player->getName() == playerName;
+        });
 }
 
 int Player::updateArmyCount() {
@@ -305,7 +314,7 @@ int Player::updateArmyCount() {
  * Meant to be called at the end of every turn.
  * @param deck shared pointer to the deck of cards used during the game
  */
-void Player::drawIfHasConquered(const shared_ptr<Deck> &deck) {
+void Player::drawIfHasConquered(const shared_ptr<Deck>& deck) {
     if (hasConqueredTerritory) {
         Card* card = deck->draw();
         this->cardHand->addCardToHand(card);
@@ -321,7 +330,7 @@ bool Player::hasPlayedCard(const string& cardType) {
     return Hand::findFirstCard(this->cardHand->getPlayCards(), cardType) != -1;
 }
 
-bool Player::hasCardInHand(const string &cardType) {
+bool Player::hasCardInHand(const string& cardType) {
     return Hand::findFirstCard(this->cardHand->getHandOfCards(), cardType) != -1;
 }
 
@@ -330,7 +339,7 @@ bool Player::hasCardInHand(const string &cardType) {
  * @param deck shared ptr to the deck
  * @param cardType the type of card that needs to be played
  */
-void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
+void Player::playCard(const shared_ptr<Deck>& deck, const string& cardType) {
     if (this->hasCardInHand(cardType)) {
         // get the card
         int cardIndex = Hand::findFirstCard(this->cardHand->getHandOfCards(), cardType);
@@ -379,17 +388,10 @@ bool Player::wasAttacked() {
  */
 void Player::update(const shared_ptr<Deck>& deck) {
     this->updateArmyCount();
-    this->reinforcementPool = max(3, this->armyCount/2); // I don't know the rule
+    this->reinforcementPool = max(3, this->armyCount / 2); // I don't know the rule
     this->updateTerritories();
     this->clearNegotiatedPlayers();
     this->drawIfHasConquered(deck);
     this->hasConqueredTerritory = false;
     this->cardHand->clearPlayedCards();
 }
-
-
-
-
-
-
-

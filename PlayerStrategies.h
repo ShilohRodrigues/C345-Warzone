@@ -19,26 +19,28 @@ public:
     virtual unique_ptr<vector<shared_ptr<Territory>>> toAttack() = 0;
     virtual unique_ptr<vector<shared_ptr<Territory>>> toDefend() = 0;
 
-    const shared_ptr<Player> &getPlayer() const;
-    void setPlayer(shared_ptr<Player> &player);
+    const shared_ptr<Player>& getPlayer() const;
+    void setPlayer(shared_ptr<Player>& player);
 
-    const string &getStrategyName() const;
-    void setStrategyName(const string &strategyName);
+    const string& getStrategyName() const;
+    void setStrategyName(const string& strategyName);
 
 protected:
     shared_ptr<Player> player;
     string strategyName;
 };
 
-class Human: public PlayerStrategy {
+class Human : public PlayerStrategy {
 public:
     Human(shared_ptr<Player> player);
-    void issueOrder() override;
+    virtual void issueOrder(const vector<shared_ptr<Player>>& allPlayers);
     unique_ptr<vector<shared_ptr<Territory>>> toAttack() override;
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
+    void advanceOrderDefend();
+    void advanceOrderAttack();
 };
 
-class Aggressive: public PlayerStrategy {
+class Aggressive : public PlayerStrategy {
 public:
     Aggressive(shared_ptr<Player> player);
     void issueOrder() override;
@@ -48,7 +50,7 @@ public:
     shared_ptr<Territory> getStrongestTerritory();
 };
 
-class Benevolent: public PlayerStrategy {
+class Benevolent : public PlayerStrategy {
 public:
     Benevolent(shared_ptr<Player> player);
     void issueOrder() override;
@@ -56,7 +58,7 @@ public:
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
 };
 
-class Neutral: public PlayerStrategy {
+class Neutral : public PlayerStrategy {
 public:
     Neutral(shared_ptr<Player> player);
     void issueOrder() override;
@@ -64,7 +66,7 @@ public:
     unique_ptr<vector<shared_ptr<Territory>>> toDefend() override;
 };
 
-class Cheater: public PlayerStrategy {
+class Cheater : public PlayerStrategy {
 public:
     Cheater(shared_ptr<Player> player);
     void issueOrder() override;
