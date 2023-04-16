@@ -22,6 +22,14 @@ void PlayerStrategy::setPlayer(shared_ptr<Player> &player) {
     PlayerStrategy::player = player;
 }
 
+const string &PlayerStrategy::getStrategyName() const {
+    return strategyName;
+}
+
+void PlayerStrategy::setStrategyName(const string &strategyName) {
+    PlayerStrategy::strategyName = strategyName;
+}
+
 // -- HUMAN player strategy --
 Human::Human(shared_ptr<Player> player): PlayerStrategy(player) {
     this->strategyName = strategyName;
@@ -453,11 +461,17 @@ Neutral::Neutral(shared_ptr<Player> player): PlayerStrategy(player) {
 }
 
 /**
- * Issues orders for the Neutral player.
- * The Neutral player never issues any orders, but if it gets attacked, it becomes an aggressive player.
+ * Issues orders for the Neutral player, but since the Neutral player never issues any orders,
+ * the method checks if the player got attacked prior to its turn issuing orders,
+ * if so, it becomes an aggressive player.
  */
 void Neutral::issueOrder() {
-    // the neutral player doesn't issue any orders
+    // check if the player was attacked and is not already aggressive
+    if (this->player->wasAttacked() && this->player->getPlayerStrategy()->getStrategyName() != "Aggressive") {
+        // create an aggressive strategy and assign it to the player
+        auto aggressiveStrategy = make_shared<Aggressive>(this->player);
+        this->player->setPlayerStrategy(aggressiveStrategy);
+    }
 }
 
 /**

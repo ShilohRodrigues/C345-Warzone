@@ -22,6 +22,9 @@ public:
     const shared_ptr<Player> &getPlayer() const;
     void setPlayer(shared_ptr<Player> &player);
 
+    const string &getStrategyName() const;
+    void setStrategyName(const string &strategyName);
+
 protected:
     shared_ptr<Player> player;
     string strategyName;
