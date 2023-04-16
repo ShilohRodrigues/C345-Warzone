@@ -52,6 +52,8 @@ public:
     bool hasCardInHand(const string& cardType);
     void playCard(const shared_ptr<Deck>& deck, const string& cardType);
 
+    bool wasAttacked();
+
     void update(const shared_ptr<Deck>& deck);
 
     // getters and setters

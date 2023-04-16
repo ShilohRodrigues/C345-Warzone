@@ -342,6 +342,23 @@ void Player::playCard(const shared_ptr<Deck> &deck, const string &cardType) {
 }
 
 /**
+ * Checks if the player has been attacked at any time this turn.
+ * @return true if the player was attacked
+ */
+bool Player::wasAttacked() {
+    // Check if any territories owned by the player have changed ownership
+    for (auto& territory : *this->territories) {
+        if (territory->territoryWasAttacked() == true) {
+            // owned or previously owned territory was attacked, so player has been attacked
+            return true;
+        }
+    }
+
+    // No territories have changed ownership
+    return false;
+}
+
+/**
  * Updates all the player data members that need to be updated after every turn
  * and executes any additional actions that need to be done every turn.
  *
