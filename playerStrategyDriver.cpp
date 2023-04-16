@@ -6,7 +6,8 @@ using namespace std;
 void playerStrategyDemo() {
 //    aggressiveDemo();
 //    benevolentDemo();
-    neutralDemo();
+//    neutralDemo();
+    cheaterDemo();
 }
 
 void aggressiveDemo() {
@@ -194,4 +195,65 @@ void neutralDemo() {
             "\nThis is why it is now issuing aggressive orders." << endl;
     cout << "\nWe have demonstrated that the neutral player never issues any order, and that "
             "\nit becomes an aggressive player if attacked." << endl;
+}
+
+void cheaterDemo() {
+    cout << "-- CHEATER STRATEGY DEMO --" << endl;
+    // make test player
+    auto testCheaterPlayer = make_shared<Player>();
+    testCheaterPlayer->setReinforcementPool(10);
+
+    // assign strategy
+    auto cheaterStrategy = make_shared<Cheater>(testCheaterPlayer);
+    testCheaterPlayer->setPlayerStrategy(cheaterStrategy);
+
+    // make territories
+    auto testTerritory1 = make_shared<Territory>(1, "testTerritory1", 0, "test", 2);
+    auto testTerritory2 = make_shared<Territory>(2, "testTerritory2", 0, "Enemy", 1);
+    auto testTerritory3 = make_shared<Territory>(3, "testTerritory3", 0, "Enemy", 1);
+    auto testTerritory4 = make_shared<Territory>(4, "testTerritory4", 0, "test", 1);
+    auto testTerritory5 = make_shared<Territory>(5, "testTerritory5", 0, "Enemy", 1);
+    auto testTerritory6 = make_shared<Territory>(6, "testTerritory6", 0, "Enemy", 1);
+
+    testTerritory1->addAdjacent(testTerritory2);
+    testTerritory2->addAdjacent(testTerritory3);
+    testTerritory4->addAdjacent(testTerritory5);
+    testTerritory5->addAdjacent(testTerritory6);
+
+    // assign territories to player
+    testCheaterPlayer->addTerritory(testTerritory1);
+    testCheaterPlayer->addTerritory(testTerritory4);
+
+    // simulate turn
+    cout << "-- Test Cheater Player (before): " << endl;
+    cout << *testCheaterPlayer << endl;
+    testCheaterPlayer->issueOrder();
+    cout << "-- Test Cheater Player (after issuing orders turn 1, 1st time): " << endl;
+    cout << *testCheaterPlayer << endl;
+    testCheaterPlayer->getOrdersList()->executeAll();
+    cout << "We see that the cheater player initially only owned territories 1 and 4, but was able to automatically "
+            "\nconquer their adjacent enemy territories, territories 2 and 5 during turn 1 without needing "
+            "\nto issue any formal orders, because it is cheating." << endl;
+    // try to conquer again within same turn
+    testCheaterPlayer->issueOrder();
+    cout << "\n-- Test Cheater Player (after issuing orders turn 1 (same turn), 2nd time): " << endl;
+    cout << *testCheaterPlayer << endl;
+    cout << "We see that the cheater player was not able to automatically conquer the enemy territories adjacent "
+            "\nto territories 2 and 5, which would have been territories 3 and 6."
+            "\nThis is because the cheater player is still issuing 'orders' during turn 1, and the cheater player "
+            "\nhas already conquered this turn, so it cannot do it again this turn." << endl;
+    auto deck = make_shared<Deck>();
+    deck->MakeDeck();
+    testCheaterPlayer->update(deck);
+
+    // simulate another turn
+    testCheaterPlayer->issueOrder();
+    cout << "\n-- Test Cheater Player (after issuing orders turn 2): " << endl;
+    cout << *testCheaterPlayer << endl;
+    cout << "Now that we have reached a new turn, the cheater player is able to automatically conquer "
+            "\nall enemy territories adjacent to its territories again."
+            "\nWe see that the cheater player has now successfully conquered the enemy territories adjacent to"
+            "\nterritories 2 and 5, which are territories 3 and 6." << endl;
+    cout << "\nWe have demonstrated that the cheater player automatically conquers all enemy territories "
+            "\nthat are adjacent to its own territories, and only does so once per turn." << endl;
 }
