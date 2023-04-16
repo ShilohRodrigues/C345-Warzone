@@ -372,6 +372,7 @@ bool Player::wasAttacked() {
  * 5) draw if hasConqueredTerritory
  * 6) clear hasConqueredTerritory
  * 7) clear player's played cards
+ * 8) reset the cheater canCheat if the player is a cheater
  *
  * This method is meant to be called at the end of every turn on every player.
  *
@@ -385,6 +386,13 @@ void Player::update(const shared_ptr<Deck>& deck) {
     this->drawIfHasConquered(deck);
     this->hasConqueredTerritory = false;
     this->cardHand->clearPlayedCards();
+    // cheater only
+    if (this->playerStrategy->getStrategyName() == "Cheater") {
+        auto cheaterStrategy = dynamic_pointer_cast<Cheater>(this->playerStrategy);
+        if (cheaterStrategy) {
+            cheaterStrategy->setCanCheat(true);
+        }
+    }
 }
 
 
